@@ -57,13 +57,15 @@ if valid:
 
 	print("Location:../Views/AdminViews/Dashboard.cgi?uid=%s&sid=%s&remote=%s")%(iden,sid, remote)
 
+	print
+
 else:
 
 	print("Location:../index.cgi?validation=1")
 
-###### New Validation ######
+	print
 
-print
+###### New Validation ######
 
 del UserModel
 
