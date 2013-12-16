@@ -16,7 +16,13 @@ class Net2NetModel:
 
 		if name == None:
 
-			dbinfo = Config()
+			try:
+
+				dbinfo = Config()
+
+			except:
+
+				pass
 
 			try:
 
@@ -26,7 +32,9 @@ class Net2NetModel:
 
 			except MySQLdb.Error, e:
 
-   				print "Error %d: %s" % (e.args[0],e.args[1])
+				pass
+
+   				#print "Error %d: %s" % (e.args[0],e.args[1])
 
 		else:
 
@@ -40,7 +48,9 @@ class Net2NetModel:
 
 			except MySQLdb.Error, e:
 
-   				print "Error %d: %s" % (e.args[0],e.args[1])
+				pass
+
+   				#print "Error %d: %s" % (e.args[0],e.args[1])
 
 
    	def __del__(self):

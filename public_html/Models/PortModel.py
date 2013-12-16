@@ -15,8 +15,14 @@ class PortModel:
     def __init__(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
 
         if name == None:
+	
+	    try:		
 
-            dbinfo = Config()
+            	dbinfo = Config()
+
+	    except:
+
+		pass
 
             try:
 
@@ -26,7 +32,9 @@ class PortModel:
 
             except MySQLdb.Error, e:
 
-                print "Error %d: %s" % (e.args[0],e.args[1])
+		pass
+
+                #print "Error %d: %s" % (e.args[0],e.args[1])
 
         else:
 
@@ -40,7 +48,9 @@ class PortModel:
 
             except MySQLdb.Error, e:
 
-                print "Error %d: %s" % (e.args[0],e.args[1])
+		pass
+
+                #print "Error %d: %s" % (e.args[0],e.args[1])
 
 
     def __del__(self):

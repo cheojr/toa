@@ -6,6 +6,7 @@ import re
 import MySQLdb
 import os
 import sys  
+sys.path.append("../../bin")
 from Config import Config
 ##### Imports #####
 
@@ -15,7 +16,13 @@ class NetworkModel:
 
 		if name == None:
 
-			dbinfo = Config()
+			try:
+
+				dbinfo = Config()
+
+			except:
+
+				pass
 
 			try:
 
@@ -25,7 +32,9 @@ class NetworkModel:
 
 			except MySQLdb.Error, e:
 
-   				print "Error %d: %s" % (e.args[0],e.args[1])
+				pass
+
+   				#print "Error %d: %s" % (e.args[0],e.args[1])
 
 		else:
 
@@ -39,7 +48,9 @@ class NetworkModel:
 
 			except MySQLdb.Error, e:
 
-   				print "Error %d: %s" % (e.args[0],e.args[1])
+				pass
+
+   				#print "Error %d: %s" % (e.args[0],e.args[1])
 
 
    	def __del__(self):
