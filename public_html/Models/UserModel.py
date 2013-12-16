@@ -16,7 +16,10 @@ class UserModel:
 
 		if name == None:
 
-			dbinfo = Config()
+			try:	
+				dbinfo = Config()
+			except:
+				pass
 
 			try:
 
@@ -25,8 +28,8 @@ class UserModel:
 				self.cursor = conn.cursor()
 
 			except MySQLdb.Error, e:
-
-   				print "Error %d: %s" % (e.args[0],e.args[1])
+				pass
+   				#print "Error %d: %s" % (e.args[0],e.args[1])
 
 		else:
 
@@ -39,13 +42,15 @@ class UserModel:
 				self.cursor = conn.cursor()
 
 			except MySQLdb.Error, e:
-
-   				print "Error %d: %s" % (e.args[0],e.args[1])
+				pass
+   				#print "Error %d: %s" % (e.args[0],e.args[1])
 
 
    	def __del__(self):
+		try:
 			self.cursor.close()
-
+		except:
+			pass
 
 	###################### UserModel Methods ############################
 

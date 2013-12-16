@@ -25,8 +25,8 @@ class SessionModel:
 				self.cursor = conn.cursor()
 
 			except MySQLdb.Error, e:
-
-   				print "Error %d: %s" % (e.args[0],e.args[1])
+				pass
+   				#print "Error %d: %s" % (e.args[0],e.args[1])
 
 		else:
 
@@ -39,8 +39,8 @@ class SessionModel:
 				self.cursor = conn.cursor()
 
 			except MySQLdb.Error, e:
-
-   				print "Error %d: %s" % (e.args[0],e.args[1])
+				pass
+   				#print "Error %d: %s" % (e.args[0],e.args[1])
 
    	def __del__(self):
 
