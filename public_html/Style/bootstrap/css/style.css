@@ -1,0 +1,73 @@
+@import url("bootstrap.min.css");
+
+body{
+
+	background-color:#333333;
+
+}
+
+iframe{
+
+	border:0px;
+
+	width:100%;
+
+	height:900px;;
+
+	overflow:hidden;
+
+}
+
+#banner{
+
+	background-image: linear-gradient(to bottom, #5bc0de, #2f96b4);
+
+}
+
+#app-name{
+
+	margin-top:2%;
+
+	margin-bottom:3%;
+
+}
+
+#login-button{
+
+	color:#49afcd;
+
+}
+
+#login{
+
+	margin-top:2%;
+
+        margin-bottom:3%;	
+
+}
+
+#device-button{
+        
+        color:#49afcd;
+
+}
+
+#device-list-button{
+
+	margin-bottom:2%;
+
+}
+
+#content{
+
+	margin-top:3%;
+
+	width:96%;;
+
+}
+
+#sub-content{
+
+	background-image: linear-gradient(to bottom, #5bc0de, #2f96b4);
+
+}
