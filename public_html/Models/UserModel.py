@@ -48,8 +48,7 @@ class UserModel:
 
 
    	def __del__(self):
-
-		self.cursor.close()
+			self.cursor.close()
 
 
 	###################### UserModel Methods ############################
