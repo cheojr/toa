@@ -28,8 +28,6 @@ class SessionModel:
 
    				print "Error %d: %s" % (e.args[0],e.args[1])
 
-				sys.exit(1)
-
 		else:
 
 			dbinfo = Config(name, user, passwd, flows_path, graphs_path, crontime)
@@ -43,8 +41,6 @@ class SessionModel:
 			except MySQLdb.Error, e:
 
    				print "Error %d: %s" % (e.args[0],e.args[1])
-
-				sys.exit(1)				
 
    	def __del__(self):
 
