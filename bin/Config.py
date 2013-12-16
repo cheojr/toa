@@ -1,4 +1,6 @@
 #!/usr/bin/python
+import os
+import sys
 import xml.etree.ElementTree as ET
 
 #This class is for accesing the value sin the configuration file in the code.
@@ -17,8 +19,18 @@ class Config:
         graphspath=""
 
         def __init__(self):
-       
-            tree = ET.parse('/opt/nap/bin/config.xml')
+       	    conf_path = ""
+	    if os.path.isfile("/etc/config.xml"):
+		conf_path = "/etc/config.xml"
+	    elif os.path.isfile("%s/etc/config.xml" % os.environ["HOME"]):
+		conf_path = "%s/etc/config.xml" % os.environ["HOME"]
+	    elif os.path.isfile("%s/toa/etc/config.xml" % os.environ["HOME"]):
+		conf_path = "%s/toa/etc/config.xml" % os.environ["HOME"]
+            else:
+		print "ERROR: Unable to find config.xml file"
+		sys.exit(1)
+
+	    tree = ET.parse(conf_path)
             config=tree.getroot()# gets the first tag
             data=config[0] # the first child of the root tag
 

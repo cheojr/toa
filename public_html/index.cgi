@@ -182,7 +182,10 @@ print "<div class='span12'>"
 
 print """<div class="container" id="content">"""
 
-print """<center><iframe class=infovis src='../../../../graphs/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"""	
+if os.path.isfile("./graphs/p2p_graph.html"):
+	print """<center><iframe class=infovis src='graphs/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"""	
+else:
+	print """<center><font color="red">You should be watching the p2p graph.  Try refreshing the page.</font></center>"""
 
 print "</div>"
 

@@ -2,7 +2,7 @@
 <config>
         <database>
             
-            <name>flows</name>
+            <name>toa</name>
 
             <auth>
 
@@ -16,9 +16,9 @@
 
         <logs><path>/home/albert/newToa/toalogs</path></logs>
 
-        <flows><path>/flows</path></flows>
+        <flows><path>/CassandraVol/flows</path></flows>
 
-        <graphs><path>/var/www/html/graphs</path></graphs>
+        <graphs><path>/home/jortiz/toa/public_html/graphs</path></graphs>
 
         <crontime><time>300</time></crontime>
 
