@@ -41,15 +41,13 @@ def AddNetworkForm(uid, sid, remote):
 
 def EditNetworkForm(nid, device, uid, sid, remote):
 
-	print "<center><div id='Forms'>"
-
 	print "<form action='../../Controllers/SaveNetwork.cgi' method='post'>"
 
-	print "<table cellspacing='20'><tr>"
+	print "<table class='table' id='edit-net-table'><center><tr>"
 
-	print "<td><label>Network Label </label><br><input type='text' name='Label' value='%s' placeholder='Network Label'/></td>"%(device[0])
+	print "<td><h4>Network Label</h4><input type='text' name='Label' value='%s' placeholder='Network Label'/></td>"%(device[0])
 
-	print "<td><label>Type of Monitoring </label><br><select name='Type'>"
+	print "<td><h4>Type of Monitoring</h4><select name='Type'>"
 
 	if device[3] == "interface":
 
@@ -77,21 +75,19 @@ def EditNetworkForm(nid, device, uid, sid, remote):
 
 	print "</tr><tr>"
 
-	print "<td><label>Interface Number </label><br><input type='text' name='InterfaceId' value='%s' placeholder='Interface Id'/></td>"%(device[1])
+	print "<td><h4>Interface Number</h4><input type='text' name='InterfaceId' value='%s' placeholder='Interface Id'/></td>"%(device[1])
 
-	print "<td><label>AS Number </label><br><input type='text' name='ASNumber' value='%s' placeholder='AS Number'/></td>"%(device[2])
-
-	print "</tr><tr>"
-
-	print "<td><label>Min Bytes Threshold </label><br><input type='text' name='MinBytes' value='%s' placeholder='Min Bytes Size'/></td>"%(device[4])
-
-	print "<td><label>Max Bytes Threshold </label><br><input type='text' name='MaxBytes' value='%s' placeholder='Max Bytes Size'/></td>"%(device[5])
+	print "<td><h4>AS Number</h4><input type='text' name='ASNumber' value='%s' placeholder='AS Number'/></td>"%(device[2])
 
 	print "</tr><tr>"
 
-	print "<td>&nbsp;</td><td><button>Save Network</button></td>"
+	print "<td><h4>Min Bytes Threshold</h4><input type='text' name='MinBytes' value='%s' placeholder='Min Bytes Size'/></td>"%(device[4])
 
-	print "</tr></table>"
+	print "<td><h4>Max Bytes Threshold</h4><input type='text' name='MaxBytes' value='%s' placeholder='Max Bytes Size'/></td>"%(device[5])
+
+	print "</tr><tr>"
+
+	print "</tr></center></table>"
 
 	print "<input type='hidden' name='nid' value='%s'/>"%(nid) 
 
@@ -101,18 +97,16 @@ def EditNetworkForm(nid, device, uid, sid, remote):
 
 	print "<input type='hidden' name='remote' value='%s'/>"%(remote) 
 
-	print "</form></div></center>"
+	print "<button class='btn btn-large btn-inverse' id='save-network-button'>Save Network</button>"
+
+	print "</form>"
 
 
 def AddPortsForm(nid, uid, sid, remote):
 
 	print "<center><div id='Forms'><form action='../../Controllers/AddPort.cgi' method='post'>"
 
-	print "<table>"
-
-	print "<tr><td><br><br><input type='text' name='Port' value='' placeholder='Port Number'/></td><td>&nbsp;</td><td><button>Add Port</button></td></tr>"
-
-	print "</table>"
+	print "<input type='text' name='Port' value='' placeholder='Port Number'/> <button class='btn btn-inverse' id='add-port-button'>Add Port</button>"
 
 	print "<input type='hidden' name='nid' value='%s'/>"%(nid) 
 
@@ -122,23 +116,21 @@ def AddPortsForm(nid, uid, sid, remote):
 
 	print "<input type='hidden' name='remote' value='%s'/>"%(remote) 
 
-	print "</form>"
+	print "</form><br>"
 
 def AddNet2NetForm(nid, uid, sid, remote, devices):
 
-	print "<center><div id='Forms'><form action='../../Controllers/AddNet2Net.cgi' method='post'>"
+	print "<center><form action='../../Controllers/AddNet2Net.cgi' method='post'>"
 
-	print "<table><tr><td><br><br><select name='Device'>"
+	print "<select name='Device'>"
 
 	for d in devices:
 
 		print "<option value='%s'>%s</option>"%(d[0], d[1])
 
-	print "</select></td>"
+	print "</select>"
 
-	print "<td>&nbsp;</td><td><button>Add Net2Net</button></td>"
-
-	print "</tr></table>"
+	print "<button class='btn btn-inverse' id='add-n2n-button'>Add Net2Net</button></td>"
 
 	print "<input type='hidden' name='nid' value='%s'/>"%(nid) 
 
@@ -148,17 +140,13 @@ def AddNet2NetForm(nid, uid, sid, remote, devices):
 
 	print "<input type='hidden' name='remote' value='%s'/>"%(remote) 
 
-	print "</form>"
+	print "</form><br>"
 
 def AddNetBlockForm(nid, uid, sid, remote):
 
-	print "<center><div id='Forms'><form action='../../Controllers/AddBlock.cgi' method='post'>"
+	print "<center><form action='../../Controllers/AddBlock.cgi' method='post'>"
 
-	print "<table>"
-
-	print "<tr><td><br><br><input type='text' name='FIP' value='' placeholder='From (IP Address)'/></td><td>&nbsp;</td><td><br><br><input type='text' name='TIP' value='' placeholder='To (IP Address)'/></td><td>&nbsp;</td><td><button>Add NetBlock</button></td></tr>"
-
-	print "</table>"
+	print "<input type='text' name='FIP' value='' placeholder='From (IP Address)'/> <input type='text' name='TIP' value='' placeholder='To (IP Address)'/> <button class='btn btn-inverse' id='add-netblock-button'>Add NetBlock</button>"
 
 	print "<input type='hidden' name='nid' value='%s'/>"%(nid) 
 
@@ -168,7 +156,7 @@ def AddNetBlockForm(nid, uid, sid, remote):
 
 	print "<input type='hidden' name='remote' value='%s'/>"%(remote) 
 
-	print "</form>"
+	print "</form><br>"
 
 
 def AddViewForm(uid, sid, remote, graphs):

@@ -59,7 +59,7 @@ class GraphModel:
 			else:
 				self.cursor.execute("""select * from GRAPH where %s=%s""" %(field, value))
 
-			return self.cursor.fetchone()[0]
+			return self.cursor.fetchall()
 
 		except MySQLdb.Error, e:
 
@@ -98,17 +98,29 @@ class GraphModel:
 
 			
 
-	def Add(self, name, path):
+	def Add(self, name, path, vid):
 
-                try:
-                        
-                        self.cursor.execute("""insert into GRAPH (graph_name, graph_path) values('%s', '%s')"""%(name, path))
+				try:
+                     
+					self.cursor.execute("select gid from GRAPH where graph_path = '%s'"%(path))
 
-                        return self.cursor.fetchall()
+					gid = self.cursor.fetchone()
 
-                except MySQLdb.Error, e:
+					#print "Hello", gid
 
-                        return "Error %d: %s"%(e.args[0], e.args[1])
+					if gid == None:
+
+						status = self.cursor.execute("""insert into GRAPH (graph_name, graph_path) values('%s', '%s')"""%(name, path))
+
+						gid = self.cursor.lastrowid
+
+					status = self.cursor.execute("""insert into VIEW_GRAPH (v_id, g_id) values('%s', '%s')"""%(vid, gid[0]))
+
+					return status
+
+				except MySQLdb.Error, e:
+
+					return "Error %d: %s"%(e.args[0], e.args[1])
 
 
 

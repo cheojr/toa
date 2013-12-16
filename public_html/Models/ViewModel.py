@@ -48,6 +48,18 @@ class ViewModel:
 
 	###################### Model Methods ############################
 
+	def GetViewGraphs(self, vid):
+
+		try:
+
+			self.cursor.execute("""select g_id from VIEW_GRAPH where v_id='%s'""" %(vid))
+
+			return self.cursor.fetchall()
+
+		except MySQLdb.Error, e:
+
+			return "Error %d: %s"%(e.args[0], e.args[1])
+
 	def Get(self, property, field, value):
 	
 		try:
@@ -59,7 +71,7 @@ class ViewModel:
 			else:
 				self.cursor.execute("""select * from VIEW where %s=%s""" %(field, value))
 
-			return self.cursor.fetchone()[0]
+			return self.cursor.fetchall()
 
 		except MySQLdb.Error, e:
 
@@ -80,13 +92,17 @@ class ViewModel:
 
 			
 
-	def Add(self, name, description):
+	def Add(self, name, uid):
 
                 try:
                         
-                        self.cursor.execute("""insert into VIEW (view_name, description) values('%s', '%s')"""%(name, description))
+                        status = self.cursor.execute("""insert into VIEW (view_name) values('%s')"""%(name))
 
-                        return self.cursor.fetchall()
+                        vid = self.cursor.lastrowid
+
+                        status = self.cursor.execute("""insert into USUARIO_VIEW (v_id, u_id) values('%s', '%s')"""%(vid, uid))
+
+                        return status
 
                 except MySQLdb.Error, e:
 
@@ -106,14 +122,18 @@ class ViewModel:
 
                         return "Error %d: %s"%(e.args[0], e.args[1])
 
-        def Remove(self, field, value):
+		def Remove(self, vid):
 
-                try:
+			try:
 
-                	self.cursor.execute("""delete from VIEW where %s='%s'""" %(field, value))
+ 				self.cursor.execute("""delete from VIEW_GRAPH where v_id = '%s'"""%vid)
 
-                        return "Graph Removed"
+ 				self.cursor.execute("""delete from USUARIO_VIEW where v_id = '%s'"""%vid)
 
-                except MySQLdb.Error, e:
+ 				self.cursor.execute("""delete from VIEW where vid='%s'""" %(vid))
 
-                        return "Error %d: %s"%(e.args[0], e.args[1])
+ 				return "Graph Removed"
+
+			except MySQLdb.Error, e:
+
+				return "Error %d: %s"%(e.args[0], e.args[1])

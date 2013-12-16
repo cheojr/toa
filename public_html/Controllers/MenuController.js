@@ -112,11 +112,7 @@ function GetSecondSystemMenu(id, Admin){
                                                                                                           
         if (xmlhttp.readyState==4 && xmlhttp.status==200){
                                                              
-            document.getElementById("second_form").innerHTML = xmlhttp.responseText;
-
-            document.getElementById("third_form").innerHTML = "";
-
-            document.getElementById("time_form").innerHTML = "";
+            document.getElementById("custom-query-second").innerHTML = xmlhttp.responseText;
                 
         }
                                                                                                                                                                                   
@@ -124,13 +120,9 @@ function GetSecondSystemMenu(id, Admin){
 
     if(Admin){
 
-         xmlhttp.open("GET","../MenuViews/SecondSystemMenuView.cgi?id="+id+"&Admin=1",true);
+        //alert(id);
 
-    }
-
-    else{
-
-         xmlhttp.open("GET","Views/MenuViews/SecondSystemMenuView.cgi?id="+id,true);
+        xmlhttp.open("GET","../MenuViews/SecondSystemMenuView.cgi?id="+id+"&Admin=1",true);
 
     }
                      
@@ -142,7 +134,7 @@ function GetSecondSystemMenu(id, Admin){
 
 function ClearThirdSystemMenu(){
 
-    document.getElementById('third_form').innerHTML = "";
+    document.getElementById('custom-query-third').innerHTML = "";
 
 }
 
@@ -166,7 +158,7 @@ function GetThirdSystemMenu(id, state, Admin){
                                                                                                           
         if (xmlhttp.readyState==4 && xmlhttp.status==200){
                                                              
-            document.getElementById("third_form").innerHTML = xmlhttp.responseText;
+            document.getElementById("custom-query-third").innerHTML = xmlhttp.responseText;
                 
         }
                                                                                                                                                                                   
@@ -175,12 +167,6 @@ function GetThirdSystemMenu(id, state, Admin){
     if(Admin){
 
         xmlhttp.open("GET","../MenuViews/ThirdSystemMenuView.cgi?id="+id+"&state="+state+"&Admin=1",true);
-
-    }
-
-    else{
-
-         xmlhttp.open("GET","Views/MenuViews/ThirdSystemMenuView.cgi?id="+id+"&state="+state,true);
 
     }
                      
@@ -210,9 +196,9 @@ function GetTimeSystemMenu(Admin){
                                                                                                           
         if (xmlhttp.readyState==4 && xmlhttp.status==200){
                                                              
-            document.getElementById("time_form").innerHTML = xmlhttp.responseText;
-             
-             EnableDateTimePicker();
+            document.getElementById("custom-query-time").innerHTML = xmlhttp.responseText;
+
+            EnableDateTimePicker();
 
         }
                                                                                                                                                                                   
@@ -221,12 +207,6 @@ function GetTimeSystemMenu(Admin){
     if(Admin){
 
         xmlhttp.open("GET","../MenuViews/TimeSystemMenuView.cgi?Admin=1", true);
-
-    }
-
-    else{
-
-        xmlhttp.open("GET","Views/MenuViews/TimeSystemMenuView.cgi", true);
 
     }
                      

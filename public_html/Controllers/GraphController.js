@@ -1,4 +1,4 @@
-function GetGraphsView(id, Admin){
+function GetGraphsView(id, uid, sid, remote){
 
     var xmlhttp;
 
@@ -24,17 +24,9 @@ function GetGraphsView(id, Admin){
                                                                                                                                                                                   
     }
 
-    if(Admin){
+    //alert("http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/DeviceGraphView.cgi?id="+id+"&uid="+uid+"&sid="+sid+"&remote="+remote,true);
 
-        xmlhttp.open("GET","../GraphViews/GraphView.cgi?id="+id+"&Admin=1",true);
-
-    }
-
-    else{
-
-        xmlhttp.open("GET","Views/GraphViews/GraphView.cgi?id="+id,true);
-
-    }
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/DeviceGraphView.cgi?id="+id+"&uid="+uid+"&sid="+sid+"&remote="+remote,true);
                      
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                                                                                                                                                                                                           
@@ -42,7 +34,7 @@ function GetGraphsView(id, Admin){
 
 }
 
-function GetGraphsViewBy(id, value, Admin){
+function GetGraphsViewBy(id, value){
 
     var xmlhttp;
 
@@ -62,23 +54,13 @@ function GetGraphsViewBy(id, value, Admin){
                                                                                                           
         if (xmlhttp.readyState==4 && xmlhttp.status==200){
                                                              
-            document.getElementById("content").innerHTML = xmlhttp.responseText;
+            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center";
                 
         }
                                                                                                                                                                                   
     }
 
-    if(Admin){
-
-        xmlhttp.open("GET","../GraphViews/GraphView.cgi?id="+id+"&d="+value+"&Admin=1",true);
-
-    }
-
-    else{
-
-        xmlhttp.open("GET","Views/GraphViews/GraphView.cgi?id="+id+"&d="+value,true);
-
-    }
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/DeviceGraphViewsBy"+value+".cgi?id="+id,true);
                      
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                                                                                                                                                                                                           
@@ -86,9 +68,43 @@ function GetGraphsViewBy(id, value, Admin){
 
 }
 
-function GetPortGraphsView(sel, id, Admin){
+function GetPortGraphsView(sel, id){
 
-        var text = sel.options[sel.selectedIndex].value;
+    var text = sel;
+
+    var xmlhttp;
+
+    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+                                
+        xmlhttp = new XMLHttpRequest();
+    
+    }
+
+    else{// code for IE6, IE5
+                                                                  
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+    }
+                                                                                 
+    xmlhttp.onreadystatechange=function(){
+                                                                                                          
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                                                             
+            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
+                
+        }
+                                                                                                                                                                                  
+    }
+        
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/PortGraphView.cgi?id="+id+"&port="+text,true);
+                     
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                                                                                                                                                                                                          
+    xmlhttp.send();
+
+}
+
+function GetPortGraphsViewBy(id, pid, value){
 
         var xmlhttp;
 
@@ -108,23 +124,13 @@ function GetPortGraphsView(sel, id, Admin){
                                                                                                           
         if (xmlhttp.readyState==4 && xmlhttp.status==200){
                                                              
-            document.getElementById("content").innerHTML = xmlhttp.responseText;
+            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
                 
         }
                                                                                                                                                                                   
     }
 
-    if(Admin){
-
-        xmlhttp.open("GET","../GraphViews/GraphView.cgi?id="+id+"&p="+text+"&Admin=1",true);
-
-    }
-
-    else{
-
-        xmlhttp.open("GET","Views/GraphViews/GraphView.cgi?id="+id+"&p="+text,true);
-
-    }
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/PortGraphViewBy"+value+".cgi?id="+id+"&port="+pid,true);
                      
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                                                                                                                                                                                                           
@@ -135,7 +141,7 @@ function GetPortGraphsView(sel, id, Admin){
 
 function GetNet2NetGraphsView(sel, id, Admin){
 
-        var text = sel.options[sel.selectedIndex].value;
+        var text = sel;
 
         var xmlhttp;
 
@@ -155,23 +161,49 @@ function GetNet2NetGraphsView(sel, id, Admin){
                                                                                                           
         if (xmlhttp.readyState==4 && xmlhttp.status==200){
                                                              
-            document.getElementById("content").innerHTML = xmlhttp.responseText;
+            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
                 
         }
                                                                                                                                                                                   
     }
 
-    if(Admin){
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/Net2NetGraphView.cgi?id="+id+"&n="+text,true);
+                     
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                                                                                                                                                                                                          
+    xmlhttp.send();
 
-        xmlhttp.open("GET","Views/GraphViews/GraphView.cgi?id="+id+"&n="+text+"&Admin=1",true);
+}
 
+function GetNet2NetGraphsViewBy(sel, id, value){
+
+        var text = sel;
+
+        var xmlhttp;
+
+    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+                                
+        xmlhttp = new XMLHttpRequest();
+    
     }
 
-    else{
-
-        xmlhttp.open("GET","Views/GraphViews/GraphView.cgi?id="+id+"&n="+text,true);
+    else{// code for IE6, IE5
+                                                                  
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 
     }
+                                                                                 
+    xmlhttp.onreadystatechange=function(){
+                                                                                                          
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                                                             
+            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
+                
+        }
+                                                                                                                                                                                  
+    }
+
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/Net2NetGraphViewBy"+value+".cgi?id="+id+"&n="+text,true);
                      
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                                                                                                                                                                                                           
@@ -183,7 +215,9 @@ function Search(form){
 
     id = document.getElementById("network").selectedIndex;
 
-    radios = document.getElementById("second_form").childNodes;
+    radios = document.getElementById("custom-query-second").childNodes;
+
+    graphtype = ""
 
     for(i=1; i<radios.length;i++){
 
@@ -211,7 +245,7 @@ function Search(form){
 
     }
 
-    checks = document.getElementById("third_form").childNodes;
+    checks = document.getElementById("custom-query-third").childNodes;
 
     checked = "";
 
@@ -225,9 +259,9 @@ function Search(form){
 
     }
 
-    d1 = document.getElementById("time_form").childNodes.item(3).value;
+    d1 = document.getElementById("custom-query-time").childNodes.item(3).value;
 
-    d2 = document.getElementById("time_form").childNodes.item(5).value;
+    d2 = document.getElementById("custom-query-time").childNodes.item(5).value;
 
     if(checked == ""){
 
@@ -347,5 +381,89 @@ function AddGraph(){
         document.getElementById("gnumber").value = gnum+1;
 
     }
+
+}
+
+function GetViewGraph(vid, vname){
+
+    var xmlhttp;
+
+    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+                                
+        xmlhttp = new XMLHttpRequest();
+    
+    }
+
+    else{// code for IE6, IE5
+                                                                  
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+    }
+                                                                                 
+    xmlhttp.onreadystatechange=function(){
+                                                                                                          
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+
+            document.getElementById("viewer-header").innerHTML = "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"+"<center><h2>"+vname+"</h2></center>";
+                                                             
+            document.getElementById("viewer-body").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
+                
+        }
+                                                                                                                                                                                  
+    }
+
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/ViewerGraphs.cgi?vid="+vid,true);
+                     
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                                                                                                                                                                                                          
+    xmlhttp.send();
+
+}
+
+function AddGraphToView(form){
+
+    graph_name = form.childNodes.item(0).value.toString();
+
+    vid = form.childNodes.item(3)[form.childNodes.item(3).selectedIndex].value;
+
+    graph_path = form.childNodes.item(7).value.toString();
+
+    uid = form.childNodes.item(4).value;
+
+    //alert(graph_path);
+
+    var xmlhttp;
+
+    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+                                
+        xmlhttp = new XMLHttpRequest();
+    
+    }
+
+    else{// code for IE6, IE5
+                                                                  
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+    }
+                                                                                 
+    xmlhttp.onreadystatechange=function(){
+                                                                                                          
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                                 
+            alert("http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Controllers/AddGraph2View.cgi?vid="+vid+"&graph_name="+graph_name+"&graph_path="+graph_path);
+
+            pid = form.id+"-status";
+
+            document.getElementById(pid.toString()).innerHTML = "<center>"+xmlhttp.responseText+"</center>";
+                
+        }
+                                                                                                                                                                                  
+    }
+
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Controllers/AddGraph2View.cgi?vid="+vid+"&graph_name="+graph_name+"&graph_path="+graph_path,true);
+                     
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                                                                                                                                                                                                          
+    xmlhttp.send();
 
 }

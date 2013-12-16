@@ -36,11 +36,7 @@ sid = form.getvalue("sid")
 
 remote = form.getvalue("remote")
 
-vid = form.getvalue("vid")
-
-vid = str(vid).strip("(),L")
-
-vid = int(vid)
+view_name = form.getvalue("view-name")
 
 now = datetime.datetime.now()#generate the TimeStamp
 
@@ -68,7 +64,7 @@ if((timestamp+5)<=tmstp or timestamp == -1):
 
 SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-ViewModel.Remove(vid)
+print ViewModel.Add(view_name, uid)
 
 del ViewModel
 

@@ -1,118 +1,195 @@
 #!/usr/bin/python
-########### Imports #######################
+
+######################### imports  #########################
 
 import cgi
 import sys 
 import os
 import cgitb
-from datetime import datetime
+import datetime
+import urllib, hashlib
+import sys
+sys.path.append("Models")
+from NetworkModel import NetworkModel
+from PortModel import PortModel
+from Net2NetModel import Net2NetModel
 
-########## Imports #######################
+######################### imports  #########################
 
-############### Init #######################
+######################### headers  #########################
 
-print "Content-Type: text/html\n\n"
+print "Content-Type: text/html"     
 
-agent = os.environ.get("HTTP_USER_AGENT", "N/A")
+print 
 
-form = cgi.FieldStorage()#getting the values of the form in case of a validation error
+print "<!DOCTYPE html><html>"
 
-if form.has_key("validation"):
+print "<head>"
 
-    validation = int(form.getvalue("validation"))
+print "<title>ToaNMS</title>"
 
-else:
+print """<link rel="stylesheet" href="Style/bootstrap/css/style.css"/>"""
 
-    validation = None
+print """<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>"""
 
-if form.has_key("iframe_display"):
-        
-	iframe_display = form.getvalue("iframe_display")
+print """<script src="Style/bootstrap/js/bootstrap.min.js"></script>"""
 
-else:
+print "<script type='text/javascript' src='http://platform.twitter.com/widgets.js'></script>"
 
-    iframe_display = "p2p"
+print """<script src="Controllers/GraphController.js"></script>"""
 
-##################### Init ##########################################
+print """<script src='Style/bootstrap/js/helpers.js'></script>"""
 
-print """        
-	
-		<head>
+print "</head>"
 
-        	<title>TOA Network Monitoring System</title>
+######################### headers #########################
 
-            <link rel='stylesheet' type='text/css' href='Style/Style.css'>
+print "<body>"
 
-            <script type='text/javascript' src='Controllers/MenuController.js'></script>
+######################### banner  #########################
 
-            <script type='text/javascript' src='Controllers/GraphController.js'></script>
+print """<div class="row-fluid" id="banner">"""
 
-            <script type='text/javascript' src='Style/jquery.min.js'></script>
+print """<div class="span8 offset1" id="app-name">"""
+		
+print """<h1>Toa Network Monitoring System</h1>"""
 
-            <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js' type='text/javascript'></script>
-    
-            <script type='text/javascript' src='Style/jquery.ui.datetimepicker.min.js'></script>
-    
-            <script type='text/javascript' src='Style/Style.js'></script>
+print "</div>"
 
-            <link rel='stylesheet' type='text/css' href='Style/jquery-ui.css'/>
+print """<div class="span2 offset1" id="login">"""
+		
+print """<div class="btn-group">"""
 
-        </head>"""
+print """<a href=#login-form-modal data-toggle="modal" class="btn btn-large btn-inverse" id="login-button">Login</a>"""
 
-print """<div class=banner><p>TOA Network Monitoring System</p>"""
+print "</div>"
 
-if agent.find("Mobile") == -1:
+print "</div>"
 
-    print """
-                                                      
-                <form action='Controllers/AuthenticationController.cgi' method='post'>
+print "</div>"
 
-                    <input id=username type='text' name='username' value='' placeholder='Username'>
+######################### banner  #########################
 
-                    <input id=password type='password' name='password' value='' placeholder='Password'>
+######################### login form  #########################
 
-                    <input id='login_button' type='submit' name='button' value='Login'>"""
+print """<div class="modal hide fade" id="login-form-modal">"""
 
-    if validation <= 1 and validation != None:
+print """<div class="modal-header">"""
 
-        print """<label>Invalid Username or Password.</label>"""
+print """<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>"""
 
+print """<center><h2>Toa Login</h2></center>"""
 
-    print	"""</form>"""
-			
-print """</div>                                                                                                                                                                                                                                                                       
-	
-		<body>
+print "</div>"
 
-            <div class=menu>
+print """<div class="modal-body">"""
 
-            	<div id='top_menu_button' onclick='GetNetworksMenu()'>
+print """<center><br><form action="Controllers/AuthenticationController.cgi" method="post" class="form-horizontal">"""
 
-            		<br><br><br><br><br><br><p>Networks</p>
+print """<div class="input-prepend">"""
 
-            	</div>
+print """<span class="add-on"><i class="icon-envelope"></i></span>"""
 
-            	<div id='bottom_menu_button' onclick='GetFirstSystemMenu()'>
+print """<input class="span4" id="prependedInput" type="text" name="username" placeholder="Username">"""
 
-            		<br><br><br><br><br><p>System</p>
+print "</div><br><br>"
 
-            	</div>
+print """<div class="input-prepend">"""
 
-            	<div id='menu_content'>
+print """<span class="add-on"><i class="icon-lock"></i></span>"""
 
+print """<input class="span4" id="prependedInput" type="password" name="password" placeholder="Password">"""
 
-            	</div>
+print "</div>"
 
-            	<div id='port_net_menu_container'>
+print "</div>"
 
-            	</div>
+print """<div class="modal-footer">"""
 
-            </div>
+print """<input class="btn btn-large btn-inverse" id="login-button" type="submit" value="Login">"""
 
-            <div class='content' id='content'>"""
+print "</form></center>"
 
-if (iframe_display=="p2p"):
-       
-	print """<center><iframe class=infovis src='../../../../graphs/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"""	
+print "</div>"
 
-print "</div></body>"
+print "</div>"
+
+######################### login form  #########################
+
+######################### content  #########################
+
+print "<div class='row' id='FeatureBar'>"
+
+print "<br>"
+
+print "<div class='span11 offset1'>"
+
+print """<div class="btn-group">"""
+
+print """<a href='#DeviceMenu' data-toggle="dropdown" class="btn btn-large btn-inverse dropdown-toggle" id="device-button">Device</a>"""		
+
+print "<ul class='dropdown-menu' role='menu'>"
+
+NetworkModel = NetworkModel()
+
+PortModel = PortModel()
+
+Net2NetModel = Net2NetModel()
+
+devices = NetworkModel.GetAll()
+
+for device in devices:
+
+	print "<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#%sInterfaceGraph' onclick='GetGraphsView(%s)'>Interface Graph</a></li><li><a href='#%sPortGraph' onclick=\"GetGraphsView(%s)\">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, %s)'>"%(device[1], device[1], device[0], device[0], device[1], device[0])
+
+	ports = PortModel.Get(device[0])
+
+	print "<option value='None'>Select</option>"
+
+	for port in ports:
+
+		print "<option value='%s'>%s</option>"%(port[1], port[1])
+
+	print "</select></a></li><li><a href='#%sNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, %s)'>"%(device[1], device[0])
+
+	net2nets = Net2NetModel.Get(device[0])
+
+	print "<option value='None'>Select</option>"
+
+	for net2net in net2nets:
+
+		print "<option value='%s'>%s</option>"%(net2net[2], net2net[1])
+
+	print "</select></a></li></ul></li>"
+
+del NetworkModel
+
+del PortModel
+
+del Net2NetModel
+
+print "</ul>"
+
+print "</div>"
+
+print "</div></div>"
+
+print "<br>"
+
+print "<div class='row-fluid' id='Parent'>"
+
+print "<div class='span12'>"
+
+print """<div class="container" id="content">"""
+
+print """<center><iframe class=infovis src='../../../../graphs/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"""	
+
+print "</div>"
+
+print "</div>"
+
+######################### content  #########################
+
+print "</body>"
+
+print "</html>"

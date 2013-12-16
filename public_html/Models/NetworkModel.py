@@ -50,9 +50,11 @@ class NetworkModel:
 
 	def GetLabel(self, id):
 	
-		self.cursor.execute("""select label from NETWORK where n_id=%s""" % id)
+		self.cursor.execute("""select label from NETWORK where n_id='%s'""" % id)
 
 		return self.cursor.fetchone()[0]
+
+		#print "Hello"
 
 	def GetLabels(self):
 

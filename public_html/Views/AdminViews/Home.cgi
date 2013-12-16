@@ -13,6 +13,8 @@ sys.path.append("../../Models")
 from SessionModel import SessionModel
 from NetworkModel import NetworkModel
 from UserModel import UserModel
+from PortModel import PortModel
+from Net2NetModel import Net2NetModel
 
 #cgitb.enable()
 
@@ -42,19 +44,9 @@ tmstp = now.minute#converting the TimeStamp to string
 
 SessionModel = SessionModel()
 
-NetworkModel = NetworkModel()
-
 UserModel = UserModel()
 
 timestamp = SessionModel.Validate(uid, sid, remote)
-
-if form.has_key("iframe_display"):
-        
-	iframe_display = form.getvalue("iframe_display")
-
-else:
-
-    iframe_display = "p2p"
 
 ##################### Init ##########################################
 
@@ -70,86 +62,152 @@ if((timestamp+5)<=tmstp or timestamp == -1):
 
     print """<script language=\"JavaScript\">{location.href=\"../../index.cgi\";self.focus();}</script>"""
 
+print "Hello"
+
 SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-print """        
-	
-		<head>
+######################### headers  #########################
 
-        	<title>TOA Network Monitoring System</title>
+print "<!DOCTYPE html><html>"
 
-            <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'></script>
+print "<head>"
 
-            <link rel='stylesheet' type='text/css' href='../../Style/Style.css'>
+print "<title>ToaNMS</title>"
 
-        	<script type='text/javascript' src='../../Style/Style.js'></script>
+print """<link rel="stylesheet" href="../../Style/bootstrap/css/style.css"/>"""
 
-            <script type='text/javascript' src='../../Controllers/MenuController.js'></script>
+print """<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>"""
 
-            <script type='text/javascript' src='../../Controllers/GraphController.js'></script>
+print """<script src="../../Style/bootstrap/js/bootstrap.min.js"></script>"""
 
-            <div class=banner>
+print """<script src="../../Controllers/GraphController.js"></script>"""
 
-            	<p>TOA Network Monitoring System</p>
+print "</head>"
 
-                <div id='user_box'>
+######################### headers #########################
 
-                    <p>"""
+print "<body>"
+
+######################### banner  #########################
+
+print """<div class="row-fluid" id="banner">"""
+
+print """<div class="span8 offset1" id="app-name">"""
+        
+print """<h1>Toa Network Monitoring System</h1>"""
+
+print "</div>"
+
+print """<div class="span3" id="user-box">"""
+    
+print "<div class='row'>"
+
+print "<div class='span12'><h3><center>"
+
 print UserModel.GetUsername(uid)[0]
 
-print  """  <br>
+print "</center></h3></div>"
 
-                    <a href='Home.cgi?uid=%s&sid=%s&remote=%s'>Home</a>&nbsp;
+print "</div>"
 
-                    <a href='Dashboard.cgi?uid=%s&sid=%s&remote=%s'>Dashboard</a>&nbsp;
+print "<div class='row'>"
 
-                    <a href='Setting.cgi?uid=%s&sid=%s&remote=%s'>Settings</a>
+print "<div class='span12'><center>"
 
-                    </p>
+print "<a class='btn btn-inverse' id='login-button' href='Home.cgi?uid=%s&sid=%s&remote=%s'>Home</a>"%(uid, sid, remote)
 
-                </div>
-			
-			</div>                                                                                                                                                                                                                                                                       
-		
-		</head>
-	
-		<body>
+print "<a class='btn btn-inverse' id='login-button' href='Dashboard.cgi?uid=%s&sid=%s&remote=%s'>Dashboard</a>"%(uid, sid, remote)
 
-            <div class=menu>
+print "<a class='btn btn-inverse' id='login-button' href='Setting.cgi?uid=%s&sid=%s&remote=%s'>Settings</a>"%(uid, sid, remote)
 
-            	<div id='top_menu_button' onclick='GetNetworksMenu(1)'>
+print "</center></div>"
 
-            		<br><br><br><br><br><br><p>Networks</p>
+print "</div>"
 
-            	</div>
+print "</div>"
 
-            	<div id='bottom_menu_button' onclick='GetFirstSystemMenu(1)'>
+print "</div>"
 
-            		<br><br><br><br><br><p>System</p>
+######################### banner  #########################
 
-            	</div>
+######################### content  #########################
 
-            	<div id='menu_content'>
+print "<div class='row' id='FeatureBar'>"
 
+print "<br>"
 
-            	</div>
+print "<div class='span11 offset1'>"
 
-            	<div id='port_net_menu_container'>
+print """<div class="btn-group">"""
 
-            	</div>
+print """<a href='#DeviceMenu' data-toggle="dropdown" class="btn btn-large btn-inverse dropdown-toggle" id="device-button">Device</a>"""        
 
-            </div>
+print "<ul class='dropdown-menu' role='menu'>"
 
-            <div class='content' id='content'>"""%(uid, sid, remote, uid, sid, remote, uid, sid, remote)
+NetworkModel = NetworkModel()
+
+PortModel = PortModel()
+
+Net2NetModel = Net2NetModel()
+
+devices = NetworkModel.GetAll()
+
+for device in devices:
+
+    print "<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#%sInterfaceGraph' onclick='GetGraphsView(%s)'>Interface Graph</a></li><li><a href='#%sPortGraph' onclick=\"GetGraphsView(%s)\">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, %s)'>"%(device[1], device[1], device[0], device[0], device[1], device[0])
+
+    ports = PortModel.Get(device[0])
+
+    print "<option value='None'>Select</option>"
+
+    for port in ports:
+
+        print "<option value='%s'>%s</option>"%(port[1], port[1])
+
+    print "</select></a></li><li><a href='#%sNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, %s)'>"%(device[1], device[0])
+
+    net2nets = Net2NetModel.Get(device[0])
+
+    print "<option value='None'>Select</option>"
+
+    for net2net in net2nets:
+
+        print "<option value='%s'>%s</option>"%(net2net[2], net2net[1])
+
+    print "</select></a></li></ul></li>"
 
 del NetworkModel
+
+del PortModel
+
+del Net2NetModel
 
 del UserModel
 
 del SessionModel
 
-if (iframe_display=="p2p"):
-                
-    print """<center><iframe class=infovis src='../../../../../../graphs/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"""  
+print "</ul>"
 
-print "</div></body>"
+print "</div>"
+
+print "</div></div>"
+
+print "<br>"
+
+print "<div class='row-fluid' id='Parent'>"
+
+print "<div class='span12'>"
+
+print """<div class="container" id="content">"""
+
+print """<center><iframe class=infovis src='../../../../graphs/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>""" 
+
+print "</div>"
+
+print "</div>"
+
+######################### content  #########################
+
+print "</body>"
+
+print "</html>"

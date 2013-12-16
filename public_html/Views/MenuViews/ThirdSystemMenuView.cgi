@@ -25,7 +25,7 @@ PortModel = PortModel()
 
 NetworkModel = NetworkModel()
 
-html = "&nbsp;&nbsp;&nbsp;&nbsp;"
+html = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
 
 if(id != 'None'):
 
@@ -35,7 +35,7 @@ if(id != 'None'):
 
 		for p in ports:
 
-			html += "<input name='checkboxoptions' type='checkbox' value='%s'>%s&nbsp;"%(p[0],p[1])
+			html += "<label class='checkbox inline'><input name='checkboxoptions' type='checkbox' value='%s'>%s</label>"%(p[0],p[1])
 
 	else:
 
@@ -43,7 +43,7 @@ if(id != 'None'):
 
 		for n in net2net:
 
-			html += "<input name='checkboxoptions' type='checkbox' value='%s'>%s&nbsp;"%(n[0], n[1])
+			html += "<label class='checkbox inline'><input name='checkboxoptions' type='checkbox' value='%s'>%s</label>"%(n[0], n[1])
 
 else:
 

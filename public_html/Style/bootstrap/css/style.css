@@ -12,15 +12,58 @@ iframe{
 
 	width:100%;
 
-	height:900px;;
+	height:400px;
 
 	overflow:hidden;
 
+	padding-bottom: 5%;
+
 }
+
+#edit-net-table, #edit-net-table td{
+
+	margin-left: 9%;
+
+	border-top:none;
+
+}
+
+#edit-network-view{
+
+	background-color: #F3E2A9;
+
+	width:60%;
+
+}
+
+.radio{
+
+	padding-left: 8%!important;
+
+}
+
+#setting-menu{
+
+	width:150%;
+
+	min-width: 150%;
+
+	padding-right: 0px!important;
+
+}
+
+#setting-menu>li>a{
+
+	padding: 0px;
+
+}
+
 
 #banner{
 
-	background-image: linear-gradient(to bottom, #5bc0de, #2f96b4);
+	/*background-image: linear-gradient(to bottom, #5bc0de, #2f96b4);*/
+
+	background-color: #F3E2A9;
 
 }
 
@@ -32,9 +75,61 @@ iframe{
 
 }
 
-#login-button{
+#viewer-modal{
 
-	color:#49afcd;
+	width: 100%;
+
+	height:100%;
+
+	margin: 0px;
+
+	padding: 0px;
+
+	left:0%;
+
+	top: 0%;
+
+}
+
+#viewer-body{
+
+	height:100%;
+
+	padding: 0px;
+
+	margin: 0px;
+
+	left: 0px;
+
+	top:0px;
+
+	max-height: 100%!important;
+
+}
+
+#viewer-table{
+
+	border-color: transparent!important;
+
+}
+
+#add-graph-form1-status, #add-graph-form2-status, #add-graph-form3-status, #add-graph-form4-status{
+
+	float: left;
+
+}
+
+#login-button, #addview-button, #save-network-button{
+
+	color:#F3E2A9;
+
+}
+
+#add-port-button, #add-n2n-button, #add-netblock-button{
+
+	color:#F3E2A9;
+
+	vertical-align: top;
 
 }
 
@@ -42,13 +137,15 @@ iframe{
 
 	margin-top:2%;
 
-        margin-bottom:3%;	
+    margin-bottom:3%;	
 
 }
 
 #device-button{
         
-        color:#49afcd;
+    color:#F3E2A9;
+
+    margin-bottom: 20%;
 
 }
 
@@ -58,16 +155,152 @@ iframe{
 
 }
 
+#devicel-button, #view-button{
+
+	color: #F3E2A9;
+
+	margin-bottom: 1%;
+
+}
+
+#query-button{
+
+	color:#F3E2A9;
+
+}
+
+#feature-bar-button{
+
+	margin-bottom: 2%;
+
+	color:#F3E2A9;
+
+}
+
+.device-button{
+
+	margin-bottom: 17%!important;
+
+}
+
+#entry td{
+
+	border-top: 1px solid #333333 !important;
+
+}
+
+#edit-button{
+
+	margin-top: 18%;
+
+}
+
+#remove-button{
+
+	margin-top: 17%;
+
+}
+
+#device-list, #view-list{
+
+	background-color: #F3E2A9;
+
+}
+
 #content{
 
 	margin-top:3%;
 
-	width:96%;;
+	width:96%;
 
 }
 
-#sub-content{
+#GraphDisplay{
 
-	background-image: linear-gradient(to bottom, #5bc0de, #2f96b4);
+	width:65%;
+
+	background-color: #F3E2A9;
+
+	margin-bottom: 7%;
 
 }
+
+#Disclaimer{
+
+	color:#F3E2A9;
+
+}
+
+#TripleOptionMenu{
+
+	margin-top: 0.1%;
+
+	border-radius: 0px;
+
+}
+
+#PortSelection, #N2NSelection{
+
+	width:80%;
+
+}
+
+#manage-device-menu{
+
+	width:49.5%;
+
+	padding:0px;
+
+	color: #333333;
+
+}
+
+#manage-device-menu .nav{
+
+	background-image: linear-gradient(to bottom,#fff,#F3E2A9);
+
+}
+
+#manage-device-menu ul{
+
+	width: 100%;
+
+}
+
+#TimeLapseMenu{
+
+	width:44.7%;	
+
+	padding:0px;
+
+	color: #333333;
+
+}
+
+#TimeLapseMenu .nav{
+
+	background-image: linear-gradient(to bottom,#fff,#F3E2A9);
+
+}
+
+#TimeLapseMenu ul{
+
+	width: 100%;
+
+}
+
+#Parent{
+
+	background-color: #333333;
+
+}
+
+#FeatureBar{
+
+	background-color:#5d5d5d; 
+
+}
+
+.dropdown-submenu > a:focus, .dropdown-submenu > a:hover, .dropdown-submenu:focus>a, r, .dropdown-submenu:hover>a,
+.dropdown-menu > li a:hover,
+.dropdown-menu > li a:focus { background-color: #333333; color:#F3E2A9;background-image: none; filter: none; text-decoration: none; border: none; }
