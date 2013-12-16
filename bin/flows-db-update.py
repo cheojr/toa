@@ -35,7 +35,7 @@ def main(file):
 	db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
 	c = db.cursor()
         basepath=config.getFlowsPath()
-	path=basepath+file
+	path=file
 	print path
 	network = GenerateDictionary().GenDictionary(c) #This generates the dictionary. It needs the database cursor because settings for the dictionary are in the database
 	
