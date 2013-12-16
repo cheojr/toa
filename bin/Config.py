@@ -24,6 +24,10 @@ class Config:
 		conf_path = "/etc/config.xml"
 	    elif os.path.isfile("../etc/config.xml"):
 		conf_path = "../etc/config.xml"
+            elif os.path.isfile("../../etc/config.xml"):
+                conf_path = "../../etc/config.xml"
+	    elif os.path.isfile("../../../etc/config.xml"):
+                conf_path = "../../../etc/config.xml"
 	    elif os.environ.has_key("HOME") and os.path.isfile("%s/etc/config.xml" % os.environ["HOME"]):
 		conf_path = "%s/etc/config.xml" % os.environ["HOME"]
 	    elif os.environ.has_key("HOME") and os.path.isfile("%s/toa/etc/config.xml" % os.environ["HOME"]):

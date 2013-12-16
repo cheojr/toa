@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.1.61, for redhat-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.1.67, for redhat-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: flows
 -- ------------------------------------------------------
--- Server version	5.1.61
+-- Server version	5.1.67
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,21 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `GRAPH`
+--
+
+DROP TABLE IF EXISTS `GRAPH`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `GRAPH` (
+  `gid` int(11) NOT NULL AUTO_INCREMENT,
+  `graph_name` varchar(100) DEFAULT NULL,
+  `graph_path` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`gid`)
+) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `JOB`
@@ -43,7 +58,7 @@ CREATE TABLE `NET2NET` (
   `tn_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nn_id`),
   UNIQUE KEY `fn_id` (`fn_id`,`tn_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=122 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,7 +80,7 @@ CREATE TABLE `NETWORK` (
   UNIQUE KEY `label` (`label`),
   UNIQUE KEY `interface` (`interface`),
   UNIQUE KEY `asn` (`asn`)
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -82,7 +97,7 @@ CREATE TABLE `NET_BLOCK` (
   `ip_to` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`nb_id`),
   UNIQUE KEY `ip_from` (`ip_from`,`ip_to`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,7 +113,7 @@ CREATE TABLE `PORT` (
   `port` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`p_id`),
   UNIQUE KEY `n_id` (`n_id`,`port`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=43 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,14 +141,13 @@ DROP TABLE IF EXISTS `USUARIO`;
 CREATE TABLE `USUARIO` (
   `uid` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(60) NOT NULL DEFAULT '',
-  `passwd` varchar(20) NOT NULL DEFAULT '',
+  `passwd` varbinary(100) DEFAULT NULL,
   `phone` varchar(15) NOT NULL DEFAULT '',
   `email` varchar(50) NOT NULL DEFAULT '',
   `staff` smallint(6) NOT NULL DEFAULT '0',
   PRIMARY KEY (`uid`),
-  UNIQUE KEY `passwd` (`passwd`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -149,6 +163,51 @@ CREATE TABLE `USUARIO_NETWORK` (
   `n_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`unid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `USUARIO_VIEW`
+--
+
+DROP TABLE IF EXISTS `USUARIO_VIEW`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `USUARIO_VIEW` (
+  `v_id` int(11) DEFAULT NULL,
+  `u_id` int(11) DEFAULT NULL,
+  KEY `v_id` (`v_id`),
+  KEY `u_id` (`u_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `VIEW`
+--
+
+DROP TABLE IF EXISTS `VIEW`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `VIEW` (
+  `vid` int(11) NOT NULL AUTO_INCREMENT,
+  `view_name` varchar(100) DEFAULT NULL,
+  `description` text,
+  PRIMARY KEY (`vid`)
+) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `VIEW_GRAPH`
+--
+
+DROP TABLE IF EXISTS `VIEW_GRAPH`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `VIEW_GRAPH` (
+  `v_id` int(11) DEFAULT NULL,
+  `g_id` int(11) DEFAULT NULL,
+  KEY `v_id` (`v_id`),
+  KEY `g_id` (`g_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -185,11 +244,10 @@ CREATE TABLE `rrd_n` (
   `opacks` int(10) unsigned NOT NULL,
   `iflows` int(10) unsigned NOT NULL,
   `oflows` int(10) unsigned NOT NULL,
-  `time` text NOT NULL,
   `time_unix` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nid_time_unix` (`nid`,`time_unix`)
-) ENGINE=MyISAM AUTO_INCREMENT=1351000 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=2060527 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -208,10 +266,9 @@ CREATE TABLE `rrd_port` (
   `opacks` int(10) unsigned NOT NULL,
   `iflows` int(10) unsigned NOT NULL,
   `oflows` int(10) unsigned NOT NULL,
-  `time` text NOT NULL,
   `time_unix` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=633957 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=974038 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -251,11 +308,10 @@ CREATE TABLE `rrd_to_net` (
   `opacks` int(10) unsigned NOT NULL,
   `iflows` int(10) unsigned NOT NULL,
   `oflows` int(10) unsigned NOT NULL,
-  `time` text NOT NULL,
   `nn_id` int(11) NOT NULL,
   `time_unix` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=746538 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=3030340 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -289,4 +345,4 @@ CREATE TABLE `rrd_to_net_backup` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-02-22 11:01:10
+-- Dump completed on 2013-12-16 16:14:01

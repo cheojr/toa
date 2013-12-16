@@ -327,7 +327,6 @@ ViewModel = ViewModel()
 views = ViewModel.GetAll(uid)
 
 for view in views:
-
     print "<li><a href=#viewer-modal onclick=\"GetViewGraph(%s, '%s')\" data-toggle='modal'>%s</a></li>"%(view[0], view[1], view[1])
 
 print "</div>"
