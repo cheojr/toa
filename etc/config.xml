@@ -1,0 +1,25 @@
+<!-- Warning do not leave spaces in between tags, it will count as part of the data string -->
+<config>
+        <database>
+            
+            <name>toa</name>
+
+            <auth>
+
+                <user>toauser</user>
+
+                <passwd>toapassword</passwd>
+
+            </auth>
+
+        </database>
+
+        <logs><path>/home/albert/newToa/toalogs</path></logs>
+
+        <flows><path>/CassandraVol/flows</path></flows>
+
+        <graphs><path>/home/jortiz/toa/public_html/graphs</path></graphs>
+
+        <crontime><time>300</time></crontime>
+
+    </config>
