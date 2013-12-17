@@ -102,14 +102,11 @@ def processgrapher(args):
 
 if __name__=='__main__':
 
-    it=0
-    max=5
     labels=[]
     # for each type of monitoring option (AS, network, interface)
     for inter in network.keys():
 		#for each network under that type
 		for label in network[inter].keys():
-			if it<max:
 				#create a list of networks to graphs
 				labels.append(label)
 				it=it+1
