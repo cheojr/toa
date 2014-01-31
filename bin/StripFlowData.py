@@ -7,7 +7,6 @@ import struct
 class StripFlowData:
 
 	def StripFlowData(self, flow, network):
-                #print 'BEGIN STRIP *****************************************************************************************************\n'
 		in_id = None
 		out_id = None
 
@@ -86,8 +85,6 @@ class StripFlowData:
 		return 0
 		
 	def CheckByNetwork(self, addr, network):
-		#print network["net"]
-		#network["net"].keys() return labels for networks
 		#For now it only works with /32 /24 /16 and /8
 		for net in network["net"]:
 			# Plan on sorting all networks and do a binary search
