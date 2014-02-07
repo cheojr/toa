@@ -1,34 +1,106 @@
-def AddNetworkForm(uid, sid, remote):
-
-	print "<center><div id='Forms'>"
+def AddNetworkForm(uid, sid, remote, errors):
 
 	print "<form action='../../Controllers/AddNetwork.cgi' method='post'>"
 
-	print "<table cellspacing='20'><tr>"
+	print "<center><div class='row'>"
 
-	print "<td><input type='text' name='Label' value='' placeholder='Network Label'/></td>"
+	print "<div class='col-md-3 col-md-offset-3'>"
 
-	print "<td><select name='Type'><option value='interface'>Interface</optiom>"
+	print "<div class='input-group input-group-lg'>"
 
-	print "<option value='as'>As</option><option value='network'>Network</option></select></td>"
+	print "<span class='input-group-addon'><i class='glyphicon glyphicon-tag'></i></span>"
 
-	print "</tr><tr>"
+	print "<input class='form-control' type='text' name='Label' value='' placeholder='Network Label'/>"
 
-	print "<td><input type='text' name='InterfaceId' value='' placeholder='Interface Id'/></td>"
+	print "</div>"
 
-	print "<td><input type='text' name='ASNumber' value='' placeholder='AS Number'/></td>"
+	print "</div>"
 
-	print "</tr><tr>"
+	print "<div class='col-md-3'>"
 
-	print "<td><input type='text' name='MinBytes' value='' placeholder='Min Bytes Size'/></td>"
+	print "<div class='input-group input-group-lg'>"
 
-	print "<td><input type='text' name='MaxBytes' value='' placeholder='Max Bytes Size'/></td>"
+	print "<select class='form-control' name='Type'><option value='interface'>Interface</option>"
 
-	print "</tr><tr>"
+	print "<option value='as'>As</option><option value='network'>Network</option></select>"
 
-	print "<td>&nbsp;</td><td><button>Add Network</button></td>"
+	print "</div>"
 
-	print "</tr></table>"
+	print "</div>"
+
+	print "</div>"
+
+	print "<br>"
+
+	print "<div class='row'>"
+
+	print "<div class='col-md-3 col-md-offset-3'>"
+
+	print "<div class='input-group input-group-lg'>"
+
+	print "<span class='input-group-addon'><i class='glyphicon glyphicon-th-large'></i></span>"
+
+	print "<input class='form-control' type='text' name='InterfaceId' value='' placeholder='Interface Id'/>"
+
+	print "</div>"
+
+	print "</div>"
+
+	print "<div class='col-md-3'>"
+
+	print "<div class='input-group input-group-lg'>"
+
+	print "<span class='input-group-addon'><i class='glyphicon glyphicon-th-large'></i></span>"
+
+	print "<input class='form-control' type='text' name='ASNumber' value='' placeholder='AS Number'/>"
+
+	print "</div></div></div>"
+
+	print "<br>"
+
+	print "<div class='row'>"
+
+	print "<div class='col-md-3 col-md-offset-3'>"
+
+	print "<div class='input-group input-group-lg'>"
+
+	print "<span class='input-group-addon'><i class='glyphicon glyphicon-sort-by-attributes-alt'></i></span>"
+
+	print "<input class='form-control' type='text' name='MinBytes' value='' placeholder='Min Bytes Size'/>"
+
+	print "</div></div>"
+
+	print "<div class='col-md-3'>"
+
+	print "<div class='input-group input-group-lg'>"
+
+	print "<span class='input-group-addon'><i class='glyphicon glyphicon-sort-by-attributes'></i></span>"
+
+	print "<input class='form-control' type='text' name='MaxBytes' value='' placeholder='Max Bytes Size'/>"
+
+	print "</div></div></div>"
+
+	print "<br>"
+
+	print "<div class='row'>"
+
+	print "<div class='col-md-4 col-md-offset-3'>"
+
+	print "<p class='text-danger'>"
+
+	for error in errors:
+
+		print error.strip('\'\'')
+
+	print "</p>"
+
+	print "</div>"
+
+	print "<div class='col-md-2'>"
+
+	print "<button class='btn btn-default btn-lg pull-right add-device-button'>Add Network</button>"
+
+	print "</div></div>"
 
 	print "<input type='hidden' name='uid' value='%s'/>"%(uid) 
 
@@ -36,18 +108,32 @@ def AddNetworkForm(uid, sid, remote):
 
 	print "<input type='hidden' name='remote' value='%s'/>"%(remote) 
 
-	print "</form></div></center>"
+	print "</form>"
 
 
-def EditNetworkForm(nid, device, uid, sid, remote):
+def EditNetworkForm(nid, device, uid, sid, remote, errors):
 
 	print "<form action='../../Controllers/SaveNetwork.cgi' method='post'>"
 
-	print "<table class='table' id='edit-net-table'><center><tr>"
+	print "<center><div class='row'>"
 
-	print "<td><h4>Network Label</h4><input type='text' name='Label' value='%s' placeholder='Network Label'/></td>"%(device[0])
+	print "<div class='col-md-3 col-md-offset-3'>"
 
-	print "<td><h4>Type of Monitoring</h4><select name='Type'>"
+	print "<div class='input-group input-group-lg'>"
+
+	print "<span class='input-group-addon'><i class='glyphicon glyphicon-tag'></i></span>"
+
+	print "<input class='form-control' type='text' name='Label' value='%s' placeholder='Network Label'/>"%(device[0])
+
+	print "</div>"
+
+	print "</div>"
+
+	print "<div class='col-md-3'>"
+
+	print "<div class='input-group input-group-lg'>"
+
+	print "<select class='form-control' name='Type'>"
 
 	if device[3] == "interface":
 
@@ -73,21 +159,85 @@ def EditNetworkForm(nid, device, uid, sid, remote):
 
 		print "<option value='network'>Network</option></select></td>"
 
-	print "</tr><tr>"
+	print "</select>"
 
-	print "<td><h4>Interface Number</h4><input type='text' name='InterfaceId' value='%s' placeholder='Interface Id'/></td>"%(device[1])
+	print "</div>"
 
-	print "<td><h4>AS Number</h4><input type='text' name='ASNumber' value='%s' placeholder='AS Number'/></td>"%(device[2])
+	print "</div>"
 
-	print "</tr><tr>"
+	print "</div>"
 
-	print "<td><h4>Min Bytes Threshold</h4><input type='text' name='MinBytes' value='%s' placeholder='Min Bytes Size'/></td>"%(device[4])
+	print "<br>"
 
-	print "<td><h4>Max Bytes Threshold</h4><input type='text' name='MaxBytes' value='%s' placeholder='Max Bytes Size'/></td>"%(device[5])
+	print "<div class='row'>"
 
-	print "</tr><tr>"
+	print "<div class='col-md-3 col-md-offset-3'>"
 
-	print "</tr></center></table>"
+	print "<div class='input-group input-group-lg'>"
+
+	print "<span class='input-group-addon'><i class='glyphicon glyphicon-th-large'></i></span>"
+
+	print "<input class='form-control' type='text' name='InterfaceId' value='%s' placeholder='Interface Id'/>"%(device[1])
+
+	print "</div>"
+
+	print "</div>"
+
+	print "<div class='col-md-3'>"
+
+	print "<div class='input-group input-group-lg'>"
+
+	print "<span class='input-group-addon'><i class='glyphicon glyphicon-th-large'></i></span>"
+
+	print "<input class='form-control' type='text' name='ASNumber' value='%s' placeholder='AS Number'/>"%(device[2])
+
+	print "</div></div></div>"
+
+	print "<br>"
+
+	print "<div class='row'>"
+
+	print "<div class='col-md-3 col-md-offset-3'>"
+
+	print "<div class='input-group input-group-lg'>"
+
+	print "<span class='input-group-addon'><i class='glyphicon glyphicon-sort-by-attributes-alt'></i></span>"
+
+	print "<input class='form-control' type='text' name='MinBytes' value='%s' placeholder='Min Bytes Size'/>"%(device[4])
+
+	print "</div></div>"
+
+	print "<div class='col-md-3'>"
+
+	print "<div class='input-group input-group-lg'>"
+
+	print "<span class='input-group-addon'><i class='glyphicon glyphicon-sort-by-attributes'></i></span>"
+
+	print "<input class='form-control' type='text' name='MaxBytes' value='%s' placeholder='Max Bytes Size'/>"%(device[5])
+
+	print "</div></div></div>"
+
+	print "<br>"
+
+	print "<div class='row'>"
+
+	print "<div class='col-md-4 col-md-offset-3'>"
+
+	print "<p class='text-danger'>"
+
+	for error in errors:
+
+		print error.strip('\'\'')
+
+	print "</p>"
+
+	print "</div>"
+
+	print "<div class='col-md-2'>"
+
+	print "<button class='btn btn-default btn-lg pull-right add-device-button'>Save Network</button>"
+
+	print "</div></div>"
 
 	print "<input type='hidden' name='nid' value='%s'/>"%(nid) 
 
@@ -96,8 +246,6 @@ def EditNetworkForm(nid, device, uid, sid, remote):
 	print "<input type='hidden' name='sid' value='%s'/>"%(sid)
 
 	print "<input type='hidden' name='remote' value='%s'/>"%(remote) 
-
-	print "<button class='btn btn-large btn-inverse' id='save-network-button'>Save Network</button>"
 
 	print "</form>"
 

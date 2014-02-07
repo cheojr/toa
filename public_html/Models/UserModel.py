@@ -24,6 +24,8 @@ class UserModel:
 
 				self.cursor = conn.cursor()
 
+				return True
+
 			except MySQLdb.Error, e:
 				
 				pass
@@ -31,6 +33,8 @@ class UserModel:
 				sys.exit(0)
    				
 				print "Error %d: %s" % (e.args[0],e.args[1])
+
+				return False
 
 
 		except:
@@ -43,9 +47,15 @@ class UserModel:
 
 				self.cursor = conn.cursor()
 
+				return True
+
 			except MySQLdb.Error, e:
+				
 				pass
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
+   				
+   				print "Error %d: %s" % (e.args[0],e.args[1])
+
+   				return False
 
 
    	def __del__(self):
@@ -143,7 +153,15 @@ class UserModel:
 
 	def Create(self, name, phone, pasw, email, staff):
 
-		self.cursor.execute("""INSERT INTO USUARIO (name, phone, passwd, email, staff) VALUES ('%s', '%s', AES_ENCRYPT(%s, "toaaotnmscslabbalsc"), '%s','%s')"""%(name, phone,pasw,email,staff))
+		try:
+
+			self.cursor.execute("""INSERT INTO USUARIO (name, phone, passwd, email, staff) VALUES ('%s', '%s', AES_ENCRYPT(%s, "toaaotnmscslabbalsc"), '%s','%s')"""%(name, phone,pasw,email,staff))
+
+			return True
+
+		except MySQLdb.error:
+
+			return False
 
 	def Delete(self, id):
 

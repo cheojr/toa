@@ -45,374 +45,376 @@ SessionModel = SessionModel()
 
 UserModel = UserModel()
 
-timestamp = SessionModel.Validate(uid, sid, remote)
-
-##################### Init ##########################################
-
-#################### Validation ####################################
-
-if((timestamp+5)<=tmstp or timestamp == -1):
-
-    SessionModel.Close(uid, remote)
-
-    del NetworkModel
-
-    del UserModel
-
-    del SessionModel
-
-    print """<script language=\"JavaScript\">{location.href=\"../../index.cgi\";self.focus();}</script>"""
-
-
-#################### Validation ####################################
-
-######################### headers  #########################
-
-print "<!DOCTYPE html><html>"
-
-print "<head>"
-
-print "<title>ToaNMS</title>"
-
-print """<link rel="stylesheet" href="../../Style/bootstrap/css/style.css"/>"""
-
-print """<link rel="stylesheet" href="../../Style/bootstrap/css/datepicker.css"/>"""
-
-print """<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>"""
-
-print """<script src="../../Style/bootstrap/js/bootstrap.min.js"></script>"""
-
-print """<script src="../../Style/bootstrap/js/helpers.js"></script>"""
-
-print """<script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js' type='text/javascript'></script>"""
-
-print """<script type='text/javascript' src='../../Style/bootstrap/js/jquery.ui.datetimepicker.min.js'></script>"""
-
-print """<script src="../../Controllers/GraphController.js"></script>"""
-
-print """<script src="../../Controllers/MenuController.js"></script>"""
-
-print "</head>"
-
-######################### headers #########################
-
-SessionModel.UpdateTimeStamp(tmstp, uid, remote)
-
-print "<body>"
-
-######################### banner  #########################
-
-print """<div class="row-fluid" id="banner">"""
-
-print """<div class="span8 offset1" id="app-name">"""
-        
-print """<h1>Toa Network Monitoring System</h1>"""
-
-print "</div>"
-
-print """<div class="span3" id="user-box">"""
-    
-print "<div class='row'>"
-
-print "<div class='span12'><h3><center>"
-
-print UserModel.GetUsername(uid)[0]
-
-print "</center></h3></div>"
-
-print "</div>"
-
-print "<div class='row'>"
-
-print "<div class='span12'><center>"
-
-print "<a class='btn btn-inverse' id='login-button' href='Home.cgi?uid=%s&sid=%s&remote=%s'>Home</a>"%(uid, sid, remote)
-
-print "<a class='btn btn-inverse' id='login-button' href='Dashboard.cgi?uid=%s&sid=%s&remote=%s'>Dashboard</a>"%(uid, sid, remote)
-
-print "<div class='btn-group'><a class='btn btn-inverse dropdown-toggle' id='login-button' href='#' data-toggle='dropdown'>Settings</a>"
-
-print "<ul class='dropdown-menu' role='menu' id='setting-menu'>"
-  
-print "<li><a tabindex='-1' href='#'>Reset Password</a></li>"
-
-print "<li><a tabindex='-1' href='#'>Add Account</a></li>"
-
-print "<li><a tabindex='-1' href='../../Controllers/Logout.cgi?uid=%s&sid=%s&remote=%s'>Logout</a></li>"%(uid, sid, remote)
-
-print "</ul></div>"
-
-print "</center></div>"
-
-print "</div>"
-
-print "</div>"
-
-print "</div>"
-
-######################### banner  #########################
-
-######################### viewer  #########################
-
-print """<div class="modal hide fade" id="viewer-modal">"""
-
-print """<div class="modal-header" id='viewer-header'>"""
-
-print "</div>"
-
-print """<div class="modal-body" id="viewer-body">"""
-
-print "</div>"
-
-print "</div>"
-
-######################### viewer  #########################
-
-######################### add view form  #########################
-
-print """<div class="modal hide fade" id="addview-form-modal">"""
-
-print """<div class="modal-header">"""
-
-print """<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>"""
-
-print """<center><h2>Add View</h2></center>"""
-
-print "</div>"
-
-print """<div class="modal-body">"""
-
-print "<center><br><form action='../../Controllers/AddView.cgi' method='post' name='add-view-form'>"
-
-print "<input class='input-xlarge' type='text' name='view-name' value='' placeholder='Write the View Name'/>"
-
-print "<input type='hidden' name='uid' value='%s'/>"%(uid) 
-
-print "<input type='hidden' name='sid' value='%s'/>"%(sid)
-
-print "<input type='hidden' name='remote' value='%s'/>"%(remote) 
-
-print "</form></center>"
-
-print "</div>"
-
-print """<div class="modal-footer">"""
-
-print """<input class="btn btn-large btn-inverse" id="addview-button" onclick='AddView()' type="submit" value="Add">"""
-
-print "</center>"
-
-print "</div>"
-
-print "</div>"
-
-######################### add view form  #########################
-
-######################### custom query form  #########################
-
-print """<div class="modal hide fade" id="cquery-form-modal">"""
-
-print """<div class="modal-header">"""
-
-print """<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>"""
-
-print """<center><h2>Custom Query System</h2></center>"""
-
-print "</div>"
-
-print """<div class="modal-body" id="custom-query-body">"""
-
-print "<select name='network' id='network' onchange='GetSecondSystemMenu(this[this.selectedIndex].value, 1), ClearThirdSystemMenu()'>"
-
 NetworkModel = NetworkModel()
-
-devices = NetworkModel.GetAll()
-
-print "<option value='None'>Select Device</option>"
-
-for device in devices:
-
-    print "<option value='%s'>%s</option>"%(device[0], device[1])
-
-print "</select>"
-
-print "<div id='custom-query-second'>"
-
-print "</div>"
-
-print "<div id='custom-query-third'>"
-
-print "</div>"
-
-print "<div id='custom-query-time'>"
-
-print "</div>"
-
-print "</div>"
-
-print """<div class="modal-footer">"""
-
-print """<input class="btn btn-large btn-inverse" id="query-button" type="submit" value="Query" onclick='Search(this)'>"""
-
-print "</center>"
-
-print "</div>"
-
-print "</div>"
-
-######################### custom query form  #########################
-
-######################### content  #########################
-
-print "<div class='row' id='FeatureBar'>"
-
-print "<br>"
-
-print "<div class='span11 offset1'>"
-
-print """<div class="btn-group">"""
-
-print """<a href='#DeviceMenu' data-toggle="dropdown" class="btn btn-large btn-inverse device-button dropdown-toggle" id='feature-bar-button'>Device</a>"""        
-
-print "<ul class='dropdown-menu' role='menu'>"
 
 PortModel = PortModel()
 
 Net2NetModel = Net2NetModel()
 
-devices = NetworkModel.GetAll()
-
-for device in devices:
-
-    print "<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#%sInterfaceGraph' onclick=\"GetGraphsView(%s, %s, '%s', '%s')\">Interface Graph</a></li><li><a href='#%sPortGraph' onclick=\"GetGraphsView(%s)\">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, %s)'>"%(device[1], device[1], device[0], uid, sid, remote, device[0], device[1], device[0])
-
-    ports = PortModel.Get(device[0])
-
-    print "<option value='None'>Select</option>"
-
-    for port in ports:
-
-        print "<option value='%s'>%s</option>"%(port[1], port[1])
-
-    print "</select></a></li><li><a href='#%sNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, %s)'>"%(device[1], device[0])
-
-    net2nets = Net2NetModel.Get(device[0])
-
-    print "<option value='None'>Select</option>"
-
-    for net2net in net2nets:
-
-       print "<option value='%s'>%s</option>"%(net2net[2], net2net[1])
-
-    print "</select></a></li></ul></li>"
-
-print "</ul>"
-
-print "</div>"
-
-print "<div class='btn-group' id='feature-bar-button'>"
-
-print "<a class='btn btn-large btn-inverse' id='query-button' href='#cquery-form-modal' data-toggle='modal'>Custom Query System</a>"
-
-print "</div>"
-
-print "<div class='btn-group' id='feature-bar-button'>"
-
-print "<a class='btn btn-large btn-inverse dropdown-toggle' data-toggle='dropdown' id='view-button' href='#Viewer'>Viewer</a>"
-
-print "<ul class='dropdown-menu' role='menu'>"
-
 ViewModel = ViewModel()
 
-views = ViewModel.GetAll(uid)
+if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and ViewModel.connect() and PortModel.connect() and NetworkModel.connect():
 
-for view in views:
+    timestamp = SessionModel.Validate(uid, sid, remote)
 
-    print "<li><a href=#viewer-modal onclick=\"GetViewGraph(%s, '%s')\" data-toggle='modal'>%s</a></li>"%(view[0], view[1], view[1])
+    ##################### Init ##########################################
 
-print "</div>"
+    #################### Validation ####################################
 
-print "</div>"
+    if((timestamp+5)<=tmstp or timestamp == -1):
 
-print "</div>"
+        SessionModel.Close(uid, remote)
 
-print "<br>"
+        del UserModel
 
-print "<div class='row-fluid' id='Parent'>"
+        del SessionModel
 
-print "<div class='span12'>"
+        del NetworkModel
 
-print """<div class="container" id="content">"""
+        del PortModel
 
-print "<div class='row-fluid'>"
+        del Net2NetModel
 
-print "<div class='span5 offset1'>"
+        del ViewModel
 
-print "<div class='hero-unit' id='device-list'>"
+        print """<script language=\"JavaScript\">{location.href=\"../../index.cgi\";self.focus();}</script>"""
 
-labels = NetworkModel.GetLabels()
 
-count = NetworkModel.GetNumberOfLabels()
+    #################### Validation ####################################
 
-print "<center><h2>Device List <a class='btn btn-inverse' id='devicel-button' href='AddNetwork.cgi?uid=%s&sid=%s&remote=%s'><b>+</b></a></h2></center>"%(uid,sid,remote)
+    ######################### headers  #########################
 
-print "<br><center><table class='table'>"
+    print "<!DOCTYPE html><html>"
 
-i = 0# initialize the loop counter to 0
+    print "<head>"
 
-while(i<count):#while the loop counter is less than the number of labels....do this
+    print "<title>ToaNMS</title>"
 
-    ids = NetworkModel.GetIdByLabel(labels[i][0])
+    print """<link rel="stylesheet" href="../../Style/bootstrap/css/style.css"/>"""
 
-    print """<tr id='entry'><td><h3>%s</h3></td>"""%(labels[i][0])
+    print """<link rel="stylesheet" href="../../Style/bootstrap/css/datepicker.css"/>"""
 
-    print """<td><a class='btn btn-warning' id='edit-button' href='EditNetwork.cgi?uid=%s&sid=%s&remote=%s&nid=%s'><i class='icon-pencil'></i></a></td><td><a class='btn btn-danger' id='remove-button' href='../../Controllers/RemoveNetwork.cgi?uid=%s&sid=%s&remote=%s&nid=%s'><i class='icon-remove'></i></a></td></tr>"""%(uid, sid, remote, ids, uid, sid, remote, ids)
-    
-    i += 1 # increment the loop counter
+    print """<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>"""
 
-print "</table></center>"
+    print """<script src="../../Style/bootstrap/js/bootstrap.min.js"></script>"""
 
-print "</div>"
+    print """<script src="../../Style/bootstrap/js/helpers.js"></script>"""
 
-print "</div>"
+    print """<script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js' type='text/javascript'></script>"""
 
-print "<div class='span5'>"
+    print """<script type='text/javascript' src='../../Style/bootstrap/js/jquery.ui.datetimepicker.min.js'></script>"""
 
-print "<div class='hero-unit' id='view-list'>"
+    print """<script src="../../Controllers/GraphController.js"></script>"""
 
-print "<center><h2>View List <a class='btn btn-inverse' id='view-button' href=#addview-form-modal data-toggle='modal'>+</a></h2></center>"
+    print """<script src="../../Controllers/MenuController.js"></script>"""
 
-views = ViewModel.GetAll(uid)
+    print "</head>"
 
-print "<br><table class='table'>"
+    ######################### headers #########################
 
-if views:
+    SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-    for v in views:
+    print "<body>"
 
-        print """<tr id='entry'><td><h3>%s</h3></td>"""%(v[1])
+    ######################### banner  #########################
 
-        print """<td><a class='btn btn-warning' id='edit-button' href='EditView.cgi?uid=%s&sid=%s&remote=%s&vid=%s'><i class='icon-pencil'></i></a></td><td><a class='btn btn-danger' id='remove-button' href='../../Controllers/RemoveView.cgi?uid=%s&sid=%s&remote=%s&vid=%s'><i class='icon-remove'></i></a></td></tr>"""%(uid, sid, remote, v[0], uid, sid, remote, v[0])
+    print "<div class='row'>"
 
-print "</table>"
+    print "<div class='col-md-9'>"
+            
+    print """<h1 class='brand'>Toa Network Monitoring System</h1>"""
 
-print "</div>"
+    print "</div>"
 
-print "</div>"
+    print "<div class='col-md-3'>"
+        
+    print "<div class='row'>"
 
-print "</div>"
+    print "<div class='col-md-12 box-user'><h3><center>"
 
-print "</div>"
+    print UserModel.GetUsername(uid)[0]
 
-print "</div>"
+    print "</center></h3></div>"
 
-######################### content  #########################
+    print "</div>"
 
-######################### Fatality #########################
+    print "<div class='row'>"
 
-print "</body>"
+    print "<div class='col-md-12'><center><div class='btn-group'>"
 
-print "</html>"
+    print "<a class='btn btn-default btn-box' href='Dashboard.cgi?uid=%s&sid=%s&remote=%s'>Dashboard</a>"%(uid, sid, remote)
+
+    print "<div class='btn-group'><a class='btn btn-default btn-box' href='#' data-toggle='dropdown'>Settings</a>"
+
+    print "<ul class='dropdown-menu' role='menu' id='setting-menu'>"
+      
+    print "<li><a tabindex='-1' href='#'>Reset Password</a></li>"
+
+    print "<li><a tabindex='-1' href='#'>Add Account</a></li>"
+
+    print "<li><a tabindex='-1' href='../../Controllers/Logout.cgi?uid=%s&sid=%s&remote=%s'>Logout</a></li>"%(uid, sid, remote)
+
+    print "</ul></div>"
+
+    print "</div></center></div>"
+
+    print "</div>"
+
+    print "</div>"
+
+    print "</div>"
+
+    ######################### banner  #########################
+
+    ######################### viewer  #########################
+
+    print """<div class="modal hide fade" id="viewer-modal">"""
+
+    print """<div class="modal-header" id='viewer-header'>"""
+
+    print "</div>"
+
+    print """<div class="modal-body" id="viewer-body">"""
+
+    print "</div>"
+
+    print "</div>"
+
+    ######################### viewer  #########################
+
+    ######################### add view form  #########################
+
+    print """<div class="modal hide fade" id="addview-form-modal">"""
+
+    print """<div class="modal-header">"""
+
+    print """<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>"""
+
+    print """<center><h2>Add View</h2></center>"""
+
+    print "</div>"
+
+    print """<div class="modal-body">"""
+
+    print "<center><br><form action='../../Controllers/AddView.cgi' method='post' name='add-view-form'>"
+
+    print "<input class='input-xlarge' type='text' name='view-name' value='' placeholder='Write the View Name'/>"
+
+    print "<input type='hidden' name='uid' value='%s'/>"%(uid) 
+
+    print "<input type='hidden' name='sid' value='%s'/>"%(sid)
+
+    print "<input type='hidden' name='remote' value='%s'/>"%(remote) 
+
+    print "</form></center>"
+
+    print "</div>"
+
+    print """<div class="modal-footer">"""
+
+    print """<input class="btn btn-large btn-inverse" id="addview-button" onclick='AddView()' type="submit" value="Add">"""
+
+    print "</center>"
+
+    print "</div>"
+
+    print "</div>"
+
+    ######################### add view form  #########################
+
+    ######################### custom query form  #########################
+
+    print """<div class="modal hide fade" id="cquery-form-modal">"""
+
+    print """<div class="modal-header">"""
+
+    print """<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>"""
+
+    print """<center><h2>Custom Query System</h2></center>"""
+
+    print "</div>"
+
+    print """<div class="modal-body" id="custom-query-body">"""
+
+    print "<select name='network' id='network' onchange='GetSecondSystemMenu(this[this.selectedIndex].value, 1), ClearThirdSystemMenu()'>"
+
+    devices = NetworkModel.GetAll()
+
+    print "<option value='None'>Select Device</option>"
+
+    for device in devices:
+
+        print "<option value='%s'>%s</option>"%(device[0], device[1])
+
+    print "</select>"
+
+    print "<div id='custom-query-second'>"
+
+    print "</div>"
+
+    print "<div id='custom-query-third'>"
+
+    print "</div>"
+
+    print "<div id='custom-query-time'>"
+
+    print "</div>"
+
+    print "</div>"
+
+    print """<div class="modal-footer">"""
+
+    print """<input class="btn btn-large btn-inverse" id="query-button" type="submit" value="Query" onclick='Search(this)'>"""
+
+    print "</center>"
+
+    print "</div>"
+
+    print "</div>"
+
+    ######################### custom query form  #########################
+
+    ######################### feature bar #########################
+
+    print "<div class='row feature-bar'>"
+
+    print "<div class='col-md-11 col-md-offset-1'>"
+
+    print "<div class='btn-group feature-bar-group'>"
+
+    print "<a href='Home.cgi?uid=%s&sid=%s&remote=%s' class='btn btn-default btn-lg btn-feature-bar'>Home</a>"%(uid, sid, remote)
+
+    print "<div class='btn-group'>"
+
+    print """<a href='#DeviceMenu' data-toggle='dropdown' class='btn btn-default btn-lg btn-feature-bar'>Device</a>"""        
+
+    print "<ul class='dropdown-menu' role='menu'>"
+
+    devices = NetworkModel.GetAll()
+
+    for device in devices:
+
+        print "<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#%sInterfaceGraph' onclick=\"GetGraphsView(%s, %s, '%s', '%s')\">Interface Graph</a></li><li><a href='#%sPortGraph' onclick=\"GetGraphsView(%s)\">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, %s)'>"%(device[1], device[1], device[0], uid, sid, remote, device[0], device[1], device[0])
+
+        ports = PortModel.Get(device[0])
+
+        print "<option value='None'>Select</option>"
+
+        for port in ports:
+
+            print "<option value='%s'>%s</option>"%(port[1], port[1])
+
+        print "</select></a></li><li><a href='#%sNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, %s)'>"%(device[1], device[0])
+
+        net2nets = Net2NetModel.Get(device[0])
+
+        print "<option value='None'>Select</option>"
+
+        for net2net in net2nets:
+
+           print "<option value='%s'>%s</option>"%(net2net[2], net2net[1])
+
+        print "</select></a></li></ul></li>"
+
+    print "</ul>"
+
+    print "</div>"
+
+    print "<a class='btn btn-default btn-lg btn-feature-bar' id='query-button' href='#cquery-form-modal' data-toggle='modal'>Custom Query System</a>"
+
+    print "<div class='btn-group'>"
+
+    print "<a class='btn btn-default btn-lg btn-feature-bar' data-toggle='dropdown' id='viewer-button' href='#Viewer'>Viewer</a>"
+
+    print "<ul class='dropdown-menu' role='menu'>"
+
+    views = ViewModel.GetAll(uid)
+
+    for view in views:
+
+        print "<li><a href=#viewer-modal onclick=\"GetViewGraph(%s, '%s')\" data-toggle='modal'>%s</a></li>"%(view[0], view[1], view[1])
+
+    print "</ul></div>"
+
+    print "</div></div>"
+
+    print "</div>"
+
+    ######################### feature bar #########################
+
+    ######################### content  #########################
+
+    print "<div class='container-fluid' id='content'>"
+
+    print "<div class='row'>"
+
+    print "<div class='col-md-4 col-md-offset-1 device-col'>"
+
+    labels = NetworkModel.GetLabels()
+
+    count = NetworkModel.GetNumberOfLabels()
+
+    print "<h2 class='device-col-header page-header'>Device List <a class='pull-right device-col-button' href='AddNetwork.cgi?uid=%s&sid=%s&remote=%s'><i class='glyphicon glyphicon-plus'></i></a></h2>"%(uid,sid,remote)
+
+    i = 0# initialize the loop counter to 0
+
+    while(i<count):#while the loop counter is less than the number of labels....do this
+
+        ids = NetworkModel.GetIdByLabel(labels[i][0])
+
+        print "<div class='thumbnail'>"
+
+        print "<h3 class='device-col-entry'>%s"%(labels[i][0])
+
+        print "<a class='pull-right text-danger device-col-remove-button' href='../../Controllers/RemoveNetwork.cgi?uid=%s&sid=%s&remote=%s&nid=%s'><i class='glyphicon glyphicon-trash'></i></a>"""%(uid, sid, remote, ids)
+
+        print "<a class='pull-right text-warning device-col-edit-button' href='EditNetwork.cgi?uid=%s&sid=%s&remote=%s&nid=%s'><i class='glyphicon glyphicon-pencil'></i></a></h3></div>"%(uid, sid, remote, ids)
+        
+        i += 1 # increment the loop counter
+
+    print "</div>"
+
+    print "<div class='col-md-4 col-md-offset-1 view-col'>"
+
+    print "<h2 class='view-col-header page-header'>View List <a class='pull-right view-col-button' href=#addview-form-modal data-toggle='modal'><i class='glyphicon glyphicon-plus'></i></a></h2>"
+
+    views = ViewModel.GetAll(uid)
+
+    if views:
+
+        for v in views:
+
+            print "<div class='thumbnail'>"
+
+            print "<h3 class='view-col-entry'>%s "%(v[1])
+
+            print "<a class='pull-right text-danger view-col-remove-button' href='../../Controllers/RemoveView.cgi?uid=%s&sid=%s&remote=%s&vid=%s'><i class='glyphicon glyphicon-trash'></i></a>"%(uid, sid, remote, v[0])
+
+            print "<a class='pull-right text-warning view-col-edit-button' href='EditView.cgi?uid=%s&sid=%s&remote=%s&vid=%s'><i class='glyphicon glyphicon-pencil'></i></a></h3>"%(uid, sid, remote, v[0])
+
+            print "</div>"
+
+    print "</div>"
+
+    print "</div>"
+
+    print "</div>"
+
+    print "</div>"
+
+    ######################### content  #########################
+
+    ######################### Fatality #########################
+
+    print "</body>"
+
+    print "</html>"
+
+else:
+
+    print "Database Connection Error. Configuration File Not Found."
+
+    print SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and ViewModel.connect() #and PortModel.connect() and NetworkModel.connect()
 
 del UserModel
 

@@ -40,7 +40,13 @@ SessionModel = SessionModel()
 
 ###### New Validation ######
 
-valid = UserModel.Get(user, pasw)
+if UserModel.connect() and SessionModel.connect():
+
+	valid = UserModel.Get(user, pasw)
+
+else:
+
+	valid = 0
 
 if valid:
 

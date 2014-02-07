@@ -1,3 +1,79 @@
+function GraphView(label, type, filter, entity, portlabel, tolabel, width, height){
+
+    var xmlhttp;
+
+    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+                                
+        xmlhttp = new XMLHttpRequest();
+    
+    }
+
+    else{// code for IE6, IE5
+                                                                  
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+    }
+                                                                                 
+    xmlhttp.onreadystatechange=function(){
+                                                                                                          
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+
+            var response = xmlhttp.responseText;
+
+            var graphs = response.split("#graph");
+
+            var title = "";
+
+            if(type != "viewer"){
+
+                if(entity == "device"){
+
+                    title = label+" Interface Graphs by "+filter.charAt(0).toUpperCase() + filter.slice(1);
+
+                }
+
+                else if(entity == "port"){
+
+                    title = label+" Port "+portlabel+" Graphs by "+filter.charAt(0).toUpperCase() + filter.slice(1);
+
+                }
+
+                else if(entity == "net2net"){
+
+                    title = label+" to "+tolabel+" Graphs by "+filter.charAt(0).toUpperCase() + filter.slice(1);
+
+                }
+
+                document.getElementById("content").innerHTML = "<br><br><center><div class='col-md-6 col-md-offset-3'><h1 class='pull-left'>"+title+"</h1></div>";
+
+            }
+
+            src = document.createElement('script');
+
+            for(i=1; i<graphs.length;i++){
+
+                document.getElementById("content").innerHTML += "<div class='thumbnail graph-thumb col-md-6 col-md-offset-3'><div class='graph' id='viz"+i+"'></div></div></center>";
+
+                src.innerHTML += graphs[i];
+
+            }
+
+            //document.write(src.innerHTML);
+
+            document.body.appendChild(src);
+                
+        }
+                                                                                                                                                                                  
+    }
+
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/~albert/toa/public_html/Views/GraphViews/MasterGrapherView2.cgi?label="+label+"&entity="+entity+"&type="+type+"&filter="+filter+"&portlabel="+portlabel+"&tolabel="+tolabel+"&w="+width+"&h="+height,true);
+
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                                                                                                                                                                                                          
+    xmlhttp.send();                                                                            
+
+}
+
 function GetGraphsView(id, uid, sid, remote){
 
     var xmlhttp;
@@ -412,7 +488,7 @@ function GetViewGraph(vid, vname){
                                                                                                                                                                                   
     }
 
-    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/ViewerGraphs.cgi?vid="+vid,true);
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/~eric/toa/public_html/Views/GraphViews/ViewerGraphs.cgi?vid="+vid,true);
                      
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                                                                                                                                                                                                           

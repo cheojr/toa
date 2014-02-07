@@ -24,6 +24,8 @@ class GraphModel:
 
 				self.cursor = conn.cursor()
 
+				return True
+
 			except MySQLdb.Error, e:
                                 
 				pass
@@ -31,6 +33,8 @@ class GraphModel:
 				sys.exit(0)
                                 
 				print "Error %d: %s" % (e.args[0],e.args[1])
+
+				return False
 
 
 		except:
@@ -43,11 +47,15 @@ class GraphModel:
 
 				self.cursor = conn.cursor()
 
+				return True
+
 			except MySQLdb.Error, e:
 
 				pass
 
 				print "Error %d: %s" % (e.args[0],e.args[1])
+
+				return False
 
 
    	def __del__(self):

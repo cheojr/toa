@@ -24,6 +24,8 @@ class PortModel:
 
                 self.cursor = conn.cursor()
 
+                return True
+
             except MySQLdb.Error, e:
                                 
                 pass
@@ -32,6 +34,7 @@ class PortModel:
                                 
                 print "Error %d: %s" % (e.args[0],e.args[1])
 
+                return False
 
         except:
 
@@ -43,13 +46,15 @@ class PortModel:
 
                 self.cursor = conn.cursor()
 
+                return True
+
             except MySQLdb.Error, e:
 
                 pass
 
                 print "Error %d: %s" % (e.args[0],e.args[1])
 
-
+                return False
 
     def __del__(self):
 
@@ -66,7 +71,7 @@ class PortModel:
 
     def Get(self, id):
         	
-        self.cursor.execute("""select p_id, port from PORT where n_id=%s""" % id)
+        self.cursor.execute("""select p_id, port from PORT where n_id='%s'""" % id)
         	
         return self.cursor.fetchall()
 

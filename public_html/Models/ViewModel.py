@@ -24,6 +24,8 @@ class ViewModel:
 
 				self.cursor = conn.cursor()
 
+				return True
+
 			except MySQLdb.Error, e:
                                 
 				pass
@@ -31,6 +33,8 @@ class ViewModel:
 				sys.exit(0)
                                 
 				print "Error %d: %s" % (e.args[0],e.args[1])
+
+				return False
 
 
 		except:
@@ -43,11 +47,15 @@ class ViewModel:
 
 				self.cursor = conn.cursor()
 
+				return True
+
 			except MySQLdb.Error, e:
 
 				pass
 
 				print "Error %d: %s" % (e.args[0],e.args[1])
+
+				return False
 
 
 
@@ -125,30 +133,31 @@ class ViewModel:
 
 
 
-        def Edit(self, property, pvalue,field, value):
+	def Edit(self, property, pvalue,field, value):
 
-                try:
+		try:
 
-                        self.cursor.execute("""update VIEW set %s=%s where %s='%s'""" %(property, pvalue, field, value))
+			self.cursor.execute("""update VIEW set %s=%s where %s='%s'""" %(property, pvalue, field, value))
+		
+			return self.cursor.fetchone()[0]
 
-                        return self.cursor.fetchone()[0]
+		except MySQLdb.Error, e:
 
-                except MySQLdb.Error, e:
+			return "Error %d: %s"%(e.args[0], e.args[1])
 
-                        return "Error %d: %s"%(e.args[0], e.args[1])
 
-		def Remove(self, vid):
+	def Remove(self, vid):
 
-			try:
+		try:
 
- 				self.cursor.execute("""delete from VIEW_GRAPH where v_id = '%s'"""%vid)
+			self.cursor.execute("""delete from VIEW_GRAPH where v_id = '%s'"""%vid)
 
- 				self.cursor.execute("""delete from USUARIO_VIEW where v_id = '%s'"""%vid)
+			self.cursor.execute("""delete from USUARIO_VIEW where v_id = '%s'"""%vid)
 
- 				self.cursor.execute("""delete from VIEW where vid='%s'""" %(vid))
+			self.cursor.execute("""delete from VIEW where vid='%s'""" %(vid))
 
- 				return "Graph Removed"
+			return "Graph Removed"
+		
+		except MySQLdb.Error, e:
 
-			except MySQLdb.Error, e:
-
-				return "Error %d: %s"%(e.args[0], e.args[1])
+			return "Error %d: %s"%(e.args[0], e.args[1])
