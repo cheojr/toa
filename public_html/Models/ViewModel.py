@@ -12,18 +12,12 @@ from Config import Config
 
 class ViewModel:
 
-	def __init__(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
+	def connect(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
 
-		if name == None:
-
-			try:
-
-				dbinfo = Config()
-
-			except:
-
-				pass
-
+		try:    
+                                
+			dbinfo = Config()
+                
 			try:
 
 				conn = MySQLdb.connect(user=dbinfo.getUser(), passwd=dbinfo.getPassword(), db=dbinfo.getDBName(), host="localhost")
@@ -31,12 +25,15 @@ class ViewModel:
 				self.cursor = conn.cursor()
 
 			except MySQLdb.Error, e:
-
+                                
 				pass
+                                
+				sys.exit(0)
+                                
+				print "Error %d: %s" % (e.args[0],e.args[1])
 
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
 
-		else:
+		except:
 
 			dbinfo = Config(name, user, passwd, flows_path, graphs_path, crontime)
 
@@ -50,12 +47,19 @@ class ViewModel:
 
 				pass
 
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
+				print "Error %d: %s" % (e.args[0],e.args[1])
+
 
 
    	def __del__(self):
 
-		self.cursor.close()
+   		try:
+
+			self.cursor.close()
+
+		except:
+
+			pass
 
 	###################### Model Methods ############################
 

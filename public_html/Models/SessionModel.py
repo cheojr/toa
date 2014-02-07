@@ -12,12 +12,12 @@ from Config import Config
 
 class SessionModel:
 
-	def __init__(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
+	def connect(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
 
-		if name == None:
-
+		try:    
+                                
 			dbinfo = Config()
-
+                
 			try:
 
 				conn = MySQLdb.connect(user=dbinfo.getUser(), passwd=dbinfo.getPassword(), db=dbinfo.getDBName(), host="localhost")
@@ -25,10 +25,15 @@ class SessionModel:
 				self.cursor = conn.cursor()
 
 			except MySQLdb.Error, e:
+                                
 				pass
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
+                                
+				sys.exit(0)
+                                
+				print "Error %d: %s" % (e.args[0],e.args[1])
 
-		else:
+
+		except:
 
 			dbinfo = Config(name, user, passwd, flows_path, graphs_path, crontime)
 
@@ -39,12 +44,21 @@ class SessionModel:
 				self.cursor = conn.cursor()
 
 			except MySQLdb.Error, e:
+
 				pass
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
+
+				print "Error %d: %s" % (e.args[0],e.args[1])
+
 
    	def __del__(self):
 
-		self.cursor.close()
+   		try:
+
+			self.cursor.close()
+
+		except:
+
+			pass
 		
 
 	###################### SessionModel Methods ############################
