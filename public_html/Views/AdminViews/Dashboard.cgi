@@ -17,6 +17,8 @@ from Net2NetModel import Net2NetModel
 from ViewModel import ViewModel
 from UserModel import UserModel
 
+cgitb.enable()
+
 ########## Imports #######################
 
 ############### Init #######################
@@ -132,7 +134,7 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     print "<div class='col-md-12 box-user'><h3><center>"
 
-    print UserModel.GetUsername(uid)[0]
+    print UserModel.Email(uid)[0]
 
     print "</center></h3></div>"
 

@@ -18,6 +18,24 @@ function GraphView(label, type, filter, entity, portlabel, tolabel, width, heigh
                                                                                                           
         if (xmlhttp.readyState==4 && xmlhttp.status==200){
 
+            if(entity.match("device")){
+
+                document.getElementById("content").innerHTML = "<br><br><br><center><div class='btn-group'><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'day', 'device', 'default', 'default', 'default', 'default')\">Day</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'week', 'device', 'default', 'default', 'default', 'default')\">Week</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'month', 'device', 'default', 'default', 'default', 'default')\">Month</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'year', 'device', 'default', 'default', 'default', 'default')\">Year</a></div><br><br><br>";
+
+            }
+            
+            else if(entity == "port"){
+
+                document.getElementById("content").innerHTML = "<br><br><br><center><div class='btn-group'><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'day', 'port', "+portlabel+", 'default', 'default', 'default')\">Day</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'week', 'port', "+portlabel+", 'default', 'default', 'default')\">Week</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'month', 'port', "+portlabel+", 'default', 'default', 'default')\">Month</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'year', 'port', "+portlabel+", 'default', 'default', 'default')\">Year</a></div><br><br><br>";                
+
+            }
+
+            else if(entity == "net2net"){
+
+                document.getElementById("content").innerHTML = "<br><br><br><center><div class='btn-group'><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'day', 'net2net', 'default', '"+tolabel+"', 'default', 'default')\">Day</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'week', 'net2net', 'default', '"+tolabel+"', 'default', 'default')\">Week</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'month', 'net2net', 'default', '"+tolabel+"', 'default', 'default')\">Month</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('RUM', 'all', 'year', 'net2net', 'default', '"+tolabel+"', 'default', 'default')\">Year</a></div><br><br><br>";
+
+            }
+
             var response = xmlhttp.responseText;
 
             var graphs = response.split("#graph");
@@ -44,7 +62,7 @@ function GraphView(label, type, filter, entity, portlabel, tolabel, width, heigh
 
                 }
 
-                document.getElementById("content").innerHTML = "<br><br><center><div class='col-md-6 col-md-offset-3'><h1 class='pull-left'>"+title+"</h1></div>";
+                document.getElementById("content").innerHTML += "<div class='col-md-6 col-md-offset-3'><h1 class='pull-left'>"+title+"</h1></div>";
 
             }
 

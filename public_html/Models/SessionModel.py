@@ -74,7 +74,7 @@ class SessionModel:
 
 	def Create(self, id, sid, date, remote):
 
-	    return self.cursor.execute("""insert into SESION (uid,sid,lasttime,remote_addr) values('%s','%s','%s','%s') """%(id[0],sid,date,remote))#Update the session id of the user in the database field
+	    return self.cursor.execute("""insert into SESION (uid,sid,lasttime,remote_addr) values('%s','%s','%s','%s') """%(id,sid,date,remote))#Update the session id of the user in the database field
 		
 	
 	def GetId(self, id, remote):

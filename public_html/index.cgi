@@ -114,35 +114,31 @@ else:
 
 	for device in devices:
 
-		print "<li class='dropdown-submenu'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu'><li><a href='#%sInterfaceGraph' onclick=\"GraphView('%s', 'all', 'day', 'device', 'default', 'default', 'default', 'default')\">Interface Graph</a></li>"%(device[1], device[1], device[1])
+		print "<li class='dropdown-submenu'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu'><li><a href='#' onclick=\"GraphView('%s', 'all', 'day', 'device', 'default', 'default', 'default', 'default')\">Interface Graph</a></li>"%(device[1], device[1])
 
 		ports = PortModel.Get(device[0])
 
 		if(len(ports) > 0):
 
-			print "<li><a href='#%sPortGraph' onclick=\"GetGraphsView(%s)\">Port Graph<br><select id='PortSelection' onchange=\"GraphView('%s', 'all', 'day', 'port', this.options[this.selectedIndex].value, 'default', 'default', 'default')\">"%(device[0], device[1], device[1])
-
-			print "<option value='None'>Select</option>"
+			print "<li class='dropdown-submenu'><a href=#Port class='dropdown-hover'>Port Graph</a><ul class='dropdown-menu'>"
 
 			for port in ports:
 
-				print "<option value='%s'>%s</option>"%(port[1], port[1])
+				print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'port', '%s', 'default', 'default', 'default')\">%s</a></li>"%(device[1], port[1], port[1])
 
-			print "</select></a></li>"
+			print "</ul></li>"
 
 		net2nets = Net2NetModel.Get(device[0])
 
 		if(len(net2nets) > 0):
 
-			print """<li><a href='#%sNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange=\"GraphView('%s', 'all', 'day', 'net2net', 'default', this.options[this.selectedIndex].text, 'default', 'default')\">"""%(device[1], device[1])
-
-			print "<option value='None'>Select</option>"
+			print "<li class='dropdown-submenu'><a href=#Net2Net class='dropdown-hover'>Net2Net Graph</a><ul class='dropdown-menu'>"
 
 			for net2net in net2nets:
 
-				print "<option value='%s'>%s</option>"%(net2net[2], net2net[1])
+				print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'net2net', 'default', '%s', 'default', 'default')\">%s</a>"%(device[1],net2net[1], net2net[1])
 
-			print "</select></a></li>"
+			print "</ul></li>"
 
 		print "</li></ul>"
 
