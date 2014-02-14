@@ -51,8 +51,7 @@ def printgraphs(GRAPH_PATH,device,type):
 
     </script></div>"""%(type)
    file.close()	
-
-cgitb.enable()
+#cgitb.enable()
 
 GRAPH_PATH = "/graphtest/"### Ojo
 
