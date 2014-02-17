@@ -377,18 +377,34 @@ def graphInt24h(now, label, id, path):
     FILE1=open(pjoin(path, label+ "_1dnet.js"), "w")
 
     # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
+<<<<<<< HEAD
+=======
+    FILE1.write(gen_header()) 
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 
     FILE2=open(pjoin(path, label+ "_1dpak.js"), "w")
 
     # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
+<<<<<<< HEAD
+=======
+    FILE2.write(gen_header()) 
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 
     FILE3=open(pjoin(path, label+ "_1dflw.js"), "w")
 
     # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
+<<<<<<< HEAD
+=======
+    FILE3.write(gen_header()) 
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 
     FILE4=open(pjoin(path, label+ "_1dcpl.js"), "w")
 
     # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
+<<<<<<< HEAD
+=======
+    FILE4.write(gen_header()) 
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 
     sizetype="bytes"
     sizetype_array=["bytes","bytes","bytes"]
@@ -451,6 +467,7 @@ def graphInt1s(now, label, id, path):
     c = db.cursor()
 
     FILE1=open(pjoin(path,label+ "_1wnet.js"), "w")
+<<<<<<< HEAD
      
     FILE2=open(pjoin(path,label+ "_1wpak.js"), "w")
      
@@ -458,6 +475,15 @@ def graphInt1s(now, label, id, path):
      
     FILE4=open(pjoin(path,label+ "_1wcpl.js"), "w")
      
+=======
+    FILE1.write(gen_header())
+    FILE2=open(pjoin(path,label+ "_1wpak.js"), "w")
+    FILE2.write(gen_header())
+    FILE3=open(pjoin(path,label+ "_1wflw.js"), "w")
+    FILE3.write(gen_header())
+    FILE4=open(pjoin(path,label+ "_1wcpl.js"), "w")
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
     first=now-604800
 
     sizetype_array=["bytes","bytes","bytes"]
@@ -517,6 +543,7 @@ def graphInt1m(now, label, id, path):
     c = db.cursor()
 
     FILE1=open(pjoin(path,label+ "_1mnet.js"), "w")
+<<<<<<< HEAD
      
     FILE2=open(pjoin(path,label+ "_1mpak.js"), "w")
      
@@ -524,6 +551,15 @@ def graphInt1m(now, label, id, path):
      
     FILE4=open(pjoin(path,label+ "_1mcpl.js"), "w")
      
+=======
+    FILE1.write(gen_header())
+    FILE2=open(pjoin(path,label+ "_1mpak.js"), "w")
+    FILE2.write(gen_header())
+    FILE3=open(pjoin(path,label+ "_1mflw.js"), "w")
+    FILE3.write(gen_header())
+    FILE4=open(pjoin(path,label+ "_1mcpl.js"), "w")
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 
     first=now-2419200
 	
@@ -580,6 +616,7 @@ def graphInt1a(now, label, id, path):
     db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
     c = db.cursor()
     FILE1=open(pjoin(path,label+ "_1anet.js"), "w")
+<<<<<<< HEAD
      
     FILE2=open(pjoin(path,label+ "_1apak.js"), "w")
      
@@ -587,6 +624,15 @@ def graphInt1a(now, label, id, path):
      
     FILE4=open(pjoin(path,label+ "_1acpl.js"), "w")
      
+=======
+    FILE1.write(gen_header())
+    FILE2=open(pjoin(path,label+ "_1apak.js"), "w")
+    FILE2.write(gen_header())
+    FILE3=open(pjoin(path,label+ "_1aflw.js"), "w")
+    FILE3.write(gen_header())
+    FILE4=open(pjoin(path,label+ "_1acpl.js"), "w")
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
     
     first=now-29030400
     sizetype="bytes"
@@ -647,6 +693,7 @@ def graphPort24h(now, nlabel, label, id, path):
     c = db.cursor()
     qb = QueryBuilder()
     FILE1=open(pjoin(path,"%s-p%s_1dnet.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.js 
+<<<<<<< HEAD
      
     FILE2=open(pjoin(path,"%s-p%s_1dpak.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
      
@@ -654,6 +701,15 @@ def graphPort24h(now, nlabel, label, id, path):
      
     FILE4=open(pjoin(path,"%s-p%s_1dcpl.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
      
+=======
+    FILE1.write(gen_header())
+    FILE2=open(pjoin(path,"%s-p%s_1dpak.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
+    FILE2.write(gen_header())
+    FILE3=open(pjoin(path,"%s-p%s_1dflw.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
+    FILE3.write(gen_header())
+    FILE4=open(pjoin(path,"%s-p%s_1dcpl.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 	
     first=now-86400
 
@@ -714,6 +770,7 @@ def graphPort1s(now,nlabel, label, id, path):
     qb = QueryBuilder()
    # the name of the file is "name of network"-"port number"_1.d.js 
     FILE1=open(pjoin(path,"%s-p%s_1wnet.js") % (nlabel, label), "w") 
+<<<<<<< HEAD
      
     # the name of the file is "name of network"-"port number"_1.d.js
     FILE2=open(pjoin(path,"%s-p%s_1wpak.js") % (nlabel, label), "w") 
@@ -724,6 +781,18 @@ def graphPort1s(now,nlabel, label, id, path):
    # the name of the file is "name of network"-"port number"_1.d.js
     FILE4=open(pjoin(path,"%s-p%s_1wcpl.js") % (nlabel, label), "w") 
      
+=======
+    FILE1.write(gen_header())
+    # the name of the file is "name of network"-"port number"_1.d.js
+    FILE2=open(pjoin(path,"%s-p%s_1wpak.js") % (nlabel, label), "w") 
+    FILE2.write(gen_header())
+    # the name of the file is "name of network"-"port number"_1.d.js
+    FILE3=open(pjoin(path,"%s-p%s_1wflw.js") % (nlabel, label), "w") 
+    FILE3.write(gen_header())
+   # the name of the file is "name of network"-"port number"_1.d.js
+    FILE4=open(pjoin(path,"%s-p%s_1wcpl.js") % (nlabel, label), "w") 
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
     first=now-604800
 
     sizetype_array=["bytes","bytes","bytes"]
@@ -781,6 +850,7 @@ def graphPort1m(now,nlabel, label, id, path):
     qb = QueryBuilder()
 # the name of the file is "name of network"-"port number"_1.d.js 
     FILE1=open(pjoin(path,"%s-p%s_1mnet.js") % (nlabel, label), "w") 
+<<<<<<< HEAD
      
     FILE2=open(pjoin(path,"%s-p%s_1mpak.js") % (nlabel, label), "w") 
      
@@ -788,6 +858,15 @@ def graphPort1m(now,nlabel, label, id, path):
      
     FILE4=open(pjoin(path,"%s-p%s_1mcpl.js") % (nlabel, label), "w") 
      
+=======
+    FILE1.write(gen_header())
+    FILE2=open(pjoin(path,"%s-p%s_1mpak.js") % (nlabel, label), "w") 
+    FILE2.write(gen_header())
+    FILE3=open(pjoin(path,"%s-p%s_1mflw.js") % (nlabel, label), "w") 
+    FILE3.write(gen_header())
+    FILE4=open(pjoin(path,"%s-p%s_1mcpl.js") % (nlabel, label), "w") 
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
         
     first=now-2419200
 	
@@ -851,6 +930,7 @@ def graphPort1a(now,nlabel, label, id, path):
 
      # the name of the file is "name of network"-"port number"_1.d.js 
     FILE1=open(pjoin(path,"%s-p%s_1anet.js") % (nlabel, label), "w") 
+<<<<<<< HEAD
      
     FILE2=open(pjoin(path,"%s-p%s_1apak.js") % (nlabel, label), "w") 
      
@@ -858,6 +938,15 @@ def graphPort1a(now,nlabel, label, id, path):
      
     FILE4=open(pjoin(path,"%s-p%s_1acpl.js") % (nlabel, label), "w") 
      
+=======
+    FILE1.write(gen_header())
+    FILE2=open(pjoin(path,"%s-p%s_1apak.js") % (nlabel, label), "w") 
+    FILE2.write(gen_header())
+    FILE3=open(pjoin(path,"%s-p%s_1aflw.js") % (nlabel, label), "w") 
+    FILE3.write(gen_header())
+    FILE4=open(pjoin(path,"%s-p%s_1acpl.js") % (nlabel, label), "w") 
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 	
     first=now-29030400
 	
@@ -916,6 +1005,7 @@ def graphP2P24h(now,nlabel, nn_id, to_label, path):
     c = db.cursor()
     qb = QueryBuilder()
     FILE1=open(pjoin(path,"%s_%s_1dnet.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.js
+<<<<<<< HEAD
      
     FILE2=open(pjoin(path,"%s_%s_1dpak.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
      
@@ -923,6 +1013,15 @@ def graphP2P24h(now,nlabel, nn_id, to_label, path):
      
     FILE4=open(pjoin(path,"%s_%s_1dcpl.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
      
+=======
+    FILE1.write(gen_header())
+    FILE2=open(pjoin(path,"%s_%s_1dpak.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
+    FILE2.write(gen_header())
+    FILE3=open(pjoin(path,"%s_%s_1dflw.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
+    FILE3.write(gen_header())
+    FILE4=open(pjoin(path,"%s_%s_1dcpl.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 		
     first=now-86400
     sizetype="bytes"
@@ -992,6 +1091,7 @@ def graphP2P1s(now,nlabel, nn_id, to_label, path):
 
 	#The file will be named "source"_"destination"_1d.js
     FILE1=open(pjoin(path,"%s_%s_1wnet.js")%(nlabel, to_label), "w") 
+<<<<<<< HEAD
      
     FILE2=open(pjoin(path,"%s_%s_1wpak.js")%(nlabel, to_label), "w")
      
@@ -999,6 +1099,15 @@ def graphP2P1s(now,nlabel, nn_id, to_label, path):
      
     FILE4=open(pjoin(path,"%s_%s_1wcpl.js")%(nlabel, to_label), "w") 
      
+=======
+    FILE1.write(gen_header())
+    FILE2=open(pjoin(path,"%s_%s_1wpak.js")%(nlabel, to_label), "w")
+    FILE2.write(gen_header())
+    FILE3=open(pjoin(path,"%s_%s_1wflw.js")%(nlabel, to_label), "w") 
+    FILE3.write(gen_header())
+    FILE4=open(pjoin(path,"%s_%s_1wcpl.js")%(nlabel, to_label), "w") 
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 	
     first=now-604800
 
@@ -1064,6 +1173,7 @@ def graphP2P1m(now,nlabel, nn_id, to_label, path):
     c = db.cursor()
     #The file will be named "source"_"destination"_1d.js
     FILE1=open(pjoin(path,"%s_%s_1mnet.js")%(nlabel, to_label), "w") 
+<<<<<<< HEAD
      
     FILE2=open(pjoin(path,"%s_%s_1mpak.js")%(nlabel, to_label), "w") 
      
@@ -1071,6 +1181,15 @@ def graphP2P1m(now,nlabel, nn_id, to_label, path):
      
     FILE4=open(pjoin(path,"%s_%s_1mcpl.js")%(nlabel, to_label), "w") 
      
+=======
+    FILE1.write(gen_header())
+    FILE2=open(pjoin(path,"%s_%s_1mpak.js")%(nlabel, to_label), "w") 
+    FILE2.write(gen_header())
+    FILE3=open(pjoin(path,"%s_%s_1mflw.js")%(nlabel, to_label), "w") 
+    FILE3.write(gen_header())
+    FILE4=open(pjoin(path,"%s_%s_1mcpl.js")%(nlabel, to_label), "w") 
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 	
     first=now-2419200
 	
@@ -1134,6 +1253,7 @@ def graphP2P1a(now,nlabel, nn_id, to_label, path):
 
     #The file will be named "source"_"destination"_1d.js
     FILE1=open(pjoin(path,"%s_%s_1anet.js")%(nlabel, to_label), "w") 
+<<<<<<< HEAD
      
     FILE2=open(pjoin(path,"%s_%s_1apak.js")%(nlabel, to_label), "w") 
      
@@ -1141,6 +1261,15 @@ def graphP2P1a(now,nlabel, nn_id, to_label, path):
      
     FILE4=open(pjoin(path,"%s_%s_1acpl.js")%(nlabel, to_label), "w") 
      
+=======
+    FILE1.write(gen_header())
+    FILE2=open(pjoin(path,"%s_%s_1apak.js")%(nlabel, to_label), "w") 
+    FILE2.write(gen_header())
+    FILE3=open(pjoin(path,"%s_%s_1aflw.js")%(nlabel, to_label), "w") 
+    FILE3.write(gen_header())
+    FILE4=open(pjoin(path,"%s_%s_1acpl.js")%(nlabel, to_label), "w") 
+    FILE4.write(gen_header())
+>>>>>>> c8e24b9a6553065e44cc5c67da4a8b02d6bd3661
 
 	
     first=now-29030400
