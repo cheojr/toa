@@ -1,5 +1,5 @@
 
-#This script is in charge of creating the graph files that are stored in /var/www/html/graphs and are displayed in the page. These functions are called from flowsgrapher.py located in /opt/nap/bin/ 
+#This script is in charge of creating the graph files that are stored in /var/www/js/graphs and are displayed in the page. These functions are called from flowsgrapher.py located in /opt/nap/bin/ 
 
 import MySQLdb
 import time
@@ -91,10 +91,6 @@ def setsizetype (row,sizetype):
 #It receives fd which is the pointer to the file and sizetype indicating the size of the data 
 def gen_ioscript_header(fd,sizetype):
 	fd.write(("""
-        <script type="text/javascript">
-        google.load('visualization', '1', {packages: ['corechart']});
-        </script> <script type="text/javascript">
-        function drawVisualization() {
         // Create and populate the data table.
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'x');
@@ -105,11 +101,7 @@ def gen_ioscript_header(fd,sizetype):
 # This function writes the headers for the graphs. 
 #It receives fd which is the pointer to the file and sizetype indicating the size of the data 
 def gen_ioascript_header(fd,sizetype):
-	fd.write("""<script type="text/javascript">
-      google.load('visualization', '1', {packages: ['corechart']});
-
-    </script> <script type="text/javascript">
-      function drawVisualization() {
+	fd.write("""
         // Create and populate the data table.
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'x');
@@ -344,22 +336,17 @@ def gen_ioscript_footer(fd, label, type,graphname,max,min,sizetype):
         else:
                 minlabel = "%.2f bytes" % min 
 
-        fd.write("""var net = new google.visualization.AreaChart(document.getElementById('%s'));
-            net.draw(data, {curveType: "function",
-	 width:750, height: 400, title: '%s  Traffic  %s  Max: %.2f %s  Min: %s', titleX: 'Time', titleY: '%s',
-                        vAxis: {maxValue: '%s'}}
-                );
+        fd.write("""
+	var graphtitle='%s Traffic %s Max: %.2f %s Min: %s'
+	var xtitle='Time'
+	var ytitle='%s'
+	var maxvalue='%s'
+
+	
         
-                //setTimeout(test, 1000* 10) ; 
-      }
-      function test(data, net){
-                data.addRow(["asa", 0,0]) ;
-                net.draw(data) ;
-                setTimeout(test, 1000* 10) ; 
-      }
-      google.setOnLoadCallback(drawVisualization);
-      </script>
-      <div id="%s" style="width: 900px; height: 600px;"></div>""" % (graphname, label, type,max/typediv,sizetype,minlabel, type, int(max/typediv), graphname))
+      
+	""" % (label, type,max/typediv,sizetype,minlabel, type, int(max/typediv)))
+
 
 
 #Function to write the footer of the "all"  graph
@@ -367,18 +354,13 @@ def gen_ioscript_footer(fd, label, type,graphname,max,min,sizetype):
 def gen_ioascript_footer(fd, label, graphname): 
 
         
-	fd.write("""net = new google.visualization.AreaChart(document.getElementById('%s'))
-            net.draw(data, {curveType: "function",
-                        width:750, height: 400,title: '%s Net Traffic ', titleX: 'Time', titleY: 'All',
-                        vAxis: {maxValue: 10}}
-                );
-
-      }
-
-
-      google.setOnLoadCallback(drawVisualization);
-    </script>
-<div id="%s" style="width: 900px; height: 400px;"></div>""" % (graphname,label,graphname))	
+	fd.write("""
+	    var graphtitle="%s Net Traffic ";
+	    var xtitle='Time';
+            var ytitle='All'
+            
+	
+	    """ % (label))	
 
 ###################################Functions called from the flowsgrapher.py script that use the functions defined above ###################################
 
@@ -392,25 +374,21 @@ def graphInt24h(now, label, id, path):
     #object to use the functions defined in QueryBuilder.py  to retreive data from the database 
     qb = QueryBuilder()
 	
-    FILE1=open(pjoin(path, label+ "_1dnet.html"), "w")
+    FILE1=open(pjoin(path, label+ "_1dnet.js"), "w")
 
-    # writes a file  on /var/www/html/graphs with the name  "label"_1d.html
-    FILE1.write(gen_header()) 
+    # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
 
-    FILE2=open(pjoin(path, label+ "_1dpak.html"), "w")
+    FILE2=open(pjoin(path, label+ "_1dpak.js"), "w")
 
-    # writes a file  on /var/www/html/graphs with the name  "label"_1d.html
-    FILE2.write(gen_header()) 
+    # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
 
-    FILE3=open(pjoin(path, label+ "_1dflw.html"), "w")
+    FILE3=open(pjoin(path, label+ "_1dflw.js"), "w")
 
-    # writes a file  on /var/www/html/graphs with the name  "label"_1d.html
-    FILE3.write(gen_header()) 
+    # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
 
-    FILE4=open(pjoin(path, label+ "_1dcpl.html"), "w")
+    FILE4=open(pjoin(path, label+ "_1dcpl.js"), "w")
 
-    # writes a file  on /var/www/html/graphs with the name  "label"_1d.html
-    FILE4.write(gen_header()) 
+    # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
 
     sizetype="bytes"
     sizetype_array=["bytes","bytes","bytes"]
@@ -457,13 +435,9 @@ def graphInt24h(now, label, id, path):
     gen_ioadata(FILE4, now, first,sizetype_array,row, "D")
     gen_ioascript_footer(FILE4, label, "viz4")
 	
-    FILE1.write(gen_footer())
 
-    FILE2.write(gen_footer())
 
-    FILE3.write(gen_footer())
 
-    FILE4.write(gen_footer())
 
     c.close()
 ##################################################################	
@@ -476,14 +450,14 @@ def graphInt1s(now, label, id, path):
     db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
     c = db.cursor()
 
-    FILE1=open(pjoin(path,label+ "_1wnet.html"), "w")
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,label+ "_1wpak.html"), "w")
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,label+ "_1wflw.html"), "w")
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,label+ "_1wcpl.html"), "w")
-    FILE4.write(gen_header())
+    FILE1=open(pjoin(path,label+ "_1wnet.js"), "w")
+     
+    FILE2=open(pjoin(path,label+ "_1wpak.js"), "w")
+     
+    FILE3=open(pjoin(path,label+ "_1wflw.js"), "w")
+     
+    FILE4=open(pjoin(path,label+ "_1wcpl.js"), "w")
+     
     first=now-604800
 
     sizetype_array=["bytes","bytes","bytes"]
@@ -522,13 +496,13 @@ def graphInt1s(now, label, id, path):
     gen_ioadata(FILE4, now, first,sizetype_array, row, "S")
     gen_ioascript_footer(FILE4, label, "viz4")
 	
-    FILE1.write(gen_footer())
+     
 
-    FILE2.write(gen_footer())
+     
 
-    FILE3.write(gen_footer())
+     
 
-    FILE4.write(gen_footer())
+     
 
     c.close()
 #######################################################################################
@@ -542,14 +516,14 @@ def graphInt1m(now, label, id, path):
     db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
     c = db.cursor()
 
-    FILE1=open(pjoin(path,label+ "_1mnet.html"), "w")
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,label+ "_1mpak.html"), "w")
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,label+ "_1mflw.html"), "w")
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,label+ "_1mcpl.html"), "w")
-    FILE4.write(gen_header())
+    FILE1=open(pjoin(path,label+ "_1mnet.js"), "w")
+     
+    FILE2=open(pjoin(path,label+ "_1mpak.js"), "w")
+     
+    FILE3=open(pjoin(path,label+ "_1mflw.js"), "w")
+     
+    FILE4=open(pjoin(path,label+ "_1mcpl.js"), "w")
+     
 
     first=now-2419200
 	
@@ -591,10 +565,10 @@ def graphInt1m(now, label, id, path):
     gen_ioadata(FILE4, now, first,sizetype_array, row, "M")
     gen_ioascript_footer(FILE4, label, "viz4")
 	#FILE.write(graph_content)
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
     c.close()
 ##################################################################################
@@ -605,14 +579,14 @@ def graphInt1a(now, label, id, path):
 
     db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
     c = db.cursor()
-    FILE1=open(pjoin(path,label+ "_1anet.html"), "w")
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,label+ "_1apak.html"), "w")
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,label+ "_1aflw.html"), "w")
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,label+ "_1acpl.html"), "w")
-    FILE4.write(gen_header())
+    FILE1=open(pjoin(path,label+ "_1anet.js"), "w")
+     
+    FILE2=open(pjoin(path,label+ "_1apak.js"), "w")
+     
+    FILE3=open(pjoin(path,label+ "_1aflw.js"), "w")
+     
+    FILE4=open(pjoin(path,label+ "_1acpl.js"), "w")
+     
     
     first=now-29030400
     sizetype="bytes"
@@ -656,10 +630,10 @@ def graphInt1a(now, label, id, path):
     gen_ioadata(FILE4, now, first, sizetype_array,row, "A")
     gen_ioascript_footer(FILE4, label, "viz4")
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
     c.close()
 ################################## PORT GRAPHS ##################################################
@@ -672,14 +646,14 @@ def graphPort24h(now, nlabel, label, id, path):
     db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
     c = db.cursor()
     qb = QueryBuilder()
-    FILE1=open(pjoin(path,"%s-p%s_1dnet.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html 
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s-p%s_1dpak.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s-p%s_1dflw.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s-p%s_1dcpl.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE4.write(gen_header())
+    FILE1=open(pjoin(path,"%s-p%s_1dnet.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.js 
+     
+    FILE2=open(pjoin(path,"%s-p%s_1dpak.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
+     
+    FILE3=open(pjoin(path,"%s-p%s_1dflw.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
+     
+    FILE4=open(pjoin(path,"%s-p%s_1dcpl.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
+     
 	
     first=now-86400
 
@@ -722,10 +696,10 @@ def graphPort24h(now, nlabel, label, id, path):
     gen_ioadata(FILE4, now, first, sizetype_array,row,"D")
     gen_ioascript_footer(FILE4, label, "viz4")
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
    
     c.close()
 ############################################################
@@ -738,18 +712,18 @@ def graphPort1s(now,nlabel, label, id, path):
     db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
     c = db.cursor()
     qb = QueryBuilder()
-   # the name of the file is "name of network"-"port number"_1.d.html 
-    FILE1=open(pjoin(path,"%s-p%s_1wnet.html") % (nlabel, label), "w") 
-    FILE1.write(gen_header())
-    # the name of the file is "name of network"-"port number"_1.d.html
-    FILE2=open(pjoin(path,"%s-p%s_1wpak.html") % (nlabel, label), "w") 
-    FILE2.write(gen_header())
-    # the name of the file is "name of network"-"port number"_1.d.html
-    FILE3=open(pjoin(path,"%s-p%s_1wflw.html") % (nlabel, label), "w") 
-    FILE3.write(gen_header())
-   # the name of the file is "name of network"-"port number"_1.d.html
-    FILE4=open(pjoin(path,"%s-p%s_1wcpl.html") % (nlabel, label), "w") 
-    FILE4.write(gen_header())
+   # the name of the file is "name of network"-"port number"_1.d.js 
+    FILE1=open(pjoin(path,"%s-p%s_1wnet.js") % (nlabel, label), "w") 
+     
+    # the name of the file is "name of network"-"port number"_1.d.js
+    FILE2=open(pjoin(path,"%s-p%s_1wpak.js") % (nlabel, label), "w") 
+     
+    # the name of the file is "name of network"-"port number"_1.d.js
+    FILE3=open(pjoin(path,"%s-p%s_1wflw.js") % (nlabel, label), "w") 
+     
+   # the name of the file is "name of network"-"port number"_1.d.js
+    FILE4=open(pjoin(path,"%s-p%s_1wcpl.js") % (nlabel, label), "w") 
+     
     first=now-604800
 
     sizetype_array=["bytes","bytes","bytes"]
@@ -791,10 +765,10 @@ def graphPort1s(now,nlabel, label, id, path):
     gen_ioadata(FILE4, now, first, sizetype_array,row,"S")
     gen_ioascript_footer(FILE4, label, "viz4")
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
 
     c.close()
@@ -805,15 +779,15 @@ def graphPort1m(now,nlabel, label, id, path):
     db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
     c = db.cursor()
     qb = QueryBuilder()
-# the name of the file is "name of network"-"port number"_1.d.html 
-    FILE1=open(pjoin(path,"%s-p%s_1mnet.html") % (nlabel, label), "w") 
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s-p%s_1mpak.html") % (nlabel, label), "w") 
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s-p%s_1mflw.html") % (nlabel, label), "w") 
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s-p%s_1mcpl.html") % (nlabel, label), "w") 
-    FILE4.write(gen_header())
+# the name of the file is "name of network"-"port number"_1.d.js 
+    FILE1=open(pjoin(path,"%s-p%s_1mnet.js") % (nlabel, label), "w") 
+     
+    FILE2=open(pjoin(path,"%s-p%s_1mpak.js") % (nlabel, label), "w") 
+     
+    FILE3=open(pjoin(path,"%s-p%s_1mflw.js") % (nlabel, label), "w") 
+     
+    FILE4=open(pjoin(path,"%s-p%s_1mcpl.js") % (nlabel, label), "w") 
+     
         
     first=now-2419200
 	
@@ -859,10 +833,10 @@ def graphPort1m(now,nlabel, label, id, path):
     gen_ioascript_footer(FILE4, label, "viz4")
 
 	
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
 
     c.close()
@@ -875,15 +849,15 @@ def graphPort1a(now,nlabel, label, id, path):
     c = db.cursor()
     qb = QueryBuilder()
 
-     # the name of the file is "name of network"-"port number"_1.d.html 
-    FILE1=open(pjoin(path,"%s-p%s_1anet.html") % (nlabel, label), "w") 
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s-p%s_1apak.html") % (nlabel, label), "w") 
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s-p%s_1aflw.html") % (nlabel, label), "w") 
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s-p%s_1acpl.html") % (nlabel, label), "w") 
-    FILE4.write(gen_header())
+     # the name of the file is "name of network"-"port number"_1.d.js 
+    FILE1=open(pjoin(path,"%s-p%s_1anet.js") % (nlabel, label), "w") 
+     
+    FILE2=open(pjoin(path,"%s-p%s_1apak.js") % (nlabel, label), "w") 
+     
+    FILE3=open(pjoin(path,"%s-p%s_1aflw.js") % (nlabel, label), "w") 
+     
+    FILE4=open(pjoin(path,"%s-p%s_1acpl.js") % (nlabel, label), "w") 
+     
 	
     first=now-29030400
 	
@@ -925,10 +899,10 @@ def graphPort1a(now,nlabel, label, id, path):
     gen_ioadata(FILE4, now, first, sizetype_array,row, "A")
     gen_ioascript_footer(FILE4, label, "viz4")
 #######################################
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
     c.close()    
 ##################### Point 2 Point graphs ############################
@@ -941,14 +915,14 @@ def graphP2P24h(now,nlabel, nn_id, to_label, path):
     db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
     c = db.cursor()
     qb = QueryBuilder()
-    FILE1=open(pjoin(path,"%s_%s_1dnet.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s_%s_1dpak.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s_%s_1dflw.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s_%s_1dcpl.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE4.write(gen_header())
+    FILE1=open(pjoin(path,"%s_%s_1dnet.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.js
+     
+    FILE2=open(pjoin(path,"%s_%s_1dpak.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
+     
+    FILE3=open(pjoin(path,"%s_%s_1dflw.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
+     
+    FILE4=open(pjoin(path,"%s_%s_1dcpl.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
+     
 		
     first=now-86400
     sizetype="bytes"
@@ -999,10 +973,10 @@ def graphP2P24h(now,nlabel, nn_id, to_label, path):
     gen_ioascript_footer(FILE4, to_label, "viz4")
 
 	
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
 
     c.close()
@@ -1016,15 +990,15 @@ def graphP2P1s(now,nlabel, nn_id, to_label, path):
     db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
     c = db.cursor()
 
-	#The file will be named "source"_"destination"_1d.html
-    FILE1=open(pjoin(path,"%s_%s_1wnet.html")%(nlabel, to_label), "w") 
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s_%s_1wpak.html")%(nlabel, to_label), "w")
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s_%s_1wflw.html")%(nlabel, to_label), "w") 
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s_%s_1wcpl.html")%(nlabel, to_label), "w") 
-    FILE4.write(gen_header())
+	#The file will be named "source"_"destination"_1d.js
+    FILE1=open(pjoin(path,"%s_%s_1wnet.js")%(nlabel, to_label), "w") 
+     
+    FILE2=open(pjoin(path,"%s_%s_1wpak.js")%(nlabel, to_label), "w")
+     
+    FILE3=open(pjoin(path,"%s_%s_1wflw.js")%(nlabel, to_label), "w") 
+     
+    FILE4=open(pjoin(path,"%s_%s_1wcpl.js")%(nlabel, to_label), "w") 
+     
 	
     first=now-604800
 
@@ -1072,10 +1046,10 @@ def graphP2P1s(now,nlabel, nn_id, to_label, path):
 
 
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
     c.close()               
 
@@ -1088,15 +1062,15 @@ def graphP2P1m(now,nlabel, nn_id, to_label, path):
 
     db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
     c = db.cursor()
-    #The file will be named "source"_"destination"_1d.html
-    FILE1=open(pjoin(path,"%s_%s_1mnet.html")%(nlabel, to_label), "w") 
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s_%s_1mpak.html")%(nlabel, to_label), "w") 
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s_%s_1mflw.html")%(nlabel, to_label), "w") 
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s_%s_1mcpl.html")%(nlabel, to_label), "w") 
-    FILE4.write(gen_header())
+    #The file will be named "source"_"destination"_1d.js
+    FILE1=open(pjoin(path,"%s_%s_1mnet.js")%(nlabel, to_label), "w") 
+     
+    FILE2=open(pjoin(path,"%s_%s_1mpak.js")%(nlabel, to_label), "w") 
+     
+    FILE3=open(pjoin(path,"%s_%s_1mflw.js")%(nlabel, to_label), "w") 
+     
+    FILE4=open(pjoin(path,"%s_%s_1mcpl.js")%(nlabel, to_label), "w") 
+     
 	
     first=now-2419200
 	
@@ -1143,10 +1117,10 @@ def graphP2P1m(now,nlabel, nn_id, to_label, path):
     gen_ioascript_footer(FILE4, to_label, "viz4")
 
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
     c.close()
 # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 year to Point/Net 2 Net  graphs that contain the octect,packets,flows and "all" graphs, 
@@ -1158,15 +1132,15 @@ def graphP2P1a(now,nlabel, nn_id, to_label, path):
 	
     qb = QueryBuilder()
 
-    #The file will be named "source"_"destination"_1d.html
-    FILE1=open(pjoin(path,"%s_%s_1anet.html")%(nlabel, to_label), "w") 
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s_%s_1apak.html")%(nlabel, to_label), "w") 
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s_%s_1aflw.html")%(nlabel, to_label), "w") 
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s_%s_1acpl.html")%(nlabel, to_label), "w") 
-    FILE4.write(gen_header())
+    #The file will be named "source"_"destination"_1d.js
+    FILE1=open(pjoin(path,"%s_%s_1anet.js")%(nlabel, to_label), "w") 
+     
+    FILE2=open(pjoin(path,"%s_%s_1apak.js")%(nlabel, to_label), "w") 
+     
+    FILE3=open(pjoin(path,"%s_%s_1aflw.js")%(nlabel, to_label), "w") 
+     
+    FILE4=open(pjoin(path,"%s_%s_1acpl.js")%(nlabel, to_label), "w") 
+     
 
 	
     first=now-29030400
@@ -1218,10 +1192,10 @@ def graphP2P1a(now,nlabel, nn_id, to_label, path):
 
 
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
     c.close()
 ###################################################################################################### THE END ####################################################################################

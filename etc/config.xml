@@ -2,13 +2,13 @@
 <config>
         <database>
             
-            <name>toa</name>
+            <name>flows</name>
 
             <auth>
 
-                <user>toauser</user>
+                <user>root</user>
 
-                <passwd>toapassword</passwd>
+                <passwd>rootitg</passwd>
 
             </auth>
 
@@ -18,7 +18,7 @@
 
         <flows><path>/CassandraVol/flows</path></flows>
 
-        <graphs><path>/home/jortiz/toa/public_html/graphs</path></graphs>
+        <graphs><path>/home/albert/public_html/toa/public_html/graphs</path></graphs>
 
         <crontime><time>300</time></crontime>
 
