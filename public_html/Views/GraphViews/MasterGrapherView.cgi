@@ -56,12 +56,12 @@ def getviews(type,filter,entity,h,w,portlabel,tolabel,label,views):
 	for path in paths:
 		 
 		if re.match('(([a-zA-Z0-9]|-|_)+_1(d|m|a|w)(net|pak|flw).js|([a-zA-Z0-9]|-|_)+_([a-zA-Z0-9]|-|_)+_1(d|m|a|w)(net|pak|flw).js|([a-zA-Z0-9]|-|_)+-p([a-zA-Z0-9]|-|_)+_1(d|m|a|w)(net|pak|flw).js)$',path)!=None:
-			divid='viz%s'%(i+1)
+			divid='view%s'%(i+1)
 			response+='#graph\n\n'+ printgraphs(GRAPH_PATH+path,'net',w,h,divid)
 		
 		elif re.match('(([a-zA-Z0-9]|-|_)+_1(d|m|a|w)cpl.js|([a-zA-Z0-9]|-|_)+_([a-zA-Z0-9]|-|_)+_1(d|m|a|w)cpl.js|([a-zA-Z0-9]|-|_)+-p([a-zA-Z0-9]|-|_)+_1(d|m|a|w)cpl.js)$',path)!=None:
 
-			divid='viz%s'%(i+1)
+			divid='view%s'%(i+1)
 			response+='#graph\n\n'+ printgraphs(GRAPH_PATH+path,'cpl',w,h,divid)
 		else:
 			response+= '#graph ERROR: wrong path %s format for views'%(path)

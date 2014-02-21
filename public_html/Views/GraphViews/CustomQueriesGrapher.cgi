@@ -323,7 +323,7 @@ def GetLabel(c,type,network,checkbox_marked):
 		for i in range(len(checkbox_marked)):
 			c.execute("""select port from PORT  where p_id=%s """%(checkbox_marked[i]))
 			labelport=c.fetchall()
-			if len(label)<=0:
+			if len(labelport)<=0:
 				print "ERROR: no port  corresponds to port id"
 				exit(1)
 		
@@ -1005,7 +1005,7 @@ def gen_ioascript_footer_selectall(label,labelto,type, graphname,id):
 		
        		 graph_foot = """new google.visualization.LineChart(document.getElementById('%s')).
        	     draw(data, {curveType: "function",
-       	                 width:7500, height:400,title: ' Net Traffic From """%(graphname)
+       	                 width:750, height:400,title: ' Net Traffic From """%(graphname)
 		
 		 for i in label.keys():
 			graph_foot+=" Port %s "%(label[i][0]) 
@@ -1076,21 +1076,25 @@ def graphInt_plus(label,labelto,id,checkbox_marked, now, first,type,evaluate):
 
 
 	if row:#Cautionary if for checking if there was nothing in the database, if that happens row is empty and we dont graph.  
+			    
+			FILE+="#graph"
 
                         sizetype,max,min=setsizetype_plus_selectall(row,"p") #en este caso los return values son un hashes 
 			FILE+=gen_ioscript_plus_header_selectall(sizetype,label,labelto,"p",type)
 			FILE+=gen_iodata_plus_selectall(now,first,row,sizetype,"p",evaluate)
 			FILE+=gen_ioscript_footer_selectall(label,labelto,type, "Octects", "viz1",max,min,sizetype,id) 
 		
+			FILE+="#graph"
 			sizetype,max,min=setsizetype_plus_selectall(row,"o") #en este caso los return values son un hashes 
 			FILE+=gen_ioscript_plus_header_selectall(sizetype,label,labelto,"o",type)
 			FILE+=gen_iodata_plus_selectall(now,first,row,sizetype,"o",evaluate)
-			FILE+=gen_ioscript_footer_selectall(label,labelto,type, "Octects", "viz3",max,min,sizetype,id) 
+			FILE+=gen_ioscript_footer_selectall(label,labelto,type, "Octects", "viz2",max,min,sizetype,id) 
 			
+			FILE+="#graph"
                         sizetype,max,min=setsizetype_plus_selectall(row,"i") #en este caso los return values son un hashes 
 			FILE+=gen_ioscript_plus_header_selectall(sizetype,label,labelto,"i",type)
 			FILE+=gen_iodata_plus_selectall(now,first,row,sizetype,"i",evaluate)
-			FILE+=gen_ioscript_footer_selectall(label,labelto,type, "Octects", "viz2",max,min,sizetype,id) 
+			FILE+=gen_ioscript_footer_selectall(label,labelto,type, "Octects", "viz3",max,min,sizetype,id) 
 
 	
 # The I/O Packet data
@@ -1099,43 +1103,49 @@ def graphInt_plus(label,labelto,id,checkbox_marked, now, first,type,evaluate):
 	row = IntRangeP(c, id,checkbox_marked,now, first,type)
 
 	if row:
+			FILE+="#graph"
 			sizetype,max,min=setsizetype_plus_selectall(row,"p") #en este caso los return values son arreglos
 			FILE+=gen_ioscript_plus_header_selectall(sizetype,label,labelto,"p",type)
 			FILE+=gen_iodata_plus_selectall(now,first,row,sizetype,"p",evaluate)
 			FILE+=gen_ioscript_footer_selectall(label, labelto,type,"Packet", "viz4",max,min,sizetype,id) 
 			
+			FILE+="#graph"
 			sizetype,max,min=setsizetype_plus_selectall(row,"o") #en este caso los return values son arreglos
 			FILE+=gen_ioscript_plus_header_selectall(sizetype,label,labelto,"o",type)
 			FILE+=gen_iodata_plus_selectall(now,first,row,sizetype,"o",evaluate)
-			FILE+=gen_ioscript_footer_selectall(label,labelto, type,"Packet", "viz6",max,min,sizetype,id) 
+			FILE+=gen_ioscript_footer_selectall(label,labelto, type,"Packet", "viz5",max,min,sizetype,id) 
 
 
+			FILE+="#graph"
 			sizetype,max,min=setsizetype_plus_selectall(row,"i") #en este caso los return values son arreglos
 			FILE+=gen_ioscript_plus_header_selectall(sizetype,label,labelto,"i",type)
 			FILE+=gen_iodata_plus_selectall(now,first,row,sizetype,"i",evaluate)
-			FILE+=gen_ioscript_footer_selectall(label,labelto, type,"Packet", "viz5",max,min,sizetype,id) 
+			FILE+=gen_ioscript_footer_selectall(label,labelto, type,"Packet", "viz6",max,min,sizetype,id) 
 # The I/O Flow data
 
 
 	row = IntRangeF(c, id, checkbox_marked, now, first,type)
 
 	if row:
+			FILE+="#graph"
 
 			sizetype,max,min=setsizetype_plus_selectall(row,"p") #en este caso los return values son arreglos
 			FILE+=gen_ioscript_plus_header_selectall(sizetype,label,labelto,"p",type)
 			FILE+=gen_iodata_plus_selectall(now,first,row,sizetype,"p",evaluate)
 			FILE+=gen_ioscript_footer_selectall(label,labelto, type,"Flows", "viz7",max,min,sizetype,id) 
 			
+			FILE+="#graph"
 			
 			sizetype,max,min=setsizetype_plus_selectall(row,"o") #en este caso los return values son arreglos
 			FILE+=gen_ioscript_plus_header_selectall(sizetype,label,labelto,"o",type)
 			FILE+=gen_iodata_plus_selectall(now,first,row,sizetype,"o",evaluate)
-			FILE+=gen_ioscript_footer_selectall(label, labelto,type,"Flows", "viz9",max,min,sizetype,id) 
+			FILE+=gen_ioscript_footer_selectall(label, labelto,type,"Flows", "viz8",max,min,sizetype,id) 
 			
+			FILE+="#graph"
                         sizetype,max,min=setsizetype_plus_selectall(row,"i") #en este caso los return values son arreglos
 			FILE+=gen_ioscript_plus_header_selectall(sizetype,label,labelto,"i",type)
 			FILE+=gen_iodata_plus_selectall(now,first,row,sizetype,"i",evaluate)
-			FILE+=gen_ioscript_footer_selectall(label,labelto, type,"Flows", "viz8",max,min,sizetype,id) 
+			FILE+=gen_ioscript_footer_selectall(label,labelto, type,"Flows", "viz9",max,min,sizetype,id) 
 
 
 
@@ -1165,6 +1175,7 @@ def graphInt(label,labelto,id,checkbox_marked, now, first,type,evaluate):
 
 
 	if row:
+			    FILE+="#graph"
 			    sizetype,max,min=setsizetype_selectall(row) #en este caso los return values son un hashes 
 			    FILE+=gen_ioscript_header_selectall(sizetype,label,labelto,type)
 			    FILE+=gen_iodata_selectall(now,first,row,sizetype,evaluate)
@@ -1176,6 +1187,7 @@ def graphInt(label,labelto,id,checkbox_marked, now, first,type,evaluate):
 	row= IntRangeP(c, id,checkbox_marked,now, first,type)
 
 	if row:
+			    FILE+="#graph"
 			    sizetype,max,min=setsizetype_selectall(row) #en este caso los return values son arreglos
 			    FILE+=gen_ioscript_header_selectall(sizetype,label,labelto,type)
 			    FILE+=gen_iodata_selectall(now,first,row,sizetype,evaluate)
@@ -1188,6 +1200,7 @@ def graphInt(label,labelto,id,checkbox_marked, now, first,type,evaluate):
 	row = IntRangeF(c, id, checkbox_marked, now, first,type)
 
 	if row:
+			    FILE+="#graph"
 			    sizetype,max,min=setsizetype_selectall(row) #en este caso los return values son arreglos
 			    FILE+=gen_ioscript_header_selectall(sizetype,label,labelto,type)
 			    FILE+=gen_iodata_selectall(now,first,row,sizetype,evaluate)
@@ -1200,6 +1213,7 @@ def graphInt(label,labelto,id,checkbox_marked, now, first,type,evaluate):
 	row = IntRangeAll(c, id, checkbox_marked,now, first,type)
 	if row :
 	
+			    FILE+="#graph"
 			    sizetype_array=setsizetype_all_selectall(row) # en este caso el return value es un una lsita de 2 dimensiones
                		    FILE+= gen_ioascript_header_selectall(sizetype_array,label,labelto,type)
 	               	    FILE+=gen_ioadata_selectall( now, first,row ,sizetype_array,evaluate )
@@ -1315,7 +1329,9 @@ def checkdate(form,label,labelto,type,id,checkbox_marked):
 
                 else:
         		graphs="""ERROR:The time field contains a non valid input"""
-                print graphs
+	else:
+		graphs="ERROR: no time was chosen\n"
+        print graphs
 
 
 
@@ -1330,15 +1346,6 @@ form = cgi.FieldStorage()
 print "Content-Type: text/html\n\n"
 print 
 
-if form.has_key("graphtype"):
-      	type=form.getfirst("graphtype")
-	
-        if re.match("(port|p2p|i/o)$", type) == None:  
-		print "ERROR: type is not a valid input"
-		exit(1)
-#type es el de donde viene la data si del network, port o p2p
-
-
 if form.has_key("id"):
 	id=form.getfirst('id')
 	if (re.match("(\d)+$",id)!=None) :
@@ -1348,7 +1355,21 @@ if form.has_key("id"):
 		exit(1)
 
 else :
-	id=0
+	print "ERROR: No network was chosen \n"
+	exit(1)
+
+if form.has_key("graphtype"):
+      	type=form.getfirst("graphtype")
+	
+        if re.match("(port|p2p|i/o)$", type) == None:  
+		print "ERROR: type is not a valid input"
+		exit(1)
+#type es el de donde viene la data si del network, port o p2p
+else:
+	print "ERROR: no graph type was chosen\n"
+	exit(1)
+
+	
 
 if type!="i/o":
 	if form.has_key("checkbox_marked"):
