@@ -40,6 +40,8 @@ print "<script type='text/javascript' src='http://platform.twitter.com/widgets.j
 
 print """<script src="Controllers/GraphController.js"></script>"""
 
+print """<script src="Controllers/Top100Controller.js"></script>"""
+
 print """<script src='Style/bootstrap/js/helpers.js'></script>"""
 
 print "<script type='text/javascript'>google.load('visualization', '1', {packages: ['corechart']});</script>"
@@ -106,7 +108,7 @@ else:
 
 	print "<div class='btn-group'>"
 
-	print "<a href='#DeviceMenu' data-toggle='dropdown' class='btn btn-default btn-lg btn-feature-bar'>Device</a>"
+	print "<a href='#DeviceMenu' data-toggle='dropdown' class='btn btn-default btn-lg btn-feature-bar last'>Device</a>"
 
 	print "<ul class='dropdown-menu' role='menu'>"
 
@@ -139,6 +141,55 @@ else:
 				print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'net2net', 'default', '%s', 'default', 'default')\">%s</a>"%(device[1],net2net[1], net2net[1])
 
 			print "</ul></li>"
+
+		print "<li class='dropdown-submenu'><a href=#Top100 class='dropdown-hover'>Top100</a>"
+
+		print "<ul class='dropdown-menu' role='menu'>"
+
+		#### Net Top 1000
+
+		print "<li class='dropdown-submenu'><a class='dropdown-hover'>Network</a>"
+
+		print "<ul class='dropdown-menu' role='menu'>"
+
+		print "<li><a onclick=\"GetTop100('net', 'oct', '%s')\">Octects</a></li>"%device[0]
+
+		print "<li><a onclick=\"GetTop100('net', 'pak', '%s')\">Packets</a></li>"%device[0]
+
+		print "<li><a onclick=\"GetTop100('net', 'flow', '%s')\">Flows</a></li>"%device[0]
+
+		print "</ul></li>"
+
+		### Port Top 100
+
+
+		print "<li class='dropdown-submenu'><a class='dropdown-hover'>Port</a>"
+
+		print "<ul class='dropdown-menu' role='menu'>"
+
+		print "<li><a onclick=\"GetTop100('port', 'oct', '%s')\">Octects</a></li>"%device[0]
+
+		print "<li><a onclick=\"GetTop100('port', 'pak', '%s')\">Packets</a></li>"%device[0]
+
+		print "<li><a onclick=\"GetTop100('port', 'flow', '%s')\">Flows</a></li>"%device[0]
+
+		print "</ul></li>"
+
+		###  Net2Net Top 1000
+
+		print "<li class='dropdown-submenu'><a class='dropdown-hover'>Net2Net</a>"
+
+		print "<ul class='dropdown-menu' role='menu'>"
+
+		print "<li><a onclick=\"GetTop100('net2net', 'oct', '%s')\">Octects</a></li>"%device[0]
+
+		print "<li><a onclick=\"GetTop100('net2net', 'pak', '%s')\">Packets</a></li>"%device[0]
+
+		print "<li><a onclick=\"GetTop100('net2net', 'flow', '%s')\">Flows</a></li>"%device[0]
+
+		print "</ul></li>"
+
+		print "</ul>"
 
 		print "</li></ul>"
 
