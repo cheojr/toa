@@ -72,34 +72,26 @@ def getfilepath():
 
 def format(results,type):
 	
-        max=[1,1,1]
-	typediv=[1,1,1]
-	sizetype=['bytes','bytes','bytes']
-
-	for i in range(len(results)):
-		if i%4!=0:#no comparing the ports or ips
-			if max[(i%4)-1]< int(results[i]):
-				max[(i%4)-1]=int(results[i])
-
-	for i in range(len(max)):
-		if max[i]>= 1073741824:
-			#print sizetype	
-                	sizetype[i]="GB"
-                	typediv[i]=1073741824.0
-        	elif max[i] >= 1048576:
-                	sizetype[i]="MB"
-                	typediv[i]=1048576.0
-        	elif  max[i] >= 1024:
-                	sizetype[i]="KB"
-                	typediv[i]=1024.0
-        	else:
-               		sizetype[i]="bytes"
-               		typediv[i]=1
 
 	format=""	
 	for i in range(len(results)):
 		if i%4!=0:
-			format+="%.2f-%s "%(int(results[i])/typediv[(i%4)-1],sizetype[(i%4)-1])
+			max=int(results[i])
+			if max>= 1073741824:
+			#print sizetype	
+                		sizetype="GB"
+                		typediv=1073741824.0
+        		elif max >= 1048576:
+                		sizetype="MB"
+                		typediv=1048576.0
+        		elif  max >= 1024:
+                		sizetype="KB"
+                		typediv=1024.0
+        		else:
+               			sizetype="bytes"
+               			typediv=1
+			
+			format+="%.2f-%s "%(int(results[i])/typediv,sizetype)
 		else:
 			format+="#top100 %s "%(results[i])
 	return format
