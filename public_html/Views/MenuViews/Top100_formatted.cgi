@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+import re
 import cgi
 import sys 
 import os
@@ -101,7 +101,7 @@ def format(results,type):
 		if i%4!=0:
 			format+="%.2f-%s "%(int(results[i])/typediv[(i%4)-1],sizetype[(i%4)-1])
 		else:
-			format+="%s "%(results[i])
+			format+="#top100 %s "%(results[i])
 	return format
 		
 if form.has_key('entity') and form.has_key('id') and form.has_key('type'):
@@ -114,35 +114,39 @@ if form.has_key('entity') and form.has_key('id') and form.has_key('type'):
 
 	id =form.getvalue('id')
 	entity=form.getvalue('entity')
+   
+	if re.match('(net|port)$',entity) != None and re.match('(flows|pak|oct)$',type)!=None and re.match('(\d)*$',id)!=None :
 
-	info=getinfo(id,entity)
-	if info:	
-		tom=info[3]	
+		info=getinfo(id,entity)
+		if info:	
+			tom=info[3]	
 
-		if tom=='as':
-			asn=info[2]
+			if tom=='as':
+				asn=info[2]
 
-			cmd="/usr/local/flow-tools/bin/flow-cat %s | /usr/local/flow-tools/bin/flow-filter -a %s | /usr/local/flow-tools/bin/flow-stat -f %s -S %s | head -n 112"%(getfilepath(),asn,entities[entity],types[type])
-			pipe=os.popen(cmd)
-			top=pipe.read().split('#\n')
-			top=str(top[len(top)-1])
-			top=top.split()
-			top=format(top,types[type])
-		elif tom=='int':
+				cmd="/usr/local/flow-tools/bin/flow-cat %s | /usr/local/flow-tools/bin/flow-filter -a %s | /usr/local/flow-tools/bin/flow-stat -f %s -S %s | head -n 112"%(getfilepath(),asn,entities[entity],types[type])
+				pipe=os.popen(cmd)
+				top=pipe.read().split('#\n')
+				top=str(top[len(top)-1])
+				top=top.split()
+				top=format(top,types[type])
+			elif tom=='int':
 	
-			int=info[1]	
-			cmd="/usr/local/flow-tools/bin/flow-cat %s | /usr/local/flow-tools/bin/flow-filter -i %s | /usr/local/flow-tools/bin/flow-stat -f %s -S %s | head -n 112"%(getfilepath,asn,entities[entity],types[type])
-			pipe=os.popen(cmd)
-			top=list(pipe.read().split('#\n'))
-			top=str(top[len(top)-1])
-			top=top.split()
-			top=format(top,types[type])
+				int=info[1]	
+				cmd="/usr/local/flow-tools/bin/flow-cat %s | /usr/local/flow-tools/bin/flow-filter -i %s | /usr/local/flow-tools/bin/flow-stat -f %s -S %s | head -n 112"%(getfilepath,asn,entities[entity],types[type])
+				pipe=os.popen(cmd)
+				top=list(pipe.read().split('#\n'))
+				top=str(top[len(top)-1])
+				top=top.split()
+				top=format(top,types[type])
 			
 	
+			else:
+					top="ERROR: Sorry, no Top100 option for that id \n" 
 		else:
-				top="ERROR: Sorry, no Top100 option for that id \n" 
+			top="ERROR: Not valid network\n"
 	else:
-		top="ERROR: Not valid network\n"
+		top="ERROR: Not valid params\n"
 else:
 	top="ERROR: missing params\n"
 

@@ -5,33 +5,40 @@ import socket
 import re         
 import MySQLdb  
 import sys
-sys.path.append("../../bin/")
+import bcrypt
+#sys.path.append("../../bin/")
 from Config import Config
 
 ##### Imports #####
 
 class UserModel:
 
-	def __init__(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
+	def connect(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
 
-		if name == None:
-
-			try:	
-				dbinfo = Config()
-			except:
-				pass
-
+		try:	
+		
+			dbinfo = Config()
+		
 			try:
 
 				conn = MySQLdb.connect(user=dbinfo.getUser(), passwd=dbinfo.getPassword(), db=dbinfo.getDBName(), host="localhost")
 
 				self.cursor = conn.cursor()
 
-			except MySQLdb.Error, e:
-				pass
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
+				return True
 
-		else:
+			except MySQLdb.Error, e:
+				
+				pass
+                                
+				sys.exit(0)
+   				
+				print "Error %d: %s" % (e.args[0],e.args[1])
+
+				return False
+
+
+		except:
 
 			dbinfo = Config(name, user, passwd, flows_path, graphs_path, crontime)
 
@@ -41,105 +48,120 @@ class UserModel:
 
 				self.cursor = conn.cursor()
 
+				return True
+
 			except MySQLdb.Error, e:
+				
 				pass
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
+   				
+   				print "Error %d: %s" % (e.args[0],e.args[1])
+
+   				return False
 
 
    	def __del__(self):
+		
 		try:
+		
 			self.cursor.close()
+		
 		except:
 			pass
 
 	###################### UserModel Methods ############################
 
-	def GetList(self):
 
-		self.cursor.execute("""SELECT email FROM USUARIO""")#select all the usernames in the database
+	def GetAll(self, uid = None):
 
-		return self.cursor.fetchall()#fetch them all and store them on us(user) as a list
+		if uid == None:
 
+			self.cursor.execute("""SELECT name FROM USUARIO""")
 
-	def GetComplementList(self, id):
+		else:
 
-	    self.cursor.execute("""SELECT name FROM USUARIO WHERE uid != '%s'"""%id)
+			self.cursor.execute("""SELECT name FROM USUARIO WHERE uid != '%s'"""%id)
 
-	    return self.cursor.fetchall()
+		return self.cursor.fetchall()
 
 
 	def Get(self, email, passwd):
 
-		self.cursor.execute("""select name from USUARIO where Email = '%s' and passwd = AES_ENCRYPT('%s', 'toaaotnmscslabbalsc')"""%(email, passwd))
+		try:
 
-		a = self.cursor.fetchone()
+			passwd = bcrypt.hashpw(passwd, '$2a$10$tWEM0OEUvxEyFWJIGaxP2.')
 
-		if a:
+			self.cursor.execute("""select uid from USUARIO where email = '%s' and passwd = '%s'"""%(email, passwd))
 
-			return 1
+			return self.cursor.fetchone()[0]
 
-		else:
+		except:
 
-			return 0
+			return False
 
 
-	def GetMail(self, uid):
+	def Email(self, uid):
+
+		try:
 	
-		self.cursor.execute("""select email from USUARIO where uid = '%s'"""%(uid))
+			self.cursor.execute("""select email from USUARIO where uid = '%s'"""%(uid))
 
-		return self.cursor.fetchone()
+			return self.cursor.fetchone()
 
+		except MySQLdb.error:
 
-	def GetMailList(self):
-
-	    self.cursor.execute("SELECT email FROM USUARIO")
-
-	    return self.cursor.fetchall()
+			return False
 
 
-	def GetPassword(self, user):	
+	def Privilege(self, id):
 
-		self.cursor.execute("""SELECT passwd FROM USUARIO WHERE email = '%s'"""%user)#select all the passwords that correspond to the current username
+		try:
 
-		return self.cursor.fetchone()#fetch it and store it on the variable pas
+			self.cursor.execute("""SELECT staff FROM USUARIO WHERE uid='%s'"""%id)
 
+			return self.cursor.fetchone()
 
-	def GetPasswordById(self, id): 
+		except MySQLdb.error:
 
-		self.cursor.execute("""SELECT passwd FROM USUARIO WHERE uid = '%s'"""%id)#select all the passwords that correspond to the current username
-
-		return self.cursor.fetchone()#fetch it and store it on the variable pas
-
-
-	def GetId(self, user):
-
-		self.cursor.execute("SELECT uid FROM USUARIO WHERE email = '%s'"""%user)#select the id of the user from the database
-
-		return self.cursor.fetchone()#fetch the id and store it on the variable id
-
-	def GetUsername(self, id):
-
-		self.cursor.execute("SELECT email FROM USUARIO WHERE uid='%s'"%id)
-
-		return self.cursor.fetchone()
-
-
-	def GetPrivilege(self, id):
-
-		self.cursor.execute("""SELECT staff FROM USUARIO WHERE uid='%s'"""%id)
-
-		return self.cursor.fetchone()
-
+			return False
 
 	def ChangePassword(self, np, id):
 
-		self.cursor.execute("""UPDATE USUARIO SET passwd='%s' WHERE uid='%s'"""%(np,id))
+		try:
+
+			passwd = bcrypt.hashpw(np, '$2a$10$tWEM0OEUvxEyFWJIGaxP2.')
+
+			self.cursor.execute("""UPDATE USUARIO SET passwd='%s' WHERE uid='%s'"""%(passwd,id))
+
+			return True
+
+		except:
+
+			return False
 
 
 	def Create(self, name, phone, pasw, email, staff):
 
-		self.cursor.execute("""INSERT INTO USUARIO (name, phone, passwd, email, staff) VALUES ('%s', '%s', AES_ENCRYPT(%s, "toaaotnmscslabbalsc"), '%s','%s')"""%(name, phone,pasw,email,staff))
+		try:
+
+			pasw = bcrypt.hashpw(pasw, '$2a$10$tWEM0OEUvxEyFWJIGaxP2.')
+
+			self.cursor.execute("""INSERT INTO USUARIO (name, phone, passwd, email, staff) VALUES ('%s', '%s', '%s', '%s','%s')"""%(name, phone,pasw,email,staff))
+
+			return True
+
+		except MySQLdb.error:
+
+			return False
 
 	def Delete(self, id):
 
-		self.cursor.execute("""DELETE FROM USUARIO WHERE uid = '%s'"""%id)
+		try:
+
+			self.cursor.execute("""DELETE FROM USUARIO WHERE uid = '%s'"""%id)
+
+			return True
+
+		except MySQLdb.error:
+
+			return False
+
