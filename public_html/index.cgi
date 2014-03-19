@@ -13,6 +13,10 @@ sys.path.append("Models")
 from NetworkModel import NetworkModel
 from PortModel import PortModel
 from Net2NetModel import Net2NetModel
+from Config import Config
+
+config=Config()
+PATH=config.getGraphsPath()
 
 ######################### imports  #########################
 
@@ -182,8 +186,8 @@ print "<div class='span12'>"
 
 print """<div class="container" id="content">"""
 
-if os.path.isfile("./graphs/p2p_graph.html"):
-	print """<center><iframe class=infovis src='graphs/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"""	
+if os.path.isfile(PATH+"/p2p_graph.html"):
+	print """<center><iframe class=infovis src='%s/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"""%(PATH)
 else:
 	print """<center><font color="red">You should be watching the p2p graph.  Try refreshing the page.</font></center>"""
 

@@ -30,19 +30,6 @@ print
 
 form = cgi.FieldStorage()
 
-def getinfo(id,entity):
-	if entity=='net':
-		info=GetNetwork(c,id)	
-	elif entity=='ports':
-		portmodel=PortModel()		
-		id=portmodel.GetPortNetwork(id)[0]
-		if id!=None:
-			info=GetNetwork(c,id)
-		else:
-			info=None
-	else:
-		info=None
-	return info	
 def GetNetwork(c, id):
 	c.execute("""select label, interface, asn, tom from NETWORK where n_id=%s""" % id)
 	result = c.fetchone()	
@@ -107,21 +94,23 @@ if form.has_key('entity') and form.has_key('id') and form.has_key('type'):
 	id =form.getvalue('id')
 	entity=form.getvalue('entity')
    
-	if re.match('(net|port)$',entity) != None and re.match('(flows|pak|oct)$',type)!=None and re.match('(\d)*$',id)!=None :
+	if re.match('(net|ports)$',entity) != None and re.match('(flows|pak|oct)$',type)!=None and re.match('(\d)*$',id)!=None :
 
-		info=getinfo(id,entity)
+		#info=getinfo(id,entity)
+		info=GetNetwork(c,id)	
 		if info:	
 			tom=info[3]	
 
 			if tom=='as':
 				asn=info[2]
-
 				cmd="/usr/local/flow-tools/bin/flow-cat %s | /usr/local/flow-tools/bin/flow-filter -a %s | /usr/local/flow-tools/bin/flow-stat -f %s -S %s | head -n 112"%(getfilepath(),asn,entities[entity],types[type])
 				pipe=os.popen(cmd)
 				top=pipe.read().split('#\n')
 				top=str(top[len(top)-1])
 				top=top.split()
 				top=format(top,types[type])
+				if len(top) <=0:
+					top="No data found !\n"	
 			elif tom=='int':
 	
 				int=info[1]	
@@ -131,8 +120,9 @@ if form.has_key('entity') and form.has_key('id') and form.has_key('type'):
 				top=str(top[len(top)-1])
 				top=top.split()
 				top=format(top,types[type])
+				if len(top) <=0:
+					top="No data found !\n"	
 			
-	
 			else:
 					top="ERROR: Sorry, no Top100 option for that id \n" 
 		else:
