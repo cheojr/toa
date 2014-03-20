@@ -6,31 +6,38 @@ import re
 import MySQLdb    
 import sys
 sys.path.append("../../bin/")
-sys.path.append("../bin/")
-sys.path.append("../../../bin")
 from Config import Config
 
 ##### Imports #####
 
 class SessionModel:
 
-	def __init__(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
+	def connect(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
 
-		if name == None:
-
+		try:    
+                                
 			dbinfo = Config()
-
+                
 			try:
 
 				conn = MySQLdb.connect(user=dbinfo.getUser(), passwd=dbinfo.getPassword(), db=dbinfo.getDBName(), host="localhost")
 
 				self.cursor = conn.cursor()
 
-			except MySQLdb.Error, e:
-				pass
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
+				return True
 
-		else:
+			except MySQLdb.Error, e:
+                                
+				pass
+                                
+				sys.exit(0)
+                                
+				print "Error %d: %s" % (e.args[0],e.args[1])
+
+				return False
+
+
+		except:
 
 			dbinfo = Config(name, user, passwd, flows_path, graphs_path, crontime)
 
@@ -40,13 +47,26 @@ class SessionModel:
 
 				self.cursor = conn.cursor()
 
+				return True
+
 			except MySQLdb.Error, e:
+
 				pass
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
+
+				print "Error %d: %s" % (e.args[0],e.args[1])
+
+				return False
+
 
    	def __del__(self):
 
-		self.cursor.close()
+   		try:
+
+			self.cursor.close()
+
+		except:
+
+			pass
 		
 
 	###################### SessionModel Methods ############################
@@ -54,7 +74,7 @@ class SessionModel:
 
 	def Create(self, id, sid, date, remote):
 
-	    return self.cursor.execute("""insert into SESION (uid,sid,lasttime,remote_addr) values('%s','%s','%s','%s') """%(id[0],sid,date,remote))#Update the session id of the user in the database field
+	    return self.cursor.execute("""insert into SESION (uid,sid,lasttime,remote_addr) values('%s','%s','%s','%s') """%(id,sid,date,remote))#Update the session id of the user in the database field
 		
 	
 	def GetId(self, id, remote):

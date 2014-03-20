@@ -5,16 +5,21 @@ import sys
 import os
 import MySQLdb
 import cgitb
-from datetime import datetime
+import datetime
 sys.path.append('../../../bin/')
 from Config import Config
 config=Config()
 GRAPH_PATH=config.getGraphsPath()
+
+sys.path.append('../../Models/')
+from SessionModel import SessionModel
+
 def printgraphs(graph,type,w,h,divid):
 
 
    file=open(graph,'r')
    graphdata=file.read()
+   graphdata=graphdata.replace("data","data%s"%(divid))
    response=""
 
    if type !='cpl':
@@ -23,23 +28,87 @@ def printgraphs(graph,type,w,h,divid):
 
 
 	response+="""
-	var net = new google.visualization.AreaChart(document.getElementById('%s'));
-            net.draw(data, {curveType: "function",
+	var net%s = new google.visualization.AreaChart(document.getElementById('%s'));
+	net%s.draw(data%s, {curveType: "function",
 	 width:%s, height:%s, title: graphtitle , titleX: xtitle, titleY: ytitle,
                         vAxis: {maxValue: maxvalue}}
                 );
-      """%(divid,w,h)
+
+	google.visualization.events.addOneTimeListener(net%s, 'select', function(e){
+                                 
+				//document.getElementById('APP_FILTER').style.display = 'inline';
+				$('#%s-popover').css('display','block');
+                         });
+
+                       google.visualization.events.addListener(net%s,'select',function(e){
+                               var item = net%s.getSelection()[0];
+                               if (item == undefined){
+
+				 return ;
+				}
+                               
+                               if (item.row != null && item.column != null){
+                                       $( "#dialog" ).dialog({modal: true });
+                                       $("#active").button({label:"Open"})
+                                       flowDate = data%s.getFormattedValue(item.row, 0);
+                                       document.getElementById('APP_FILTER').selectedIndex = 0;        
+                               }
+                       });
+
+		function getApp(){
+                         var selection = document.getElementById('APP_FILTER').value;
+                         var url = '';
+                         if (selection == 'cube')
+                                 url = "http://flows.hpcf.upr.edu/plugins/c/?fromtoa="+flowDate;
+                         else if (selection == "graph")
+                                 url = "http://flows.hpcf.upr.edu/plugins/g/?fromtoa="+flowDate;
+                         else return ;
+                       window.open(url,"_blank");
+        		 }
+
+      """%(divid,divid,divid,divid,w,h,divid,divid,divid,divid,divid)
    else:
 	
 	response+=graphdata
 
 	response+= """
-	    net = new google.visualization.AreaChart(document.getElementById('%s'))
-            net.draw(data, {curveType: "function",
+	    net%s = new google.visualization.AreaChart(document.getElementById('%s'))
+            net%s.draw(data%s, {curveType: "function",
                         width:%s, height:%s,title: graphtitle, titleX: xtitle, titleY: ytitle,
                         vAxis: {maxValue: 10}}
                 );
-	"""%(divid,w,h)
+
+		google.visualization.events.addOneTimeListener(net%s, 'select', function(e){
+                       //          document.getElementById('APP_FILTER').style.display = 'inline';
+				$('#%s-popover').css('display','block');
+                         });
+
+                       google.visualization.events.addListener(net%s,'select',function(e){
+                               var item = net%s.getSelection()[0];
+                               if (item == undefined){
+
+				 return ;
+				}
+                               
+                               if (item.row != null && item.column != null){
+                                       $( "#dialog" ).dialog({modal: true });
+                                       $("#active").button({label:"Open"})
+                                       flowDate = data%s.getFormattedValue(item.row, 0);
+                                       document.getElementById('APP_FILTER').selectedIndex = 0;        
+                               }
+                       });
+
+		function getApp(){
+                         var selection = document.getElementById('APP_FILTER').value;
+                         var url = '';
+                         if (selection == 'cube')
+                                 url = "http://flows.hpcf.upr.edu/plugins/c/?fromtoa="+flowDate;
+                         else if (selection == "graph")
+                                 url = "http://flows.hpcf.upr.edu/plugins/g/?fromtoa="+flowDate;
+                         else return ;
+                       window.open(url,"_blank");
+        		 }
+	"""%(divid,divid,divid,divid,w,h,divid,divid,divid,divid,divid)
 
    file.close()	
    return response
@@ -50,11 +119,22 @@ def getviews(type,filter,entity,h,w,portlabel,tolabel,label,views):
 	if w=='default':
 		w='750'
 	
-	paths=views.split("$")
+	DB_NAME=config.getDBName();
+	DB_HOST='localhost'
+	DB_USER=config.getUser();
+	DB_PASS=config.getPassword();
+
+	db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+	c = db.cursor()
+
+	#paths=views.split("$")
+	sql="select  graph_name from VIEW_GRAPH,GRAPH where v_id=%s and VIEW_GRAPH.g_id=GRAPH.gid;"%(views)
+	c.execute(sql)
+	paths=c.fetchall()
 	response=""
 	i=0
 	for path in paths:
-		 
+		path=path[0] 
 		if re.match('(([a-zA-Z0-9]|-|_)+_1(d|m|a|w)(net|pak|flw).js|([a-zA-Z0-9]|-|_)+_([a-zA-Z0-9]|-|_)+_1(d|m|a|w)(net|pak|flw).js|([a-zA-Z0-9]|-|_)+-p([a-zA-Z0-9]|-|_)+_1(d|m|a|w)(net|pak|flw).js)$',path)!=None:
 			divid='view%s'%(i+1)
 			response+='#graph\n\n'+ printgraphs(GRAPH_PATH+path,'net',w,h,divid)
@@ -119,12 +199,13 @@ def getGraph(type,filter,entity,h, w,portlabel,tolabel,label):
 	return response
 # MAIN
 cgitb.enable()
+form = cgi.FieldStorage()
 
 print "Content-Type: text/html\n\n"
-
 print
 
-form = cgi.FieldStorage()
+
+
 if form.has_key('views') and   form.has_key('label') and form.has_key('type') and form.has_key('h') and form.has_key('w') and form.has_key('filter') and form.has_key('entity') :
 	type = form.getvalue("type")
 	filter=form.getvalue("filter")
@@ -147,8 +228,11 @@ if form.has_key('views') and   form.has_key('label') and form.has_key('type') an
 							if re.match('([0-9]+|default)$',h)!=None:
 								if re.match('([0-9]+|default)$',w)!=None:
 									if entity=='views':
+										if  re.match('([0-9]+)$',views)!=None:
 									
-										print getviews(type,filter,entity,h,w,portlabel,tolabel,label,views)
+											print getviews(type,filter,entity,h,w,portlabel,tolabel,label,views)
+										else:
+											print 'ERROR: views is not a valid parameter\n'
 									else:
 										print getGraph(type,filter,entity,h,w,portlabel,tolabel,label)
 								else:

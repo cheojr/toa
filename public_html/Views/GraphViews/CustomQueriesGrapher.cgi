@@ -7,6 +7,7 @@
 import MySQLdb
 import time
 from os.path import join as pjoin
+import datetime
 import sys
 import re
 import cgi
@@ -27,6 +28,42 @@ interval_modulation=INCREMENT #sets the number that thetime is going to be modul
 db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
 c = db.cursor()
 
+sys.path.append('../../Models/')
+from SessionModel import SessionModel
+
+def validate(form):
+	if form.has_key('uid') and form.has_key('sid') and form.has_key('remote'):
+		uid=form.getvalue('uid')
+		sid=form.getvalue('sid')
+		remote=form.getvalue('remote')
+		now = datetime.datetime.now()#generate the TimeStamp
+
+		tmstp = now.minute#converting the TimeStamp to string   
+
+		sm = SessionModel()
+
+
+		if sm.connect():
+
+    			timestamp = sm.Validate(uid, sid, remote)
+
+    			if((timestamp+5)<=tmstp or timestamp == -1):
+
+        			sm.Close(uid, remote)
+
+        			del sm
+				c.close()
+				return 0
+			else:
+				return 1
+		else:
+			c.close()
+			return 0
+		return 1
+	else:
+		c.close()
+		return 0
+	
 def normalizeall (input,output,rangeb,rangea):
         start=rangeb
         end=rangea
@@ -1345,6 +1382,10 @@ form = cgi.FieldStorage()
 
 print "Content-Type: text/html\n\n"
 print 
+
+if (validate(form)!=1):
+	print "ERROR: You must be logged in to use this feature\n"
+	exit(1)
 
 if form.has_key("id"):
 	id=form.getfirst('id')
