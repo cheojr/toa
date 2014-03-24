@@ -91,9 +91,7 @@ def processgrapher(args):
 		for port in network[inter][label]["port"]:
                         portworker(port,nid,nlabel)
 
-
-                
-				
+		
 		# Graphs Point to Point Interfaces
 		for to_inter_type in network[inter][label]["to"]:
 			for to_inter in  network[inter][label]["to"][to_inter_type]:
@@ -102,13 +100,14 @@ def processgrapher(args):
 
 if __name__=='__main__':
 
-    labels=[]
     # for each type of monitoring option (AS, network, interface)
     for inter in network.keys():
+    		labels=[]
 		#for each network under that type
 		for label in network[inter].keys():
 				#create a list of networks to graphs
 				labels.append(label)
+		print labels 
 		#if there are networks  to graph
         	if len(labels)>0:
 			#create a list of tupples to pass as param to the pool of procceses 

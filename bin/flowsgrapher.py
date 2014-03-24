@@ -30,7 +30,6 @@ GRAPH_PATH=config.getGraphsPath()
 interval_modulation=INCREMENT 
 db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
 c = db.cursor()
-
 network = GenerateDictionary().GenDictionary(c)
 now = int(time.time())
 # now is the the current time modulated by Increment. 
@@ -52,8 +51,7 @@ for inter in network.keys():
 			pid =  GetPortId(c, nid, port)
 
 			graphPort24h(now,nlabel, port, pid, GRAPH_PATH)
-
-				
+	#	continue
 		# Graphs Point to Point Interfaces 
 		for to_inter_type in network[inter][label]["to"]:
 			for to_inter in  network[inter][label]["to"][to_inter_type]:

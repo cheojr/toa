@@ -93,7 +93,6 @@ def gen_ioscript_header(fd,sizetype):
 	fd.write(("""
         // Create and populate the data table.
         var data = new google.visualization.DataTable();
-        data.addColumn('string', 'date');
         data.addColumn('string', 'x');
         data.addColumn(\'number\', \'Input %s \');
         data.addColumn(\'number\', \'Output %s \');""")%(sizetype,sizetype))
@@ -105,7 +104,6 @@ def gen_ioascript_header(fd,sizetype):
 	fd.write("""
         // Create and populate the data table.
         var data = new google.visualization.DataTable();
-        data.addColumn('string', 'date');
         data.addColumn('string', 'x');
         data.addColumn(\'number\', \'Octects Input %s \');
         data.addColumn(\'number\', \'Octects Output  %s\');
@@ -155,6 +153,7 @@ def gen_iodata(fd, now, first, sizetype, row, evaluate, type=None):
 
 	# loops while the the starting point hasnt reached the current time which is when the graph ends
 	while first <= now: 
+		
 		# limit represents the end of the interval of data that is going to create a single point in the graph.
 		while first < limit: 
 	
@@ -188,18 +187,18 @@ def gen_iodata(fd, now, first, sizetype, row, evaluate, type=None):
 		if evaluate=="D":
 
 			split_time=timedisplay[2].split(" ")
-			fd.write(""" data.addRow(["'%s'","'%s'",%.2f, %.2f]); """ % (split_time[1],time_graph, avgdata1/typediv, avgdata2/typediv))
+			fd.write(""" data.addRow(["'%s'", %.2f, %.2f]); """ % (split_time[1], avgdata1/typediv, avgdata2/typediv))
 		
 		elif evaluate=="S":
 			
-			fd.write(""" data.addRow(["'%s'", "'%s'",%.2f, %.2f]); """ % (timedisplay[2], time_graph,avgdata1/typediv, avgdata2/typediv))
+			fd.write(""" data.addRow(["'%s'", %.2f, %.2f]); """ % (timedisplay[2], avgdata1/typediv, avgdata2/typediv))
 		elif evaluate=="M":
 			
-			fd.write(""" data.addRow([ "'%s'","'%s'",%.2f, %.2f]); """ % (timedisplay[1]+" "+timedisplay[2], time_graph,avgdata1/typediv, avgdata2/typediv))
+			fd.write(""" data.addRow(["'%s'", %.2f, %.2f]); """ % (timedisplay[1]+" "+timedisplay[2], avgdata1/typediv, avgdata2/typediv))
 
 		else:	
 			
-			fd.write(""" data.addRow(["'%s'", "'%s'",%.2f, %.2f]); """ % (time_graph, time_graph, avgdata1/typediv, avgdata2/typediv))
+			fd.write(""" data.addRow(["'%s'", %.2f, %.2f]); """ % (time_graph, avgdata1/typediv, avgdata2/typediv))
 
 
 		counter=0
@@ -213,6 +212,7 @@ def gen_iodata(fd, now, first, sizetype, row, evaluate, type=None):
 # It receives the file pointer (fd), the current unix time and end point (now), the starting point of the graph (first) 
 # the sizetype for all the data (sizetype), the data (row), and evaluate which indicates if its a graph of data,month,week or year
 def gen_ioadata(fd, now, first,sizetype,row, evaluate, type=None):
+
 
 
         #Set  the increments of time in the graph for each point, 
@@ -249,8 +249,11 @@ def gen_ioadata(fd, now, first,sizetype,row, evaluate, type=None):
 		elif sizetype[i]=="GB":
 			typediv[i]=1073741824.0
 
+        
+
 	# loops while the the starting point hasnt reached the current time which is when the graph ends
         while row and first <= now: 
+
 		# limit represents the end of the interval of data that is going to create a single point in the graph.
 		while first <= limit: 
 
@@ -293,15 +296,15 @@ def gen_ioadata(fd, now, first,sizetype,row, evaluate, type=None):
 
                         split_time=timedisplay[2].split(" ")
 	
-			fd.write(""" data.addRow(["'%s'","'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (split_time[1], time_graph,avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
+			fd.write(""" data.addRow(["'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (split_time[1], avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
              	elif evaluate=="S":
-			fd.write(""" data.addRow(["'%s'", "'%s'",%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (timedisplay[1], time_graph,avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
+			fd.write(""" data.addRow(["'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (timedisplay[1], avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
 
 		elif evaluate=="M":
-			fd.write(""" data.addRow(["'%s'", "'%s'",%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (timedisplay[1] +" "+ timedisplay[2],time_graph, avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
+			fd.write(""" data.addRow(["'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (timedisplay[1] +" "+ timedisplay[2], avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
 		else :
 			  
-			fd.write(""" data.addRow(["'%s'", "'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (time_graph,time_graph, avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
+			fd.write(""" data.addRow(["'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (time_graph, avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
 		counter=0
 	        limit=limit+sumador
 		# reset data to 0 so it doesnt affect the avareges of the new interval/point in graph

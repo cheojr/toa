@@ -37,7 +37,6 @@ class Config:
 				print "ERROR: Unable to find config.xml file"
 		
 				sys.exit(1)
-
 	    		tree = ET.parse(conf_path)
            	 	config=tree.getroot()# gets the first tag
             		data=config[0] # the first child of the root tag

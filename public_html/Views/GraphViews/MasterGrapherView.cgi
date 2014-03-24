@@ -14,7 +14,7 @@ GRAPH_PATH=config.getGraphsPath()
 sys.path.append('../../Models/')
 from SessionModel import SessionModel
 
-def printgraphs(graph,type,w,h,divid):
+def  printgraphs(graph,type,w,h,divid,filter=None):
 
 
    file=open(graph,'r')
@@ -22,94 +22,66 @@ def printgraphs(graph,type,w,h,divid):
    graphdata=graphdata.replace("data","data%s"%(divid))
    response=""
 
+   eventhandler="""        google.visualization.events.addOneTimeListener(net%s, 'select', function(e){
+                                 
+                                //document.getElementById('APP_FILTER').style.display = 'inline';
+                                $('#%s-popover').css('display','block');
+                         });
+
+                       google.visualization.events.addListener(net%s,'select',function(e){
+                               var item = net%s.getSelection()[0];
+                               if (item == undefined){
+
+                                 return ;
+                                }
+                               
+                               if (item.row != null && item.column != null){
+                                       $( "#dialog" ).dialog({modal: true });
+                                       $("#active").button({label:"Open"})
+                                       var flowDate = data%s.getFormattedValue(item.row, 1);
+                                       document.getElementById('APP_FILTER').selectedIndex = 0;        
+                                       document.getElementById('%s').addEventListener('click',function() { getApp(flowDate); } ,false);        
+                               }
+                       });
+
+                         """ %(divid,divid,divid,divid,divid,divid+"submit")
+
    if type !='cpl':
 	#Read the data for the graphs and the js functions to draw it from js file
 	response+= graphdata
 
 
 	response+="""
+	var view%s = new google.visualization.DataView(data%s);
+	view%s.setColumns([0,2,3]); //here you set the columns you want to display
 	var net%s = new google.visualization.AreaChart(document.getElementById('%s'));
-	net%s.draw(data%s, {curveType: "function",
+	net%s.draw(view%s, {curveType: "function",
 	 width:%s, height:%s, title: graphtitle , titleX: xtitle, titleY: ytitle,
                         vAxis: {maxValue: maxvalue}}
                 );
 
-	google.visualization.events.addOneTimeListener(net%s, 'select', function(e){
-                                 
-				//document.getElementById('APP_FILTER').style.display = 'inline';
-				$('#%s-popover').css('display','block');
-                         });
 
-                       google.visualization.events.addListener(net%s,'select',function(e){
-                               var item = net%s.getSelection()[0];
-                               if (item == undefined){
-
-				 return ;
-				}
-                               
-                               if (item.row != null && item.column != null){
-                                       $( "#dialog" ).dialog({modal: true });
-                                       $("#active").button({label:"Open"})
-                                       flowDate = data%s.getFormattedValue(item.row, 0);
-                                       document.getElementById('APP_FILTER').selectedIndex = 0;        
-                               }
-                       });
-
-		function getApp(){
-                         var selection = document.getElementById('APP_FILTER').value;
-                         var url = '';
-                         if (selection == 'cube')
-                                 url = "http://flows.hpcf.upr.edu/plugins/c/?fromtoa="+flowDate;
-                         else if (selection == "graph")
-                                 url = "http://flows.hpcf.upr.edu/plugins/g/?fromtoa="+flowDate;
-                         else return ;
-                       window.open(url,"_blank");
-        		 }
-
-      """%(divid,divid,divid,divid,w,h,divid,divid,divid,divid,divid)
+      """%(divid,divid,divid,divid,divid,divid,divid,w,h)
+	if filter!=None and filter=="day":
+		response+=eventhandler 
    else:
 	
 	response+=graphdata
 
 	response+= """
+	var view%s = new google.visualization.DataView(data%s);
+	view%s.setColumns([0,2,3,4,5,6,7]); //here you set the columns you want to display
 	    net%s = new google.visualization.AreaChart(document.getElementById('%s'))
-            net%s.draw(data%s, {curveType: "function",
+            net%s.draw(view%s, {curveType: "function",
                         width:%s, height:%s,title: graphtitle, titleX: xtitle, titleY: ytitle,
                         vAxis: {maxValue: 10}}
                 );
 
-		google.visualization.events.addOneTimeListener(net%s, 'select', function(e){
-                       //          document.getElementById('APP_FILTER').style.display = 'inline';
-				$('#%s-popover').css('display','block');
-                         });
-
-                       google.visualization.events.addListener(net%s,'select',function(e){
-                               var item = net%s.getSelection()[0];
-                               if (item == undefined){
-
-				 return ;
-				}
-                               
-                               if (item.row != null && item.column != null){
-                                       $( "#dialog" ).dialog({modal: true });
-                                       $("#active").button({label:"Open"})
-                                       flowDate = data%s.getFormattedValue(item.row, 0);
-                                       document.getElementById('APP_FILTER').selectedIndex = 0;        
-                               }
-                       });
-
-		function getApp(){
-                         var selection = document.getElementById('APP_FILTER').value;
-                         var url = '';
-                         if (selection == 'cube')
-                                 url = "http://flows.hpcf.upr.edu/plugins/c/?fromtoa="+flowDate;
-                         else if (selection == "graph")
-                                 url = "http://flows.hpcf.upr.edu/plugins/g/?fromtoa="+flowDate;
-                         else return ;
-                       window.open(url,"_blank");
-        		 }
-	"""%(divid,divid,divid,divid,w,h,divid,divid,divid,divid,divid)
-
+	"""%(divid,divid,divid,divid,divid,divid,divid,w,h)
+	
+	if filter!=None and filter=="day":
+		response+=eventhandler 
+   response+="\n\n"
    file.close()	
    return response
 def getviews(type,filter,entity,h,w,portlabel,tolabel,label,views):
@@ -142,7 +114,7 @@ def getviews(type,filter,entity,h,w,portlabel,tolabel,label,views):
 		elif re.match('(([a-zA-Z0-9]|-|_)+_1(d|m|a|w)cpl.js|([a-zA-Z0-9]|-|_)+_([a-zA-Z0-9]|-|_)+_1(d|m|a|w)cpl.js|([a-zA-Z0-9]|-|_)+-p([a-zA-Z0-9]|-|_)+_1(d|m|a|w)cpl.js)$',path)!=None:
 
 			divid='view%s'%(i+1)
-			response+='#graph\n\n'+ printgraphs(GRAPH_PATH+path,'cpl',w,h,divid)
+			response+='#graph\n\n'+  printgraphs(GRAPH_PATH+path,'cpl',w,h,divid)
 		else:
 			response+= '#graph ERROR: wrong path %s format for views'%(path)
 		i+=1
@@ -187,12 +159,12 @@ def getGraph(type,filter,entity,h, w,portlabel,tolabel,label):
 		response=""	
 		for i in range(len(types)):
 			divid='viz%s'%(i+1)
-			response+='#graph\n\n'+ printgraphs(graph+types[i]+'.js',types[i],w,h,divid)
+			response+='#graph\n\n'+  printgraphs(graph+types[i]+'.js',types[i],w,h,divid,filter)
 
 	else:
 			graph+=type+'.js'
 		
-			response='#graph\n\n'+ printgraphs(graph,type,w,h,'viz1')
+			response='#graph\n\n'+  printgraphs(graph,type,w,h,'viz1',filter)
 
 
 
@@ -232,27 +204,27 @@ if form.has_key('views') and   form.has_key('label') and form.has_key('type') an
 									
 											print getviews(type,filter,entity,h,w,portlabel,tolabel,label,views)
 										else:
-											print 'ERROR: views is not a valid parameter\n'
+											 print 'ERROR: views is not a valid parameter\n'
 									else:
-										print getGraph(type,filter,entity,h,w,portlabel,tolabel,label)
+										 print getGraph(type,filter,entity,h,w,portlabel,tolabel,label)
 								else:
-									print 'ERROR: w param is not valid\n'
+									 print 'ERROR: w param is not valid\n'
 							else:
 								print 'ERROR: h param is not valid\n'
 						else:
-							print 'ERROR: tolabel param is not valid\n'
+							 print 'ERROR: tolabel param is not valid\n'
 					else:
-						print 'ERROR: portlabel param is not valid\n'
+						 print 'ERROR: portlabel param is not valid\n'
 				else:
-					print 'ERROR: label param is not valid'
+					 print 'ERROR: label param is not valid'
 			else:
-				print 'ERROR: entity param not valid'
+				 print 'ERROR: entity param not valid'
 		else:
 			print 'ERROR: filter param not valid'
 	else:
-		print 'ERROR: type param not valid'	
+		 print 'ERROR: type param not valid'	
 else:	
 
-	print 'Missing Params'
+	 print 'Missing Params'
 
 
