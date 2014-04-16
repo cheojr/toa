@@ -2,23 +2,23 @@
 <config>
         <database>
             
-            <name>toa</name>
+            <name>flows</name>
 
             <auth>
 
-                <user>toauser</user>
+                <user>root</user>
 
-                <passwd>toapass</passwd>
+                <passwd>rootitg</passwd>
 
             </auth>
 
         </database>
 
-        <logs><path>/home/albert/newToa/toalogs</path></logs>
+        <logs><path>/home/eric/newToa/toalogs/</path></logs>
 
-        <flows><path>/CassandraVol/flows</path></flows>
+        <flows><path>/CassandraVol/flows/</path></flows>
 
-        <graphs><path>/home/jortiz/toa/public_html/graphs</path></graphs>
+        <graphs><path>/home/eric/public_html/toa/public_html/graphs/</path></graphs>
 
         <crontime><time>300</time></crontime>
 
