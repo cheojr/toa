@@ -18,7 +18,7 @@ class Config:
 
         def __init__(self):
        
-            tree = ET.parse('/var/www/html/development/TOANMS/etc/config.xml')
+            tree = ET.parse('config.xml')
             config=tree.getroot()# gets the first tag
             data=config[0] # the first child of the root tag
 

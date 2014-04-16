@@ -14,7 +14,37 @@ GRAPH_PATH=config.getGraphsPath()
 sys.path.append('../../Models/')
 from SessionModel import SessionModel
 
-def  printgraphs(graph,type,w,h,divid,filter=None):
+def validate(form):
+	if form.has_key('uid') and form.has_key('sid') and form.has_key('remote'):
+		uid=form.getvalue('uid')
+		sid=form.getvalue('sid')
+		remote=form.getvalue('remote')
+		now = datetime.datetime.now()#generate the TimeStamp
+
+		tmstp = now.minute#converting the TimeStamp to string   
+
+		sm = SessionModel()
+
+
+		if sm.connect():
+
+    			timestamp = sm.Validate(uid, sid, remote)
+
+    			if((timestamp+5)<=tmstp or timestamp == -1):
+
+        			sm.Close(uid, remote)
+
+        			del sm
+				return 0
+			else:
+				return 1
+		else:
+			return 0
+		return 1
+	else:
+		return 0
+
+def  printgraphs(admin,graph,type,w,h,divid,filter=None):
 
 
    file=open(graph,'r')
@@ -22,13 +52,12 @@ def  printgraphs(graph,type,w,h,divid,filter=None):
    graphdata=graphdata.replace("data","data%s"%(divid))
    response=""
 
-   eventhandler="""        google.visualization.events.addOneTimeListener(net%s, 'select', function(e){
+   eventhandler="""      //  google.visualization.events.addListener(net%s, 'select', function(e){
                                  
                                 //document.getElementById('APP_FILTER').style.display = 'inline';
-                                $('#%s-popover').css('display','block');
-                         });
+                       //  });
 
-                       google.visualization.events.addListener(net%s,'select',function(e){
+                     google.visualization.events.addListener(net%s,'select',function(e){
                                var item = net%s.getSelection()[0];
                                if (item == undefined){
 
@@ -36,15 +65,22 @@ def  printgraphs(graph,type,w,h,divid,filter=None):
                                 }
                                
                                if (item.row != null && item.column != null){
+					//alert(data%s.getFormattedValue(item.row, 1))
+                               		$('#%s-popover').css('display','block');
                                        $( "#dialog" ).dialog({modal: true });
                                        $("#active").button({label:"Open"})
                                        var flowDate = data%s.getFormattedValue(item.row, 1);
                                        document.getElementById('APP_FILTER').selectedIndex = 0;        
-                                       document.getElementById('%s').addEventListener('click',function() { getApp(flowDate); } ,false);        
+                                       document.getElementById('%s').addEventListener('click',function() { 
+						getApp(flowDate); 
+						this.removeEventListener('click', arguments.callee);
+						$('#%s-popover').css('display', 'none');
+						} ,false);        
                                }
+
                        });
 
-                         """ %(divid,divid,divid,divid,divid,divid+"submit")
+                         """ %(divid,divid,divid,divid,divid,divid,divid+"submit",divid)
 
    if type !='cpl':
 	#Read the data for the graphs and the js functions to draw it from js file
@@ -62,7 +98,7 @@ def  printgraphs(graph,type,w,h,divid,filter=None):
 
 
       """%(divid,divid,divid,divid,divid,divid,divid,w,h)
-	if filter!=None and filter=="day":
+	if filter!=None and filter=="day" and admin==1:
 		response+=eventhandler 
    else:
 	
@@ -79,12 +115,13 @@ def  printgraphs(graph,type,w,h,divid,filter=None):
 
 	"""%(divid,divid,divid,divid,divid,divid,divid,w,h)
 	
-	if filter!=None and filter=="day":
+	if filter!=None and filter=="day" and admin==1:
 		response+=eventhandler 
+
    response+="\n\n"
    file.close()	
    return response
-def getviews(type,filter,entity,h,w,portlabel,tolabel,label,views):
+def getviews(admin,type,filter,entity,h,w,portlabel,tolabel,label,views):
 
    	if h=='default':
 		h='400'
@@ -109,18 +146,18 @@ def getviews(type,filter,entity,h,w,portlabel,tolabel,label,views):
 		path=path[0] 
 		if re.match('(([a-zA-Z0-9]|-|_)+_1(d|m|a|w)(net|pak|flw).js|([a-zA-Z0-9]|-|_)+_([a-zA-Z0-9]|-|_)+_1(d|m|a|w)(net|pak|flw).js|([a-zA-Z0-9]|-|_)+-p([a-zA-Z0-9]|-|_)+_1(d|m|a|w)(net|pak|flw).js)$',path)!=None:
 			divid='view%s'%(i+1)
-			response+='#graph\n\n'+ printgraphs(GRAPH_PATH+path,'net',w,h,divid)
+			response+='#graph\n\n'+ printgraphs(admin,GRAPH_PATH+path,'net',w,h,divid)
 		
 		elif re.match('(([a-zA-Z0-9]|-|_)+_1(d|m|a|w)cpl.js|([a-zA-Z0-9]|-|_)+_([a-zA-Z0-9]|-|_)+_1(d|m|a|w)cpl.js|([a-zA-Z0-9]|-|_)+-p([a-zA-Z0-9]|-|_)+_1(d|m|a|w)cpl.js)$',path)!=None:
 
 			divid='view%s'%(i+1)
-			response+='#graph\n\n'+  printgraphs(GRAPH_PATH+path,'cpl',w,h,divid)
+			response+='#graph\n\n'+  printgraphs(admin,GRAPH_PATH+path,'cpl',w,h,divid)
 		else:
 			response+= '#graph ERROR: wrong path %s format for views'%(path)
 		i+=1
 	return response
 #Id, Type (all, pak, flw,col), filter(day,week,month,day), entity(device, port, Net2net),h,w(optional)
-def getGraph(type,filter,entity,h, w,portlabel,tolabel,label):
+def getGraph(admin,type,filter,entity,h, w,portlabel,tolabel,label):
 
 	
    	if h=='default':
@@ -159,12 +196,12 @@ def getGraph(type,filter,entity,h, w,portlabel,tolabel,label):
 		response=""	
 		for i in range(len(types)):
 			divid='viz%s'%(i+1)
-			response+='#graph\n\n'+  printgraphs(graph+types[i]+'.js',types[i],w,h,divid,filter)
+			response+='#graph\n\n'+  printgraphs(admin,graph+types[i]+'.js',types[i],w,h,divid,filter)
 
 	else:
 			graph+=type+'.js'
 		
-			response='#graph\n\n'+  printgraphs(graph,type,w,h,'viz1',filter)
+			response='#graph\n\n'+  printgraphs(admin,graph,type,w,h,'viz1',filter)
 
 
 
@@ -190,7 +227,7 @@ if form.has_key('views') and   form.has_key('label') and form.has_key('type') an
 	views=form.getvalue("views")
 	paths=views.split("#")
 	
-
+	admin=validate(form)
 	if type=='all' or type=='net' or   type=='pak' or type=='flw' or type=='cpl':
 		if filter == 'day' or filter=='week' or filter=='month' or filter=='year':
 			if entity == 'net2net' or entity == 'port' or entity=='device' or entity=='views':
@@ -202,11 +239,11 @@ if form.has_key('views') and   form.has_key('label') and form.has_key('type') an
 									if entity=='views':
 										if  re.match('([0-9]+)$',views)!=None:
 									
-											print getviews(type,filter,entity,h,w,portlabel,tolabel,label,views)
+											print getviews(admin,type,filter,entity,h,w,portlabel,tolabel,label,views)
 										else:
 											 print 'ERROR: views is not a valid parameter\n'
 									else:
-										 print getGraph(type,filter,entity,h,w,portlabel,tolabel,label)
+										 print getGraph(admin,type,filter,entity,h,w,portlabel,tolabel,label)
 								else:
 									 print 'ERROR: w param is not valid\n'
 							else:

@@ -23,12 +23,44 @@ cgitb.enable()
 
 sys.path.append('../../Models/')
 from PortModel import PortModel
-
+from SessionModel import SessionModel
 print "Content-Type: text/html\n\n"
 
 print 
 
 form = cgi.FieldStorage()
+
+def validate(form):
+	if form.has_key('uid') and form.has_key('sid') and form.has_key('remote'):
+		uid=form.getvalue('uid')
+		sid=form.getvalue('sid')
+		remote=form.getvalue('remote')
+		now = datetime.now()#generate the TimeStamp
+
+		tmstp = now.minute#converting the TimeStamp to string   
+
+		sm = SessionModel()
+
+
+		if sm.connect():
+
+    			timestamp = sm.Validate(uid, sid, remote)
+
+    			if((timestamp+5)<=tmstp or timestamp == -1):
+
+        			sm.Close(uid, remote)
+
+        			del sm
+				return 0
+			else:
+				return 1
+		else:
+			return 0
+		return 1
+	else:
+		return 0
+
+
 
 def GetNetwork(c, id):
 	c.execute("""select label, interface, asn, tom from NETWORK where n_id=%s""" % id)
@@ -84,6 +116,8 @@ def format(results,type):
 	return format
 		
 if form.has_key('entity') and form.has_key('id') and form.has_key('type'):
+	
+  if validate(form)==1:
 	#int= as | int 
 	# type = flows|oct|pak
 	# entity = net | ports
@@ -129,6 +163,8 @@ if form.has_key('entity') and form.has_key('id') and form.has_key('type'):
 			top="ERROR: Not valid network\n"
 	else:
 		top="ERROR: Not valid params\n"
+  else: 
+	top="ERROR: You must be logged in to use this feature\n"
 else:
 	top="ERROR: missing params\n"
 

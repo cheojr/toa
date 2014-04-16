@@ -35,13 +35,78 @@ class runpage:
         # constructor 
 		
 
-		hash={}
-		hash=self.createhash()	
-                file=open(PATH+'/p2p_graph.js','w')
-		self.leerhash(hash,file)
+	    self.createiframe()#creates the iframe for the graphs and calls the necessary functions to create it
     
+	def createiframe(self):
+                
+                file=open(PATH+'/p2p_graph.html','w')
+
+		file.write("""
+		<html>
+	
+		<head> 
+	
+
+ 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Sunburst - Connected Sunburst</title>
+		<!-- CSS Files -->
+                <link type="text/css" href="../Jit/Examples/css/base.css" rel="stylesheet" />
+		<link type="text/css" href="../Jit/Examples/css/base.css" rel="stylesheet" />
+                <link type="text/css" href="../Jit/Examples/css/Sunburst.css" rel="stylesheet" />
+
+		<!--[if IE]><script language="javascript" type="text/javascript" src="http://flows.hpcf.upr.edu/~albert/Jit/Extras/excanvas.js"></script><![endif]-->
+
+		<!-- JIT Library File -->
+
+                <script language="javascript" type="text/javascript"src="../Jit/jit.js"></script>
+		<!--script language="javascript" type="text/javascript" src="/var/www/html/development/graph.js"></script-->
+
+                
+		<script language="javascript" type="text/javascript">
 
 
+
+                """)
+
+                
+		hash={}
+				
+		hash=self.createhash()	
+		tryagain=1
+	#	while(tryagain==1):
+		#	try:	
+		self.leerhash(hash,file)
+                        #	tryagain=0
+			#except :
+
+                file.write("""
+                
+                
+                </script>
+		</head> 
+		<body class="body_back" onload="init();"> """) 
+
+		file.write("""
+		
+		<div id="container">
+
+		<div id="center-container">
+		
+			""")
+
+                
+                file.write("""
+   		 <div id="infovis"></div>   
+		</div>
+		<div id="right-container">
+
+
+		<div id="inner-details"></div> 
+		</div>
+		
+		</body>
+		</html>
+		""")
 
 
 	def createhash (self):

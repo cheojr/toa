@@ -21,7 +21,7 @@
 
         <flows><path>/flows</path></flows>
 
-        <graphs><path>/var/www/html/development/TOANMS/graphs</path></graphs>
+        <graphs><path>/home/albert/toa/public_html/grapshs</path></graphs>
 
         <crontime><time>300</time></crontime>
 
