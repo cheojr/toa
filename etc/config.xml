@@ -14,7 +14,7 @@
 
         </database>
 
-        <logs><path>/home/eric/newToa/toalogs/</path></logs>
+        <logs><path>/home/eric/toa/toalogs/</path></logs>
 
         <flows><path>/CassandraVol/flows/</path></flows>
 
