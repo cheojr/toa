@@ -6,6 +6,7 @@ import cgi
 import sys 
 import os
 import cgitb
+cgitb.enable()
 import datetime
 import urllib, hashlib
 import sys
@@ -13,7 +14,12 @@ sys.path.append("Models")
 from NetworkModel import NetworkModel
 from PortModel import PortModel
 from Net2NetModel import Net2NetModel
+sys.path.append("../bin/")
+from Config import Config
 
+config=Config()
+PATH=config.getGraphsPath() 
+#PATH="graphs/"
 ######################### imports  #########################
 
 ######################### headers  #########################
@@ -45,6 +51,8 @@ print """<script src="Controllers/Top100Controller.js"></script>"""
 print """<script src='Style/bootstrap/js/helpers.js'></script>"""
 
 print "<script type='text/javascript'>google.load('visualization', '1', {packages: ['corechart']});</script>"
+
+print "<script>var elem = document.getElementsByClassName('popover');for(i=0; i<elem.length;i++){elem[i].popover();}</script>"
 
 print "</head>"
 
@@ -142,55 +150,6 @@ else:
 
 			print "</ul></li>"
 
-		print "<li class='dropdown-submenu'><a href=#Top100 class='dropdown-hover'>Top100</a>"
-
-		print "<ul class='dropdown-menu' role='menu'>"
-
-		#### Net Top 1000
-
-		print "<li class='dropdown-submenu'><a class='dropdown-hover'>Network</a>"
-
-		print "<ul class='dropdown-menu' role='menu'>"
-
-		print "<li><a onclick=\"GetTop100('net', 'oct', '%s')\">Octects</a></li>"%device[0]
-
-		print "<li><a onclick=\"GetTop100('net', 'pak', '%s')\">Packets</a></li>"%device[0]
-
-		print "<li><a onclick=\"GetTop100('net', 'flow', '%s')\">Flows</a></li>"%device[0]
-
-		print "</ul></li>"
-
-		### Port Top 100
-
-
-		print "<li class='dropdown-submenu'><a class='dropdown-hover'>Port</a>"
-
-		print "<ul class='dropdown-menu' role='menu'>"
-
-		print "<li><a onclick=\"GetTop100('port', 'oct', '%s')\">Octects</a></li>"%device[0]
-
-		print "<li><a onclick=\"GetTop100('port', 'pak', '%s')\">Packets</a></li>"%device[0]
-
-		print "<li><a onclick=\"GetTop100('port', 'flow', '%s')\">Flows</a></li>"%device[0]
-
-		print "</ul></li>"
-
-		###  Net2Net Top 1000
-
-		print "<li class='dropdown-submenu'><a class='dropdown-hover'>Net2Net</a>"
-
-		print "<ul class='dropdown-menu' role='menu'>"
-
-		print "<li><a onclick=\"GetTop100('net2net', 'oct', '%s')\">Octects</a></li>"%device[0]
-
-		print "<li><a onclick=\"GetTop100('net2net', 'pak', '%s')\">Packets</a></li>"%device[0]
-
-		print "<li><a onclick=\"GetTop100('net2net', 'flow', '%s')\">Flows</a></li>"%device[0]
-
-		print "</ul></li>"
-
-		print "</ul>"
-
 		print "</li></ul>"
 
 	del NetworkModel
@@ -219,9 +178,11 @@ print "<div class='col-md-7'>"
 
 print "<div class='jumbotron p2p-jumbotron'>"
 
-if os.path.isfile("../graphs/p2p_graph.html"):
+#config = Config()
+
+if os.path.isfile(PATH + "/p2p_graph.html"):
         
-        print "<center><iframe class=infovis src='graphs/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"        
+    print "<center><iframe  class='infovisgraph' src='%s/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"%(PATH)   
 
 else:
         

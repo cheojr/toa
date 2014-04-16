@@ -25,26 +25,36 @@ NetworkModel = NetworkModel()
 
 form = cgi.FieldStorage()
 
-if(form.has_key("Admin")):
+if PortModel.connect() and NetworkModel.connect():
 
-	if(id != 'None'):
+	if(form.has_key("Admin")):
 
-		ports = PortModel.Get(id)
+		if(id != 'None'):
 
-		net2net = NetworkModel.GetNetwork2(id)
+			ports = PortModel.Get(id)
 
-		html = "<label class='radio'><input name='ftype' type='radio' value='0' onclick='ClearThirdSystemMenu();GetTimeSystemMenu(1);' name='selection' checked> I/O: The general amount of traffic in this network</label>"
+			net2net = NetworkModel.GetNetwork2(id)
 
-		if(len(ports)>0):
+			html = "<label class='radio'><input name='ftype' id='ftype' type='radio' value='i/o' onclick='ClearThirdSystemMenu();GetTimeSystemMenu(1);' name='selection'> I/O: The general amount of traffic in this network</label>"
 
-			html += "<label class='radio'><input name='ftype' type='radio' value='1' onclick='GetThirdSystemMenu(%s, 1, 1);GetTimeSystemMenu(1);' name='selection'> Port: The traffic of a specific port</label>"%id
+			if(len(ports)>0):
 
-		if(len(net2net)>0):
+				html += "<label class='radio'><input name='ftype' id='ftype' type='radio' value='port' onclick='GetThirdSystemMenu(%s, 1, 1);GetTimeSystemMenu(1);' name='selection'> Port: The traffic of a specific port</label>"%id
 
-			html += "<label class='radio'><input name='ftype' type='radio' value='2' onclick='GetThirdSystemMenu(%s, 2, 1);GetTimeSystemMenu(1);' name='selection'> P2P: Traffic from one point in the network to another</label>"%id
+			if(len(net2net)>0):
 
-		print html
+				html += "<label class='radio'><input name='ftype' id='ftype' type='radio' value='p2p' onclick='GetThirdSystemMenu(%s, 2, 1);GetTimeSystemMenu(1);' name='selection'> P2P: Traffic from one point in the network to another</label>"%id
 
-	else:
+			print html
 
-		print ""
+		else:
+
+			print ""
+
+else:
+
+    print "Database Connection Error. Configuration File Not Found."
+
+del PortModel
+
+del NetworkModel

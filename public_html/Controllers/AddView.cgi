@@ -5,6 +5,7 @@
 import cgi
 import sys 
 import os
+import re
 import cgitb
 import datetime
 import urllib, hashlib
@@ -36,11 +37,15 @@ sid = form.getvalue("sid")
 
 remote = form.getvalue("remote")
 
-view_name = form.getvalue("view-name")
+view_name = str(form.getvalue("view_name"))
+
+view_description = str(form.getvalue("view_description"))
 
 now = datetime.datetime.now()#generate the TimeStamp
 
-tmstp = now.minute#converting the TimeStamp to string   
+tmstp = now.minute#converting the TimeStamp to string 
+
+validator = [re.compile('[a-zA-Z0-9]+[a-zA-Z0-9\_\-]*$'), re.compile('[a-zA-Z0-9\s\t\n\.]*$')]  
 
 SessionModel = SessionModel()
 
@@ -48,28 +53,57 @@ ViewModel = ViewModel()
 
 UserModel = UserModel()
 
-timestamp = SessionModel.Validate(uid, sid, remote)
+if SessionModel.connect() and ViewModel.connect() and UserModel.connect():
 
-if((timestamp+5)<=tmstp or timestamp == -1):
+	timestamp = SessionModel.Validate(uid, sid, remote)
 
-    SessionModel.Close(uid, remote)
+	if((timestamp+5)<=tmstp or timestamp == -1):
 
-    del ViewModel
+	    SessionModel.Close(uid, remote)
 
-    del UserModel
+	    del ViewModel
 
-    del SessionModel
+	    del UserModel
 
-    print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
+	    del SessionModel
 
-SessionModel.UpdateTimeStamp(tmstp, uid, remote)
+	    print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
 
-print ViewModel.Add(view_name, uid)
+	SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-del ViewModel
+	errors = []
 
-del UserModel
+	if validator[0].match(view_name) and validator[1].match(view_description):
 
-del SessionModel
+		if ViewModel.Add(view_name, view_description, uid):
 
-print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/Dashboard.cgi?uid=%s&sid=%s&remote=%s\";self.focus();}</script>"""%(uid, sid, remote)
+			errors.append('View Added')
+
+	else:
+
+		if not validator[0].match(view_name):
+
+			errors.append('View name must contain only letters, _, - or numbers.')
+
+		if not validator[1].match(view_description):
+
+			errors.append('Invalid view description.')
+
+	del ViewModel
+
+	del UserModel
+
+	del SessionModel
+
+	print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/AddView.cgi?uid=%s&sid=%s&remote=%s&errors=%s\";self.focus();}</script>"""%(uid, sid, remote, str(errors))
+
+
+else:
+
+	print "Database Connection Error. Configuration File Not Found."
+
+	del ViewModel
+
+	del UserModel
+
+	del SessionModel

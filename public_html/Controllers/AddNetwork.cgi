@@ -209,7 +209,9 @@ if SessionModel.connect() and UserModel.connect() and NetworkModel.connect():
 
 	del SessionModel
 
-	print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/Dashboard.cgi?uid=%s&sid=%s&remote=%s\";self.focus();}</script>"""%(uid, sid, remote)
+	errors.append("Network Added.")
+
+	print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/AddNetwork.cgi?uid=%s&sid=%s&remote=%s&errors=%s\";self.focus();}</script>"""%(uid, sid, remote, errors)
 
 
 else:

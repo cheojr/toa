@@ -71,13 +71,33 @@ class ViewModel:
 
 	###################### Model Methods ############################
 
-	def GetViewGraphs(self, vid):
+	def Graphs(self, vid):
 
 		try:
 
 			self.cursor.execute("""select g_id from VIEW_GRAPH where v_id='%s'""" %(vid))
 
-			return self.cursor.fetchall()
+			graphs_id = self.cursor.fetchall()
+
+			graphs = ''
+
+			count = 0
+
+			for graphid in graphs_id:
+
+				self.cursor.execute("""select graph_name from GRAPH where gid=%s"""%graphid[0])	
+
+				if count < len(graphs_id)-1:
+
+					graphs += self.cursor.fetchone()[0]+'$'
+
+				else:
+
+					graphs += self.cursor.fetchone()[0]
+
+				count += 1
+
+			return graphs			
 
 		except MySQLdb.Error, e:
 
@@ -105,7 +125,7 @@ class ViewModel:
 
 		try:
 		
-			self.cursor.execute("""select vid, view_name from VIEW where vid in (select v_id FROM USUARIO_VIEW where u_id = '%s')"""%uid)
+			self.cursor.execute("""select vid, view_name, description from VIEW where vid in (select v_id FROM USUARIO_VIEW where u_id = '%s')"""%uid)
 
 			return self.cursor.fetchall()
 
@@ -115,22 +135,23 @@ class ViewModel:
 
 			
 
-	def Add(self, name, uid):
+	def Add(self, name, description, uid):
 
-                try:
+		try:
                         
-                        status = self.cursor.execute("""insert into VIEW (view_name) values('%s')"""%(name))
+			status = self.cursor.execute("""insert into VIEW (view_name, description) values('%s', '%s')"""%(name, description))
 
-                        vid = self.cursor.lastrowid
+			vid = self.cursor.lastrowid
 
-                        status = self.cursor.execute("""insert into USUARIO_VIEW (v_id, u_id) values('%s', '%s')"""%(vid, uid))
+			status = self.cursor.execute("""insert into USUARIO_VIEW (v_id, u_id) values('%s', '%s')"""%(vid, uid))
 
-                        return status
+			return status
 
-                except MySQLdb.Error, e:
+		except MySQLdb.Error, e:
 
-                        return "Error %d: %s"%(e.args[0], e.args[1])
+			print "Error %d: %s"%(e.args[0], e.args[1])
 
+			return False
 
 
 	def Edit(self, property, pvalue,field, value):
@@ -143,7 +164,9 @@ class ViewModel:
 
 		except MySQLdb.Error, e:
 
-			return "Error %d: %s"%(e.args[0], e.args[1])
+			print "Error %d: %s"%(e.args[0], e.args[1])
+
+			return False
 
 
 	def Remove(self, vid):
@@ -156,8 +179,10 @@ class ViewModel:
 
 			self.cursor.execute("""delete from VIEW where vid='%s'""" %(vid))
 
-			return "Graph Removed"
+			return True
 		
 		except MySQLdb.Error, e:
 
-			return "Error %d: %s"%(e.args[0], e.args[1])
+			print "Error %d: %s"%(e.args[0], e.args[1])
+
+			return False

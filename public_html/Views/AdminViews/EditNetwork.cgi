@@ -101,6 +101,8 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     print """<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>"""
 
+    print "<script src='http://www.google.com/jsapi'></script>"
+
     print """<script src="../../Style/bootstrap/js/bootstrap.min.js"></script>"""
 
     print """<script src="../../Style/bootstrap/js/helpers.js"></script>"""
@@ -112,6 +114,8 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
     print """<script src="../../Controllers/GraphController.js"></script>"""
 
     print """<script src="../../Controllers/MenuController.js"></script>"""
+
+    print "<script type='text/javascript'>google.load('visualization', '1', {packages: ['corechart']});</script>"
 
     print "</head>"
 
@@ -135,23 +139,19 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
         
     print "<div class='row'>"
 
-    print "<div class='col-md-12 box-user'><h3><center>"
+    print "<div class='col-md-12 box-user'>"
 
-    print UserModel.GetUsername(uid)[0]
+    print "<div class='btn-group'>"
 
-    print "</center></h3></div>"
+    print "<button class='btn btn-default btn-lg btn-box last' data-toggle='dropdown'>"
 
-    print "</div>"
+    print UserModel.Email(uid)[0]
 
-    print "<div class='row'>"
+    print "<span class='caret'></span>"
 
-    print "<div class='col-md-12'><center><div class='btn-group'>"
+    print "</button>"
 
-    print "<a class='btn btn-default btn-box' href='Dashboard.cgi?uid=%s&sid=%s&remote=%s'>Dashboard</a>"%(uid, sid, remote)
-
-    print "<div class='btn-group'><a class='btn btn-default btn-box' href='#' data-toggle='dropdown'>Settings</a>"
-
-    print "<ul class='dropdown-menu' role='menu' id='setting-menu'>"
+    print "<ul class='dropdown-menu pull-right' role='menu'>"
       
     print "<li><a tabindex='-1' href='#'>Reset Password</a></li>"
 
@@ -159,9 +159,11 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     print "<li><a tabindex='-1' href='../../Controllers/Logout.cgi?uid=%s&sid=%s&remote=%s'>Logout</a></li>"%(uid, sid, remote)
 
-    print "</ul></div>"
+    print "</ul>"
 
-    print "</div></center></div>"
+    print "</div>"
+
+    print "</div>"
 
     print "</div>"
 
@@ -173,75 +175,63 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     ######################### viewer  #########################
 
-    print """<div class="modal hide fade" id="viewer-modal">"""
+    print "<div class='modal fade' id='Viewer'>"
+            
+    print "<div class='modal-dialog viewer'>"
 
-    print """<div class="modal-header" id='viewer-header'>"""
+    #print "<div class='modal-header viewer-header'>"
+        
+    #print "<h1 class='modal-title'></h1>"
+      
+    #print "</div>"
+                
+    print "<div class='modal-content viewer-body'>"
+      
+    print "<div class='modal-body modal-no-padding' >"
+
+    print "<div class='container-fluid'>"
+
+    #print "<button type='button' class='close viewer-expand' aria-hidden='true'><i class='glyphicon glyphicon-chevron-down'></i></button>"
+
+    print "<button onclick='CleanViewer();' type='button' class='close viewer-close' data-dismiss='modal' aria-hidden='true'><i class='glyphicon glyphicon-remove'></i></button>"
+
+    print "<div class='row' id='viewer-body'>"
+
+    print "</div></div>"
 
     print "</div>"
-
-    print """<div class="modal-body" id="viewer-body">"""
-
+    
+    print "</div>"
+    
     print "</div>"
 
     print "</div>"
 
     ######################### viewer  #########################
 
-    ######################### add view form  #########################
-
-    print """<div class="modal hide fade" id="addview-form-modal">"""
-
-    print """<div class="modal-header">"""
-
-    print """<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>"""
-
-    print """<center><h2>Add View</h2></center>"""
-
-    print "</div>"
-
-    print """<div class="modal-body">"""
-
-    print "<center><br><form action='../../Controllers/AddView.cgi' method='post' name='add-view-form'>"
-
-    print "<input class='input-xlarge' type='text' name='view-name' value='' placeholder='Write the View Name'/>"
-
-    print "<input type='hidden' name='uid' value='%s'/>"%(uid) 
-
-    print "<input type='hidden' name='sid' value='%s'/>"%(sid)
-
-    print "<input type='hidden' name='remote' value='%s'/>"%(remote) 
-
-    print "</form></center>"
-
-    print "</div>"
-
-    print """<div class="modal-footer">"""
-
-    print """<input class="btn btn-large btn-inverse" id="addview-button" onclick='AddView()' type="submit" value="Add">"""
-
-    print "</center>"
-
-    print "</div>"
-
-    print "</div>"
-
-    ######################### add view form  #########################
-
     ######################### custom query form  #########################
 
-    print """<div class="modal hide fade" id="cquery-form-modal">"""
-
-    print """<div class="modal-header">"""
-
-    print """<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>"""
-
-    print """<center><h2>Custom Query System</h2></center>"""
-
+    print "<div class='modal fade' id='CustomQuery'>"
+            
+    print "<div class='modal-dialog'>"
+                
+    print "<div class='modal-content'>"
+                
+    print "<div class='modal-header'>"
+        
+    print "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+        
+    print "<h4 class='modal-title'>Custom Graph Query</h4>"
+      
     print "</div>"
+      
+    print "<div class='modal-body'>"
 
-    print """<div class="modal-body" id="custom-query-body">"""
+    print "<div class='row'>"
 
-    print "<select name='network' id='network' onchange='GetSecondSystemMenu(this[this.selectedIndex].value, 1), ClearThirdSystemMenu()'>"
+    print "<div class='col-md-5'>"
+
+    print "<select name='network' class='form-control' id='network' onchange='GetSecondSystemMenu(this[this.selectedIndex].value, 1), ClearThirdSystemMenu()'>"
 
     devices = NetworkModel.GetAll()
 
@@ -253,31 +243,67 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     print "</select>"
 
-    print "<div id='custom-query-second'>"
+    print "</div></div><br><div class='row'>"
 
-    print "</div>"
+    print "<div class='col-md-10 col-md-offset-1'><div id='custom-query-second'>"
 
-    print "<div id='custom-query-third'>"
+    print "</div></div></div>"
 
-    print "</div>"
+    print "<div class='row'><div class='col-md-10 col-md-offset-1'><div id='custom-query-third'>"
+
+    print "</div></div></div>"
 
     print "<div id='custom-query-time'>"
 
     print "</div>"
 
+    print "<div class='row'>"
+
+    print "<div class='col-md-8 col-md-offset-1'><p class='text-danger' id='custom-query-status'></p></div>"
+
+    print "<div class='col-md-2'><button class='btn btn-lg btn-feature-bar' onclick=\"CustomGraphView(%s, '%s', '%s')\">Query</button></div>"%(uid, sid, remote)
+
     print "</div>"
 
-    print """<div class="modal-footer">"""
-
-    print """<input class="btn btn-large btn-inverse" id="query-button" type="submit" value="Query" onclick='Search(this)'>"""
-
-    print "</center>"
-
+    print "</div>"
+    
+    print "</div>"
+    
     print "</div>"
 
     print "</div>"
 
     ######################### custom query form  #########################
+
+    ######################### Add Graph to View ##########################
+
+    print "<div class='modal fade' id='AddGraphModal'>"
+            
+    print "<div class='modal-dialog'>"
+                
+    print "<div class='modal-content'>"
+                
+    print "<div class='modal-header'>"
+        
+    print "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+        
+    print "<h4 class='modal-title'>Add Graph to a View</h4>"
+      
+    print "</div>"
+      
+    print "<div class='modal-body'>"
+
+    print "<button type='button' class='btn btn-default btn-lg btn-feature-bar pull-right'>Add</button><br><br>"
+      
+    print "</div>"
+    
+    print "</div>"
+    
+    print "</div>"
+
+    print "</div>"
+
+    ######################### Add Graph to View ##########################
 
     ######################### feature bar #########################
 
@@ -287,7 +313,7 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     print "<div class='btn-group feature-bar-group'>"
 
-    print "<a href='Home.cgi?uid=%s&sid=%s&remote=%s' class='btn btn-default btn-lg btn-feature-bar'>Home</a>"%(uid, sid, remote)
+    print "<a class='btn btn-default btn-lg btn-feature-bar' href='Dashboard.cgi?uid=%s&sid=%s&remote=%s'>Dashboard</a>"%(uid, sid, remote)
 
     print "<div class='btn-group'>"
 
@@ -299,37 +325,41 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     for device in devices:
 
-        print "<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#%sInterfaceGraph' onclick=\"GetGraphsView(%s, %s, '%s', '%s')\">Interface Graph</a></li><li><a href='#%sPortGraph' onclick=\"GetGraphsView(%s)\">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, %s)'>"%(device[1], device[1], device[0], uid, sid, remote, device[0], device[1], device[0])
+        print "<li class='dropdown-submenu'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu'><li><a href='#' onclick=\"GraphView('%s', 'all', 'day', 'device', 'default', 'default', 'default', 'default', 1)\">Interface Graph</a></li>"%(device[1], device[1])
 
         ports = PortModel.Get(device[0])
 
-        print "<option value='None'>Select</option>"
+        if(len(ports) > 0):
 
-        for port in ports:
+            print "<li class='dropdown-submenu'><a href=#Port class='dropdown-hover'>Port Graph</a><ul class='dropdown-menu'>"
 
-            print "<option value='%s'>%s</option>"%(port[1], port[1])
+            for port in ports:
 
-        print "</select></a></li><li><a href='#%sNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, %s)'>"%(device[1], device[0])
+                print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'port', '%s', 'default', 'default', 'default', 1)\">%s</a></li>"%(device[1], port[1], port[1])
+
+            print "</ul></li>"
 
         net2nets = Net2NetModel.Get(device[0])
 
-        print "<option value='None'>Select</option>"
+        if(len(net2nets) > 0):
 
-        for net2net in net2nets:
+            print "<li class='dropdown-submenu'><a href=#Net2Net class='dropdown-hover'>Net2Net Graph</a><ul class='dropdown-menu'>"
 
-           print "<option value='%s'>%s</option>"%(net2net[2], net2net[1])
+            for net2net in net2nets:
 
-        print "</select></a></li></ul></li>"
+                print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'net2net', 'default', '%s', 'default', 'default', 1)\">%s</a>"%(device[1],net2net[1], net2net[1])
 
-    print "</ul>"
+            print "</ul></li>"
+
+        print "</li></ul>"
 
     print "</div>"
 
-    print "<a class='btn btn-default btn-lg btn-feature-bar' id='query-button' href='#cquery-form-modal' data-toggle='modal'>Custom Query System</a>"
+    print "<a class='btn btn-default btn-lg btn-feature-bar' href='#' data-toggle='modal' data-target='#CustomQuery'>Custom Query System</a>"
 
     print "<div class='btn-group'>"
 
-    print "<a class='btn btn-default btn-lg btn-feature-bar' data-toggle='dropdown' id='viewer-button' href='#Viewer'>Viewer</a>"
+    print "<a class='btn btn-default btn-lg btn-feature-bar last' data-toggle='dropdown'>Viewer</a>"
 
     print "<ul class='dropdown-menu' role='menu'>"
 
@@ -337,7 +367,7 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     for view in views:
 
-        print "<li><a href=#viewer-modal onclick=\"GetViewGraph(%s, '%s')\" data-toggle='modal'>%s</a></li>"%(view[0], view[1], view[1])
+        print "<li><a href=# onclick=\"GraphView('default', 'all', 'day', 'views', 'default', 'default', '900','400', 1, %s)\" data-toggle='modal' data-target='#Viewer'>%s</a></li>"%(view[0], view[1])
 
     print "</ul></div>"
 
@@ -353,7 +383,19 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     print "<div class='row'>"
 
-    print "<div class='col-md-12 add-device-form'>"
+    print "<div class='col-md-12'>"
+
+    print "<br><br><br><center><div class='btn-group'>"
+
+    print "<a href='EditNetwork.cgi?uid=%s&sid=%s&remote=%s&nid=%s' class='btn btn-default btn-lg btn-graph-filter'>Device</a>"%(uid, sid, remote, nid)
+
+    print "<a href='ManagePorts.cgi?uid=%s&sid=%s&remote=%s&nid=%s' class='btn btn-default btn-lg btn-graph-filter'>Port</a>"%(uid, sid, remote, nid)
+
+    print "<a href='ManageNet2Net.cgi?uid=%s&sid=%s&remote=%s&nid=%s' class='btn btn-default btn-lg btn-graph-filter'>Net2Net</a>"%(uid, sid, remote, nid)
+
+    print "<a href='ManageNetBlocks.cgi?uid=%s&sid=%s&remote=%s&nid=%s' class='btn btn-default btn-lg btn-graph-filter'>NetBlock</a>"%(uid, sid, remote, nid)
+
+    print "</div><br><br><br><br><br>";
 
     Device = NetworkModel.Get(nid)
 

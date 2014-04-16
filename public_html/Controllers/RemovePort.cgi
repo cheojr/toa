@@ -54,22 +54,34 @@ PortModel = PortModel()
 
 UserModel = UserModel()
 
-timestamp = SessionModel.Validate(uid, sid, remote)
+if PortModel.connect() and UserModel.connect() and SessionModel.connect():
 
-if((timestamp+5)<=tmstp or timestamp == -1):
+	timestamp = SessionModel.Validate(uid, sid, remote)
 
-    SessionModel.Close(uid, remote)
+	if((timestamp+5)<=tmstp or timestamp == -1):
 
-    del PortModel
+	    SessionModel.Close(uid, remote)
 
-    del UserModel
+	    del PortModel
 
-    del SessionModel
+	    del UserModel
 
-    print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
+	    del SessionModel
 
-SessionModel.UpdateTimeStamp(tmstp, uid, remote)
+	    print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
 
-PortModel.Remove(nid, port)
+	SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/ManagePorts.cgi?nid=%s&uid=%s&sid=%s&remote=%s\";self.focus();}</script>"""%(nid, uid, sid, remote)
+	PortModel.Remove(nid, port)
+
+	print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/ManagePorts.cgi?nid=%s&uid=%s&sid=%s&remote=%s\";self.focus();}</script>"""%(nid, uid, sid, remote)
+
+else:
+
+    print "Database Connection Error. Configuration File Not Found."
+
+del PortModel
+
+del UserModel
+
+del SessionModel

@@ -25,28 +25,40 @@ PortModel = PortModel()
 
 NetworkModel = NetworkModel()
 
-html = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+if PortModel.connect() and NetworkModel.connect():
 
-if(id != 'None'):
+	html = "<br><div class='row'>"
 
-	if(state == '1'):
+	if(id != 'None'):
 
-		ports = PortModel.Get(id)
+		if(state == '1'):
 
-		for p in ports:
+			ports = PortModel.Get(id)
 
-			html += "<label class='checkbox inline'><input name='checkboxoptions' type='checkbox' value='%s'>%s</label>"%(p[0],p[1])
+			for p in ports:
+
+				html += "<div class='col-md-2'><label class='checkbox-inline'><input name='checkboxoptions' type='checkbox' value='%s'>%s</label></div>"%(p[0], p[1])
+
+		else:
+
+			net2net = NetworkModel.GetNetwork2(id)
+
+			for n in net2net:
+
+				html += "<div class='col-md-2'><label class='checkbox-inline'><input name='checkboxoptions' type='checkbox' value='%s'>%s</label></div>"%(n[0], n[1])
 
 	else:
 
-		net2net = NetworkModel.GetNetwork2(id)
+		html += ""
 
-		for n in net2net:
-
-			html += "<label class='checkbox inline'><input name='checkboxoptions' type='checkbox' value='%s'>%s</label>"%(n[0], n[1])
+	print html+"</div>"
 
 else:
 
-	html += ""
+    print "Database Connection Error. Configuration File Not Found."
 
-print html
+    print SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and ViewModel.connect() #and PortModel.connect() and NetworkModel.connect()
+
+del PortModel
+
+del NetworkModel

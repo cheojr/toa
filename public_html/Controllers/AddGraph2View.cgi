@@ -12,7 +12,7 @@ import sys
 sys.path.append("../Models")
 from GraphModel import GraphModel
 
-#cgitb.enable()
+cgitb.enable()
 
 ########## Imports #######################
 
@@ -26,20 +26,26 @@ form = cgi.FieldStorage()#getting the values of the form in case of a validation
 
 vid = form.getvalue("vid")
 
-graph_path = str(form.getvalue("graph_path"))
-
-graph_name = str(form.getvalue("graph-name"))
+graph_name = str(form.getvalue("graph_name"))
 
 GraphModel = GraphModel()
 
-status = GraphModel.Add(graph_name, graph_path, vid)
+if GraphModel.connect():
 
-if status :
+	status = GraphModel.Add(graph_name, vid)
 
-	print "Graph Added to View Successfully."
+	if status:
+
+		print "Graph Added to View Successfully."
+
+	else:
+
+		print "Unable to Add Graph to View."
+
+	del GraphModel
 
 else:
 
-	print "Unable to Add Graph to View."
+	print "Database Connection"
 
-del GraphModel
+	del GraphModel

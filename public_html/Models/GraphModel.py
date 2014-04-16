@@ -120,52 +120,35 @@ class GraphModel:
 
 			
 
-	def Add(self, name, path, vid):
+	def Add(self, name, vid):
 
-				try:
-                     
-					self.cursor.execute("select gid from GRAPH where graph_path = '%s'"%(path))
+		try:
 
-					gid = self.cursor.fetchone()
+			status = self.cursor.execute("""insert into GRAPH (graph_name) values('%s')"""%(name))
 
-					#print "Hello", gid
+			gid = self.cursor.lastrowid
 
-					if gid == None:
+			status = self.cursor.execute("""insert into VIEW_GRAPH (v_id, g_id) values('%s', '%s')"""%(vid, gid))
 
-						status = self.cursor.execute("""insert into GRAPH (graph_name, graph_path) values('%s', '%s')"""%(name, path))
+			return True
 
-						gid = self.cursor.lastrowid
+		except MySQLdb.Error, e:
 
-					status = self.cursor.execute("""insert into VIEW_GRAPH (v_id, g_id) values('%s', '%s')"""%(vid, gid[0]))
+			print "Error %d: %s"%(e.args[0], e.args[1])
 
-					return status
-
-				except MySQLdb.Error, e:
-
-					return "Error %d: %s"%(e.args[0], e.args[1])
+			return False
 
 
+	def Remove(self, field, value):
 
-        def Edit(self, property, pvalue,field, value):
+		try:
 
-                try:
+			self.cursor.execute("""delete from GRAPH where %s=%s""" %(field, value))
 
-                        self.cursor.execute("""update GRAPH set %s=%s where %s='%s'""" %(property, pvalue, field, value))
+			return True
 
-                        return self.cursor.fetchone()[0]
+		except MySQLdb.Error, e:
 
-                except MySQLdb.Error, e:
+			print "Error %d: %s"%(e.args[0], e.args[1])
 
-                        return "Error %d: %s"%(e.args[0], e.args[1])
-
-        def Remove(self, field, value):
-
-                try:
-
-                	self.cursor.execute("""delete from GRAPH where %s=%s""" %(field, value))
-
-                        return "Graph Removed"
-
-                except MySQLdb.Error, e:
-
-                        return "Error %d: %s"%(e.args[0], e.args[1])
+			return False

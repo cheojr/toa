@@ -22,9 +22,21 @@ cgitb.enable()
 
 form = cgi.FieldStorage()#get the form itself
 
-user = form.getvalue("username")#get the value of the input with name 'user'
+if form.has_key("username"):
 
-pasw = form.getvalue("password")#get the value of the input with name 'passwd'
+	user = form.getvalue("username")#get the value of the input with name 'user'
+
+else:
+
+	user = ""
+
+if form.has_key("password"):
+
+	pasw = form.getvalue("password")#get the value of the input with name 'passwd'
+
+else:
+
+	pasw = ""
 
 iden = sid = remote = 0
 
