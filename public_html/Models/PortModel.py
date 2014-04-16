@@ -12,31 +12,31 @@ from Config import Config
 
 class PortModel:
 
-    def __init__(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
+    def connect(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
 
-        if name == None:
-	
-	    try:		
-
-            	dbinfo = Config()
-
-	    except:
-
-		pass
-
+        try:    
+                                
+            dbinfo = Config()
+                
             try:
 
                 conn = MySQLdb.connect(user=dbinfo.getUser(), passwd=dbinfo.getPassword(), db=dbinfo.getDBName(), host="localhost")
 
                 self.cursor = conn.cursor()
 
+                return True
+
             except MySQLdb.Error, e:
+                                
+                pass
+                                
+                sys.exit(0)
+                                
+                print "Error %d: %s" % (e.args[0],e.args[1])
 
-		pass
+                return False
 
-                #print "Error %d: %s" % (e.args[0],e.args[1])
-
-        else:
+        except:
 
             dbinfo = Config(name, user, passwd, flows_path, graphs_path, crontime)
 
@@ -46,23 +46,32 @@ class PortModel:
 
                 self.cursor = conn.cursor()
 
+                return True
+
             except MySQLdb.Error, e:
 
-		pass
+                pass
 
-                #print "Error %d: %s" % (e.args[0],e.args[1])
+                print "Error %d: %s" % (e.args[0],e.args[1])
 
+                return False
 
     def __del__(self):
 
-    	self.cursor.close()
+        try:
+
+            self.cursor.close()
+
+        except:
+
+            pass
 
 
 	################################### Ports Methods #########################################
 
     def Get(self, id):
         	
-        self.cursor.execute("""select p_id, port from PORT where n_id=%s""" % id)
+        self.cursor.execute("""select p_id, port from PORT where n_id='%s'""" % id)
         	
         return self.cursor.fetchall()
 

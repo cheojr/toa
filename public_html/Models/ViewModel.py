@@ -12,31 +12,32 @@ from Config import Config
 
 class ViewModel:
 
-	def __init__(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
+	def connect(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
 
-		if name == None:
-
-			try:
-
-				dbinfo = Config()
-
-			except:
-
-				pass
-
+		try:    
+                                
+			dbinfo = Config()
+                
 			try:
 
 				conn = MySQLdb.connect(user=dbinfo.getUser(), passwd=dbinfo.getPassword(), db=dbinfo.getDBName(), host="localhost")
 
 				self.cursor = conn.cursor()
 
+				return True
+
 			except MySQLdb.Error, e:
-
+                                
 				pass
+                                
+				sys.exit(0)
+                                
+				print "Error %d: %s" % (e.args[0],e.args[1])
 
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
+				return False
 
-		else:
+
+		except:
 
 			dbinfo = Config(name, user, passwd, flows_path, graphs_path, crontime)
 
@@ -46,26 +47,57 @@ class ViewModel:
 
 				self.cursor = conn.cursor()
 
+				return True
+
 			except MySQLdb.Error, e:
 
 				pass
 
-   				#print "Error %d: %s" % (e.args[0],e.args[1])
+				print "Error %d: %s" % (e.args[0],e.args[1])
+
+				return False
+
 
 
    	def __del__(self):
 
-		self.cursor.close()
+   		try:
+
+			self.cursor.close()
+
+		except:
+
+			pass
 
 	###################### Model Methods ############################
 
-	def GetViewGraphs(self, vid):
+	def Graphs(self, vid):
 
 		try:
 
 			self.cursor.execute("""select g_id from VIEW_GRAPH where v_id='%s'""" %(vid))
 
-			return self.cursor.fetchall()
+			graphs_id = self.cursor.fetchall()
+
+			graphs = ''
+
+			count = 0
+
+			for graphid in graphs_id:
+
+				self.cursor.execute("""select graph_name from GRAPH where gid=%s"""%graphid[0])	
+
+				if count < len(graphs_id)-1:
+
+					graphs += self.cursor.fetchone()[0]+'$'
+
+				else:
+
+					graphs += self.cursor.fetchone()[0]
+
+				count += 1
+
+			return graphs			
 
 		except MySQLdb.Error, e:
 
@@ -93,7 +125,7 @@ class ViewModel:
 
 		try:
 		
-			self.cursor.execute("""select vid, view_name from VIEW where vid in (select v_id FROM USUARIO_VIEW where u_id = '%s')"""%uid)
+			self.cursor.execute("""select vid, view_name, description from VIEW where vid in (select v_id FROM USUARIO_VIEW where u_id = '%s')"""%uid)
 
 			return self.cursor.fetchall()
 
@@ -103,48 +135,54 @@ class ViewModel:
 
 			
 
-	def Add(self, name, uid):
+	def Add(self, name, description, uid):
 
-                try:
+		try:
                         
-                        status = self.cursor.execute("""insert into VIEW (view_name) values('%s')"""%(name))
+			status = self.cursor.execute("""insert into VIEW (view_name, description) values('%s', '%s')"""%(name, description))
 
-                        vid = self.cursor.lastrowid
+			vid = self.cursor.lastrowid
 
-                        status = self.cursor.execute("""insert into USUARIO_VIEW (v_id, u_id) values('%s', '%s')"""%(vid, uid))
+			status = self.cursor.execute("""insert into USUARIO_VIEW (v_id, u_id) values('%s', '%s')"""%(vid, uid))
 
-                        return status
+			return status
 
-                except MySQLdb.Error, e:
+		except MySQLdb.Error, e:
 
-                        return "Error %d: %s"%(e.args[0], e.args[1])
+			print "Error %d: %s"%(e.args[0], e.args[1])
+
+			return False
 
 
+	def Edit(self, property, pvalue,field, value):
 
-        def Edit(self, property, pvalue,field, value):
+		try:
 
-                try:
+			self.cursor.execute("""update VIEW set %s=%s where %s='%s'""" %(property, pvalue, field, value))
+		
+			return self.cursor.fetchone()[0]
 
-                        self.cursor.execute("""update VIEW set %s=%s where %s='%s'""" %(property, pvalue, field, value))
+		except MySQLdb.Error, e:
 
-                        return self.cursor.fetchone()[0]
+			print "Error %d: %s"%(e.args[0], e.args[1])
 
-                except MySQLdb.Error, e:
+			return False
 
-                        return "Error %d: %s"%(e.args[0], e.args[1])
 
-		def Remove(self, vid):
+	def Remove(self, vid):
 
-			try:
+		try:
 
- 				self.cursor.execute("""delete from VIEW_GRAPH where v_id = '%s'"""%vid)
+			self.cursor.execute("""delete from VIEW_GRAPH where v_id = '%s'"""%vid)
 
- 				self.cursor.execute("""delete from USUARIO_VIEW where v_id = '%s'"""%vid)
+			self.cursor.execute("""delete from USUARIO_VIEW where v_id = '%s'"""%vid)
 
- 				self.cursor.execute("""delete from VIEW where vid='%s'""" %(vid))
+			self.cursor.execute("""delete from VIEW where vid='%s'""" %(vid))
 
- 				return "Graph Removed"
+			return True
+		
+		except MySQLdb.Error, e:
 
-			except MySQLdb.Error, e:
+			print "Error %d: %s"%(e.args[0], e.args[1])
 
-				return "Error %d: %s"%(e.args[0], e.args[1])
+			return False

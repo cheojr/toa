@@ -15,5 +15,3 @@ function startPicker(){
   $('.datepicker').datepicker()
   
 }
-
-

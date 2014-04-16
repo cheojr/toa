@@ -55,110 +55,119 @@ ViewModel = ViewModel()
 
 UserModel = UserModel()
 
-timestamp = SessionModel.Validate(uid, sid, remote)
+if SessionModel.connect() and UserModel.connect() and GraphModel.connect() and UserModel.connect():
 
-##################### Init ##########################################
+    timestamp = SessionModel.Validate(uid, sid, remote)
 
-if((timestamp+5)<=tmstp or timestamp == -1):
+    ##################### Init ##########################################
 
-    SessionModel.Close(uid, remote)
+    if((timestamp+5)<=tmstp or timestamp == -1):
 
-    del GraphModel
+        SessionModel.Close(uid, remote)
 
-    del UserModel
+        del GraphModel
 
-    del SessionModel
+        del UserModel
 
-    del ViewModel
+        del SessionModel
 
-    print """<script language=\"JavaScript\">{location.href=\"../../index.cgi\";self.focus();}</script>"""
+        del ViewModel
 
-SessionModel.UpdateTimeStamp(tmstp, uid, remote)
+        print """<script language=\"JavaScript\">{location.href=\"../../index.cgi\";self.focus();}</script>"""
 
-print """        
-	
-		<head>
+    SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-        	<title>TOA Network Monitoring System</title>
+    print """        
+    	
+    		<head>
 
-            <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'></script>
+            	<title>TOA Network Monitoring System</title>
 
-            <link rel='stylesheet' type='text/css' href='../../Style/Style.css'>
+                <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'></script>
 
-        	<script type='text/javascript' src='../../Style/Style.js'></script>
+                <link rel='stylesheet' type='text/css' href='../../Style/Style.css'>
 
-            <script type='text/javascript' src='../../Controllers/MenuController.js'></script>
+            	<script type='text/javascript' src='../../Style/Style.js'></script>
 
-            <script type='text/javascript' src='../../Controllers/GraphController.js'></script>
+                <script type='text/javascript' src='../../Controllers/MenuController.js'></script>
 
-            <div class=banner>
+                <script type='text/javascript' src='../../Controllers/GraphController.js'></script>
 
-            	<p>TOA Network Monitoring System</p>
+                <div class=banner>
 
-                <div id='user_box'>
+                	<p>TOA Network Monitoring System</p>
 
-                    <p>"""
+                    <div id='user_box'>
 
-print UserModel.GetUsername(uid)[0]
+                        <p>"""
 
-print  """ <br>
+    print UserModel.GetUsername(uid)[0]
 
-                    <a href='Home.cgi?uid=%s&sid=%s&remote=%s'>Home</a>&nbsp;
+    print  """ <br>
 
-                    <a href='Dashboard.cgi?uid=%s&sid=%s&remote=%s'>Dashboard</a>&nbsp;
+                        <a href='Home.cgi?uid=%s&sid=%s&remote=%s'>Home</a>&nbsp;
 
-                    <a href='Setting.cgi?uid=%s&sid=%s&remote=%s'>Settings</a>
+                        <a href='Dashboard.cgi?uid=%s&sid=%s&remote=%s'>Dashboard</a>&nbsp;
 
-                    </p>
+                        <a href='Setting.cgi?uid=%s&sid=%s&remote=%s'>Settings</a>
+
+                        </p>
+
+                    </div>
+    			
+    			</div>                                                                                                                                                                                                                                                                       
+    		
+    		</head>
+    	
+    		<body>
+
+                <div class=menu>
+
+                	<div id='top_menu_button' onclick='GetNetworksMenu(1)'>
+
+                		<br><br><br><br><br><br><p>Networks</p>
+
+                	</div>
+
+                	<div id='bottom_menu_button' onclick='GetFirstSystemMenu(1)'>
+
+                		<br><br><br><br><br><p>System</p>
+
+                	</div>
+
+                	<div id='menu_content'>
+
+
+                	</div>
+
+                	<div id='port_net_menu_container'>
+
+                	</div>
 
                 </div>
-			
-			</div>                                                                                                                                                                                                                                                                       
-		
-		</head>
-	
-		<body>
 
-            <div class=menu>
+                <div class='content' id='content'>"""%(uid, sid, remote, uid, sid, remote, uid, sid, remote)
 
-            	<div id='top_menu_button' onclick='GetNetworksMenu(1)'>
+    graphs = GraphModel.GetAll() 
 
-            		<br><br><br><br><br><br><p>Networks</p>
+    view_graphs = GraphModel.GetViewGraph("g_id", "v_id", vid)
 
-            	</div>
+    vg = ""
 
-            	<div id='bottom_menu_button' onclick='GetFirstSystemMenu(1)'>
+    for v in view_graphs:
 
-            		<br><br><br><br><br><p>System</p>
+        vg += str(v)+","
 
-            	</div>
+    view_name = ViewModel.Get("view_name", "vid", vid)
 
-            	<div id='menu_content'>
+    EditViewForm(uid, sid, remote, graphs, view_name, vg, len(view_graphs))
+
+    print "</ul><br></div></center></div></body>"
 
 
-            	</div>
+else:
 
-            	<div id='port_net_menu_container'>
-
-            	</div>
-
-            </div>
-
-            <div class='content' id='content'>"""%(uid, sid, remote, uid, sid, remote, uid, sid, remote)
-
-graphs = GraphModel.GetAll() 
-
-view_graphs = GraphModel.GetViewGraph("g_id", "v_id", vid)
-
-vg = ""
-
-for v in view_graphs:
-
-    vg += str(v)+","
-
-view_name = ViewModel.Get("view_name", "vid", vid)
-
-EditViewForm(uid, sid, remote, graphs, view_name, vg, len(view_graphs))
+    print "Database Connection Error. Configuration File Not Found."
 
 del GraphModel
 
@@ -167,5 +176,3 @@ del UserModel
 del SessionModel
 
 del ViewModel
-
-print "</ul><br></div></center></div></body>"

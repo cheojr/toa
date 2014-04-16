@@ -31,29 +31,35 @@ GraphModel = GraphModel()
 
 ViewModel = ViewModel()
 
-graph_ids = ViewModel.GetViewGraphs(vid)
+if (GraphModel.connect() and ViewModel.connect()):
 
-response = "<table class='table' id='viewer-table'>"
+	graph_ids = ViewModel.GetViewGraphs(vid)
 
-count = 1
+	response = ""
 
-for gid in graph_ids:
+	count = 1
 
-	if count == 1:
+	for gid in graph_ids:
 
-		response += "<tr>"
+		response += "<div class='row-fluid'>"
 
-	path = GraphModel.Get("graph_path", "gid", gid[0])
+		path = GraphModel.Get("graph_path", "gid", gid[0])
 
-	response += "<td><iframe scrolling='no' id='viewer-frame' src='/graphtest/%s'></iframe></td>"%path[0][0]
+		if count%2 == 0:
 
-	if count%2 == 0 and not count == 1:
+			response += "<div class='span7 pull-right'><iframe scrolling='no' id='viewer-frame' src='/graphtest/%s'></iframe></div>"%path[0][0]
 
-		response += "</tr>"	
+		else:
 
-	count += 1	
+			response += "<div class='span7 pull-left'><iframe scrolling='no' id='viewer-frame' src='/graphtest/%s'></iframe></div>"%path[0][0]
 
-response += "</table>"
+		response += "</div>"
+
+		count += 1
+
+else:
+
+	response = "Database Connection Error. Please Contact Administrator."	
 
 print response
 

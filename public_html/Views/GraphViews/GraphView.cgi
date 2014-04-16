@@ -6,185 +6,112 @@ import os
 import MySQLdb
 import cgitb
 from datetime import datetime
-sys.path.append('../../Models')
-from NetworkModel import NetworkModel
-from Net2NetModel import Net2NetModel
-from PortModel import PortModel
-
-cgitb.enable()
-
-GRAPH_PATH= "../../../../../graphs"### Ojo
-
-def DisplayGraphs(graph, link, form, id):
-
-	type = "1d"
-
-	r = "False"
-
-	if form.has_key("r"):
-
-		r = form.getfirst("r")
-
-		if r == "True":
-
-			en = "?id=%s" % (id)
-
-			if form.has_key("d1"):
-
-				d1 = form.getfirst("d1")
-
-				en+="&d1=%s" % (d1)
-
-			if form.has_key("d2"):
-
-				d2 = form.getfirst("d2")
-
-				en+="&d2=%s" % (d2)				
+sys.path.append('../../Models')#Ojo
+def printgraphs(graph,type,w,h,divid):
 
 
-	if form.has_key("d"):
+   file=open(graph,'r')
+   graphdata=file.read()
+   response=""
 
-		type = form.getfirst("d")
+   if type !='cpl':
+	#Read the data for the graphs and the js functions to draw it from js file
+	response+= graphdata
 
-		if type ==  "1w":
 
-			pass
-
-		elif type == "1m": 
-
-			pass
-
-		elif type == "1a":
-
-			pass
-
-		elif type == "1y":
-
-			pass
-
-		else:
-
-			type="1d"
-
-	print """<ul><li><div id="byDay" onclick="GetGraphsViewBy(%s,'1d')"><p>Day</p></div></li><li><div onclick="GetGraphsViewBy(%s,'1w')" id="byWeek"><p>Week</p></div></li><li><div onclick="GetGraphsViewBy(%s, '1m')" id="byMonth"><p>Month</p></div></li><li><div onclick="GetGraphsViewBy(%s, '1a')" id="byYear"><p>Year</p></div></li></ul>"""%(id, id, id, id)
+	response+="""
+	var net = new google.visualization.AreaChart(document.getElementById('%s'));
+            net.draw(data, {curveType: "function",
+	 width:%s, height:%s, title: graphtitle , titleX: xtitle, titleY: ytitle,
+                        vAxis: {maxValue: maxvalue}}
+                );
+      """%(divid,w,h)
+   else:
 	
-	if r == "True":
-		print """<script language=\"JavaScript\">{location.href=\"../../../../../graph_r.cgi%s\";self.focus();}</script>"""%(id)
-		#print """<div class='graphs'><iframe frameborder="0" src="../../../../../graph_r.cgi%s" width="803px" height="2500px" scrolling="no"></iframe></div>""" % (id, en)
+	response+=graphdata
+
+	response+= """
+	    net = new google.visualization.AreaChart(document.getElementById('%s'))
+            net.draw(data, {curveType: "function",
+                        width:%s, height:%s,title: graphtitle, titleX: xtitle, titleY: ytitle,
+                        vAxis: {maxValue: 10}}
+                );
+	"""%(divid,w,h)
+
+   file.close()	
+   return response
+#Id, Type (all, pak, flw,col), filter(day,week,month,day), entity(device, port, Net2net),h,w(optional)
+def getGraph(type,filter,entity,h, w,portlabel,tolabel,label):
+
 	
-	elif type == "1d":
-		print """<div class='graphs'><iframe id="frame" id="frame" frameborder="0" src='../../../../../graphs/%s_%s.html' width='803px' height='2500px' scrolling='no'></iframe></div>""" % (graph, type)
+   	if h=='default':
+		h='400'
+	if w=='default':
+		w='750'
+	GRAPH_PATH = "../../graphs/"### Ojo
+	graph=""
+	
+	if filter=='day':
+		f='1d'
+	elif filter=='week':
+		f='1w'
+	elif filter=='month':
+		f='1m'
+	elif filter=='year':
+		f='1a'
+	if entity=='device':
+		#id is network id 
+		#GetLabel returns the label for that id 
+
+		graph=GRAPH_PATH+label+'_'+f
+		
+
+
+	elif entity=='port':
+		#id is the port if (pid from the database)
+
+
+		graph=GRAPH_PATH+label+'-p'+portlabel+'_'+f
+
+	elif entity=='net2net':
+		graph=GRAPH_PATH+label+'_'+tolabel+'_'+f
+		
+	if type=='all':
+		types=['net','pak','flw','cpl']
+		response=""	
+		for i in range(len(types)):
+			divid='viz%s'%(i+1)
+			response+='#graph\n\n'+ printgraphs(graph+types[i]+'.js',types[i],w,h,divid)
 
 	else:
-		print """<div class='graphs'><iframe frameborder='0' src='../../../../../graphs/%s_%s.html' width='803px' height='2500px' scrolling='no'></iframe></div>""" % (graph, type)
+			graph+=type+'.js'
+		
+			response='#graph\n\n'+ printgraphs(graph,type,w,h,'viz1')
 
 
-	print """<p class="graphs_display_footer">Disclaimer: This graphics might not show the complete traffic in the network devices.</p>"""
 
+	return response
+# MAIN
+cgitb.enable()
 
 print "Content-Type: text/html\n\n"
 
-print 
-
-PortModel = PortModel()
-
-NetworkModel = NetworkModel()
-
-Net2NetModel = Net2NetModel()
+print
 
 form = cgi.FieldStorage()
+if  form.has_key('label') and form.has_key('type') and form.has_key('h') and form.has_key('w') and form.has_key('filter') and form.has_key('entity') :
+	type = form.getvalue("type")
+	filter=form.getvalue("filter")
+	entity=form.getvalue("entity")
+	label=form.getvalue("label")
+	portlabel=form.getvalue("portlabel")
+	tolabel=form.getvalue("tolabel")
+	h = form.getvalue("h")
+	w = form.getvalue("w")
 
-id = -1 
+	print getGraph(type,filter,entity,h,w,portlabel,tolabel,label)
+else:
 
-if form.has_key("id"):
-	
-	try:
-	
-		id = int(form.getfirst("id"))
-	
-	except:
-	
-		id = -1
+	print 'Missing Params'
 
-p = None
 
-if form.has_key("p"):
-
-	try:
-
-		p = int(form.getfirst("p"))
-
-	except:
-
-		p = None
-
-n = None
-
-if form.has_key("n"):
-
-	try:
-
-		n = int(form.getfirst("n"))
-
-	except:
-
-		n = None
-
-t = None
-
-if form.has_key("t"):
-
-	t = form.getfirst("t")
-
-	if not t in ("o", "p", "f"):
-
-		t = None
-
-link = "graphs.cgi"
-
-graph = None
-
-if id > 0:
-
-	if p:
-
-		# Display Port of ID
-		pInfo = PortModel.GetGraphInfo(id, p)
-
-		if pInfo:
-
-			graph = "%s-p%s" % (pInfo[0], pInfo[1])
-
-			link += "?id=%s&p=%s" % (id, p)
-
-			DisplayGraphs(graph, link, form, id)
-
-	elif n:
-		# Display Net of ID
-		nInfo = Net2NetModel.GetGraphInfo(id, n)
-
-		if nInfo and len(nInfo) == 2:
-
-			if int(nInfo[0][0]) == id:
-
-				graph = "%s_%s" % (nInfo[0][1],nInfo[1][1])
-
-			else:
-
-				graph = "%s_%s" % (nInfo[1][1],nInfo[0][1])
-
-			link += "?id=%s&n=%s" % (id, n)
-
-			DisplayGraphs(graph, link, form, id)
-	
-	else:
-		# Display Default Data
-		label = NetworkModel.GetLabel(id)
-
-		if label:
-
-			graph = "%s" % label
-
-			link += "?id=%s" % (id)
-
-		DisplayGraphs(graph, link, form, id)

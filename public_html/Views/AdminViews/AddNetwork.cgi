@@ -12,9 +12,14 @@ import sys
 sys.path.append("../../Models")
 from SessionModel import SessionModel
 from NetworkModel import NetworkModel
+from PortModel import PortModel
+from Net2NetModel import Net2NetModel
+from ViewModel import ViewModel
 from UserModel import UserModel
 sys.path.append("../../Controllers")
 from FormController import *
+
+cgitb.enable()
 
 ########## Imports #######################
 
@@ -36,111 +41,369 @@ sid = form.getvalue("sid")
 
 remote = form.getvalue("remote")
 
+if form.has_key("errors"):
+
+    errors = form.getvalue("errors")
+
+else:
+
+    errors = '[]'
+
 now = datetime.datetime.now()#generate the TimeStamp
 
 tmstp = now.minute#converting the TimeStamp to string   
 
 SessionModel = SessionModel()
 
-NetworkModel = NetworkModel()
-
 UserModel = UserModel()
 
-timestamp = SessionModel.Validate(uid, sid, remote)
+NetworkModel = NetworkModel()
 
-##################### Init ##########################################
+PortModel = PortModel()
 
-if((timestamp+5)<=tmstp or timestamp == -1):
+Net2NetModel = Net2NetModel()
 
-    SessionModel.Close(uid, remote)
+ViewModel = ViewModel()
 
-    del NetworkModel
+if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and ViewModel.connect() and PortModel.connect() and NetworkModel.connect():
 
-    del UserModel
+    timestamp = SessionModel.Validate(uid, sid, remote)
 
-    del SessionModel
+    ##################### Init ##########################################
 
-    print """<script language=\"JavaScript\">{location.href=\"../../index.cgi\";self.focus();}</script>"""
+    if((timestamp+5)<=tmstp or timestamp == -1):
 
-SessionModel.UpdateTimeStamp(tmstp, uid, remote)
+        SessionModel.Close(uid, remote)
 
-print """        
-	
-		<head>
+        del UserModel
 
-        	<title>TOA Network Monitoring System</title>
+        del SessionModel
 
-            <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'></script>
+        del NetworkModel
 
-            <link rel='stylesheet' type='text/css' href='../../Style/Style.css'>
+        del PortModel
 
-        	<script type='text/javascript' src='../../Style/Style.js'></script>
+        del Net2NetModel
 
-            <script type='text/javascript' src='../../Controllers/MenuController.js'></script>
+        del ViewModel
 
-            <script type='text/javascript' src='../../Controllers/GraphController.js'></script>
+        print """<script language=\"JavaScript\">{location.href=\"../../index.cgi\";self.focus();}</script>"""
 
-            <div class=banner>
+    SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-            	<p>TOA Network Monitoring System</p>
+    print "<!DOCTYPE html><html>"
 
-                <div id='user_box'>
+    print "<head>"
 
-                    <p>"""
+    print "<title>ToaNMS</title>"
 
-print UserModel.GetUsername(uid)[0]
+    print """<link rel="stylesheet" href="../../Style/bootstrap/css/style.css"/>"""
 
-print  """ <br>
+    print """<link rel="stylesheet" href="../../Style/bootstrap/css/datepicker.css"/>"""
 
-                    <a href='Home.cgi?uid=%s&sid=%s&remote=%s'>Home</a>&nbsp;
+    print """<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>"""
 
-                    <a href='Dashboard.cgi?uid=%s&sid=%s&remote=%s'>Dashboard</a>&nbsp;
+    print "<script src='http://www.google.com/jsapi'></script>"
 
-                    <a href='Setting.cgi?uid=%s&sid=%s&remote=%s'>Settings</a>
+    print """<script src="../../Style/bootstrap/js/bootstrap.min.js"></script>"""
 
-                    </p>
+    print """<script src="../../Style/bootstrap/js/helpers.js"></script>"""
 
-                </div>
-			
-			</div>                                                                                                                                                                                                                                                                       
-		
-		</head>
-	
-		<body>
+    print """<script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js' type='text/javascript'></script>"""
 
-            <div class=menu>
+    print """<script type='text/javascript' src='../../Style/bootstrap/js/jquery.ui.datetimepicker.min.js'></script>"""
 
-            	<div id='top_menu_button' onclick='GetNetworksMenu(1)'>
+    print """<script src="../../Controllers/GraphController.js"></script>"""
 
-            		<br><br><br><br><br><br><p>Networks</p>
+    print """<script src="../../Controllers/MenuController.js"></script>"""
 
-            	</div>
+    print "<script type='text/javascript'>google.load('visualization', '1', {packages: ['corechart']});</script>"
 
-            	<div id='bottom_menu_button' onclick='GetFirstSystemMenu(1)'>
+    print "</head>"
 
-            		<br><br><br><br><br><p>System</p>
+    ######################### headers #########################
 
-            	</div>
+    SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-            	<div id='menu_content'>
+    print "<body>"
+
+    ######################### banner  #########################
+
+    print "<div class='row'>"
+
+    print "<div class='col-md-9'>"
+            
+    print """<h1 class='brand'>Toa Network Monitoring System</h1>"""
+
+    print "</div>"
+
+    print "<div class='col-md-3'>"
+        
+    print "<div class='row'>"
+
+    print "<div class='col-md-12 box-user'>"
+
+    print "<div class='btn-group'>"
+
+    print "<button class='btn btn-default btn-lg btn-box last' data-toggle='dropdown'>"
+
+    print UserModel.Email(uid)[0]
+
+    print "<span class='caret'></span>"
+
+    print "</button>"
+
+    print "<ul class='dropdown-menu pull-right' role='menu'>"
+      
+    print "<li><a tabindex='-1' href='#'>Reset Password</a></li>"
+
+    print "<li><a tabindex='-1' href='#'>Add Account</a></li>"
+
+    print "<li><a tabindex='-1' href='../../Controllers/Logout.cgi?uid=%s&sid=%s&remote=%s'>Logout</a></li>"%(uid, sid, remote)
+
+    print "</ul>"
+
+    print "</div>"
+
+    print "</div>"
+
+    print "</div>"
+
+    print "</div>"
+
+    print "</div>"
+
+    ######################### banner  #########################
+
+    ######################### viewer  #########################
+
+    print "<div class='modal fade' id='Viewer'>"
+            
+    print "<div class='modal-dialog viewer'>"
+
+    #print "<div class='modal-header viewer-header'>"
+        
+    #print "<h1 class='modal-title'></h1>"
+      
+    #print "</div>"
+                
+    print "<div class='modal-content viewer-body'>"
+      
+    print "<div class='modal-body modal-no-padding' >"
+
+    print "<div class='container-fluid'>"
+
+    #print "<button type='button' class='close viewer-expand' aria-hidden='true'><i class='glyphicon glyphicon-chevron-down'></i></button>"
+
+    print "<button onclick='CleanViewer();' type='button' class='close viewer-close' data-dismiss='modal' aria-hidden='true'><i class='glyphicon glyphicon-remove'></i></button>"
+
+    print "<div class='row' id='viewer-body'>"
+
+    print "</div></div>"
+
+    print "</div>"
+    
+    print "</div>"
+    
+    print "</div>"
+
+    print "</div>"
+
+    ######################### viewer  #########################
+
+    ######################### custom query form  #########################
+
+    print "<div class='modal fade' id='CustomQuery'>"
+            
+    print "<div class='modal-dialog'>"
+                
+    print "<div class='modal-content'>"
+                
+    print "<div class='modal-header'>"
+        
+    print "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+        
+    print "<h4 class='modal-title'>Custom Graph Query</h4>"
+      
+    print "</div>"
+      
+    print "<div class='modal-body'>"
+
+    print "<div class='row'>"
+
+    print "<div class='col-md-5'>"
+
+    print "<select name='network' class='form-control' id='network' onchange='GetSecondSystemMenu(this[this.selectedIndex].value, 1), ClearThirdSystemMenu()'>"
+
+    devices = NetworkModel.GetAll()
+
+    print "<option value='None'>Select Device</option>"
+
+    for device in devices:
+
+        print "<option value='%s'>%s</option>"%(device[0], device[1])
+
+    print "</select>"
+
+    print "</div></div><br><div class='row'>"
+
+    print "<div class='col-md-10 col-md-offset-1'><div id='custom-query-second'>"
+
+    print "</div></div></div>"
+
+    print "<div class='row'><div class='col-md-10 col-md-offset-1'><div id='custom-query-third'>"
+
+    print "</div></div></div>"
+
+    print "<div id='custom-query-time'>"
+
+    print "</div>"
+
+    print "<div class='row'>"
+
+    print "<div class='col-md-8 col-md-offset-1'><p class='text-danger' id='custom-query-status'></p></div>"
+
+    print "<div class='col-md-2'><button class='btn btn-lg btn-feature-bar' onclick=\"CustomGraphView(%s, '%s', '%s')\">Query</button></div>"%(uid, sid, remote)
+
+    print "</div>"
+
+    print "</div>"
+    
+    print "</div>"
+    
+    print "</div>"
+
+    print "</div>"
+
+    ######################### custom query form  #########################
+
+    ######################### Add Graph to View ##########################
+
+    print "<div class='modal fade' id='AddGraphModal'>"
+            
+    print "<div class='modal-dialog'>"
+                
+    print "<div class='modal-content'>"
+                
+    print "<div class='modal-header'>"
+        
+    print "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
+        
+    print "<h4 class='modal-title'>Add Graph to a View</h4>"
+      
+    print "</div>"
+      
+    print "<div class='modal-body'>"
+
+    print "<button type='button' class='btn btn-default btn-lg btn-feature-bar pull-right'>Add</button><br><br>"
+      
+    print "</div>"
+    
+    print "</div>"
+    
+    print "</div>"
+
+    print "</div>"
+
+    ######################### Add Graph to View ##########################
 
 
-            	</div>
+    ######################### feature bar #########################
 
-            	<div id='port_net_menu_container'>
+    print "<div class='row feature-bar'>"
 
-            	</div>
+    print "<div class='col-md-11 col-md-offset-1'>"
 
-            </div>
+    print "<div class='btn-group feature-bar-group'>"
 
-            <div class='content' id='content'>"""%(uid, sid, remote, uid, sid, remote, uid, sid, remote)
+    print "<a class='btn btn-default btn-lg btn-feature-bar' href='Dashboard.cgi?uid=%s&sid=%s&remote=%s'>Dashboard</a>"%(uid, sid, remote)
 
-AddNetworkForm(uid, sid, remote)
+    print "<div class='btn-group'>"
 
-del NetworkModel
+    print """<a href='#DeviceMenu' data-toggle='dropdown' class='btn btn-default btn-lg btn-feature-bar'>Device</a>"""        
+
+    print "<ul class='dropdown-menu' role='menu'>"
+
+    devices = NetworkModel.GetAll()
+
+    for device in devices:
+
+        print "<li class='dropdown-submenu'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu'><li><a href='#' onclick=\"GraphView('%s', 'all', 'day', 'device', 'default', 'default', 'default', 'default', 1)\">Interface Graph</a></li>"%(device[1], device[1])
+
+        ports = PortModel.Get(device[0])
+
+        if(len(ports) > 0):
+
+            print "<li class='dropdown-submenu'><a href=#Port class='dropdown-hover'>Port Graph</a><ul class='dropdown-menu'>"
+
+            for port in ports:
+
+                print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'port', '%s', 'default', 'default', 'default', 1)\">%s</a></li>"%(device[1], port[1], port[1])
+
+            print "</ul></li>"
+
+        net2nets = Net2NetModel.Get(device[0])
+
+        if(len(net2nets) > 0):
+
+            print "<li class='dropdown-submenu'><a href=#Net2Net class='dropdown-hover'>Net2Net Graph</a><ul class='dropdown-menu'>"
+
+            for net2net in net2nets:
+
+                print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'net2net', 'default', '%s', 'default', 'default', 1)\">%s</a>"%(device[1],net2net[1], net2net[1])
+
+            print "</ul></li>"
+
+        print "</li></ul>"
+
+    print "</div>"
+
+    print "<a class='btn btn-default btn-lg btn-feature-bar' href='#' data-toggle='modal' data-target='#CustomQuery'>Custom Query System</a>"
+
+    print "<div class='btn-group'>"
+
+    print "<a class='btn btn-default btn-lg btn-feature-bar last' data-toggle='dropdown'>Viewer</a>"
+
+    print "<ul class='dropdown-menu' role='menu'>"
+
+    views = ViewModel.GetAll(uid)
+
+    for view in views:
+
+        print "<li><a href=# onclick=\"GraphView('default', 'all', 'day', 'views', 'default', 'default', '900','400', 1, %s)\" data-toggle='modal' data-target='#Viewer'>%s</a></li>"%(view[0], view[1])
+
+    print "</ul></div>"
+
+    print "</div></div>"
+
+    print "</div>"
+
+    ######################### feature bar #########################
+
+    ######################### content  #########################
+
+    print "<div class='container-fluid' id='content'>"
+
+    print "<div class='row'>"
+
+    print "<div class='col-md-12 add-device-form'>"
+
+    AddNetworkForm(uid, sid, remote, errors.strip('[]').split(','))
+
+    print "</div>"
+
+else:
+
+    print "Database Connection Error. Configuration File Not Found."
 
 del UserModel
 
 del SessionModel
 
-print "</ul><br></div></center></div></body>"
+del NetworkModel
+
+del PortModel
+
+del Net2NetModel
+
+del ViewModel
