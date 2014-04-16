@@ -18,7 +18,7 @@
 
         <flows><path>/CassandraVol/flows/</path></flows>
 
-        <graphs><path>/home/eric/public_html/toa/public_html/graphs/</path></graphs>
+        <graphs><path>graphs/</path></graphs>
 
         <crontime><time>300</time></crontime>
 
