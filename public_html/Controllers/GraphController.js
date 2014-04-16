@@ -1,4 +1,4 @@
-function GetGraphsView(id, uid, sid, remote){
+function GraphView(label, type, filter, entity, portlabel, tolabel, width, height, admin, vgraphs, uid, sid, remote){
 
     var xmlhttp;
 
@@ -17,453 +17,352 @@ function GetGraphsView(id, uid, sid, remote){
     xmlhttp.onreadystatechange=function(){
                                                                                                           
         if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                                                             
-            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
-                
-        }
-                                                                                                                                                                                  
-    }
 
-    //alert("http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/DeviceGraphView.cgi?id="+id+"&uid="+uid+"&sid="+sid+"&remote="+remote,true);
+            if(entity.match("device")){
 
-    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/DeviceGraphView.cgi?id="+id+"&uid="+uid+"&sid="+sid+"&remote="+remote,true);
-                     
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                                                                                                                                                                                                          
-    xmlhttp.send();                                                                                
+                if(admin){
 
-}
+                    document.getElementById("content").innerHTML = "<br><br><br><center><div class='btn-group'><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'day', 'device', 'default', 'default', 'default', 'default', 1)\">Day</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'week', 'device', 'default', 'default', 'default', 'default', 1)\">Week</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'month', 'device', 'default', 'default', 'default', 'default', 1)\">Month</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'year', 'device', 'default', 'default', 'default', 'default', 1)\">Year</a></div><br><br><br>";
 
-function GetGraphsViewBy(id, value){
+                }
 
-    var xmlhttp;
+                else{
 
-    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-                                
-        xmlhttp = new XMLHttpRequest();
-    
-    }
+                    document.getElementById("content").innerHTML = "<br><br><br><center><div class='btn-group'><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'day', 'device', 'default', 'default', 'default', 'default')\">Day</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'week', 'device', 'default', 'default', 'default', 'default')\">Week</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'month', 'device', 'default', 'default', 'default', 'default')\">Month</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'year', 'device', 'default', 'default', 'default', 'default')\">Year</a></div><br><br><br>";
 
-    else{// code for IE6, IE5
-                                                                  
-        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-
-    }
-                                                                                 
-    xmlhttp.onreadystatechange=function(){
-                                                                                                          
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                                                             
-            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center";
-                
-        }
-                                                                                                                                                                                  
-    }
-
-    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/DeviceGraphViewsBy"+value+".cgi?id="+id,true);
-                     
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                                                                                                                                                                                                          
-    xmlhttp.send();                                                                                
-
-}
-
-function GetPortGraphsView(sel, id){
-
-    var text = sel;
-
-    var xmlhttp;
-
-    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-                                
-        xmlhttp = new XMLHttpRequest();
-    
-    }
-
-    else{// code for IE6, IE5
-                                                                  
-        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-
-    }
-                                                                                 
-    xmlhttp.onreadystatechange=function(){
-                                                                                                          
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                                                             
-            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
-                
-        }
-                                                                                                                                                                                  
-    }
-        
-    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/PortGraphView.cgi?id="+id+"&port="+text,true);
-                     
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                                                                                                                                                                                                          
-    xmlhttp.send();
-
-}
-
-function GetPortGraphsViewBy(id, pid, value){
-
-        var xmlhttp;
-
-    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-                                
-        xmlhttp = new XMLHttpRequest();
-    
-    }
-
-    else{// code for IE6, IE5
-                                                                  
-        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-
-    }
-                                                                                 
-    xmlhttp.onreadystatechange=function(){
-                                                                                                          
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                                                             
-            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
-                
-        }
-                                                                                                                                                                                  
-    }
-
-    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/PortGraphViewBy"+value+".cgi?id="+id+"&port="+pid,true);
-                     
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                                                                                                                                                                                                          
-    xmlhttp.send();
-
-}
+                }
 
 
-function GetNet2NetGraphsView(sel, id, Admin){
+            }
+            
+            else if(entity == "port"){
 
-        var text = sel;
+                if(admin){
 
-        var xmlhttp;
+                    document.getElementById("content").innerHTML = "<br><br><br><center><div class='btn-group'><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'day', 'port', "+portlabel+", 'default', 'default', 'default', 1)\">Day</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'week', 'port', "+portlabel+", 'default', 'default', 'default', 1)\">Week</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'month', 'port', "+portlabel+", 'default', 'default', 'default', 1)\">Month</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'year', 'port', "+portlabel+", 'default', 'default', 'default', 1)\">Year</a></div><br><br><br>";                
 
-    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-                                
-        xmlhttp = new XMLHttpRequest();
-    
-    }
+                }
 
-    else{// code for IE6, IE5
-                                                                  
-        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                else{
 
-    }
-                                                                                 
-    xmlhttp.onreadystatechange=function(){
-                                                                                                          
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                                                             
-            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
-                
-        }
-                                                                                                                                                                                  
-    }
+                    document.getElementById("content").innerHTML = "<br><br><br><center><div class='btn-group'><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'day', 'port', "+portlabel+", 'default', 'default', 'default')\">Day</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'week', 'port', "+portlabel+", 'default', 'default', 'default')\">Week</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'month', 'port', "+portlabel+", 'default', 'default', 'default')\">Month</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'year', 'port', "+portlabel+", 'default', 'default', 'default')\">Year</a></div><br><br><br>";                
 
-    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/Net2NetGraphView.cgi?id="+id+"&n="+text,true);
-                     
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                                                                                                                                                                                                          
-    xmlhttp.send();
-
-}
-
-function GetNet2NetGraphsViewBy(sel, id, value){
-
-        var text = sel;
-
-        var xmlhttp;
-
-    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-                                
-        xmlhttp = new XMLHttpRequest();
-    
-    }
-
-    else{// code for IE6, IE5
-                                                                  
-        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-
-    }
-                                                                                 
-    xmlhttp.onreadystatechange=function(){
-                                                                                                          
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                                                             
-            document.getElementById("content").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
-                
-        }
-                                                                                                                                                                                  
-    }
-
-    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/Net2NetGraphViewBy"+value+".cgi?id="+id+"&n="+text,true);
-                     
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                                                                                                                                                                                                          
-    xmlhttp.send();
-
-}
-
-function Search(form){
-
-    id = document.getElementById("network").selectedIndex;
-
-    radios = document.getElementById("custom-query-second").childNodes;
-
-    graphtype = ""
-
-    for(i=1; i<radios.length;i++){
-
-        if(radios.item(i).checked){
-
-            if(radios.item(i).value == 0){
-
-                graphtype = "i/o";
+                }
 
             }
 
-            else if(radios.item(i).value == 1){
+            else if(entity == "net2net"){
 
-                graphtype = "port";
+                if(admin){
+
+                    document.getElementById("content").innerHTML = "<br><br><br><center><div class='btn-group'><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'day', 'net2net', 'default', '"+tolabel+"', 'default', 'default', 1)\">Day</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'week', 'net2net', 'default', '"+tolabel+"', 'default', 'default', 1)\">Week</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'month', 'net2net', 'default', '"+tolabel+"', 'default', 'default', 1)\">Month</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'year', 'net2net', 'default', '"+tolabel+"', 'default', 'default', 1)\">Year</a></div><br><br><br>";
+
+                }
+
+                else{
+
+                    document.getElementById("content").innerHTML = "<br><br><br><center><div class='btn-group'><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'day', 'net2net', 'default', '"+tolabel+"', 'default', 'default')\">Day</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'week', 'net2net', 'default', '"+tolabel+"', 'default', 'default', 1)\">Week</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'month', 'net2net', 'default', '"+tolabel+"', 'default', 'default', 1)\">Month</a><a class='btn btn-default btn-lg btn-graph-filter' onclick=\"GraphView('"+label+"', 'all', 'year', 'net2net', 'default', '"+tolabel+"', 'default', 'default', 1)\">Year</a></div><br><br><br>";
+
+                }
+
+            }
+
+            var response = xmlhttp.responseText;
+
+            var graphs = response.split("#graph");
+
+            var title = "";
+
+            if(type != "views"){
+
+                if(entity == "device"){
+
+                    title = label+" Interface Graphs by "+filter.charAt(0).toUpperCase() + filter.slice(1);
+
+                    views = 'default';
+
+                }
+
+                else if(entity == "port"){
+
+                    title = label+" Port "+portlabel+" Graphs by "+filter.charAt(0).toUpperCase() + filter.slice(1);
+
+                    views = 'default';
+
+                }
+
+                else if(entity == "net2net"){
+
+                    title = label+" to "+tolabel+" Graphs by "+filter.charAt(0).toUpperCase() + filter.slice(1);
+
+                    views = 'default';
+
+                }
+
+                document.getElementById("content").innerHTML += "<div class='col-md-6 col-md-offset-3'><h1 class='pull-left'>"+title+"</h1></div>";
+
+            }
+
+            src = document.createElement('script');
+
+            types = new Array('net', 'pak', 'flw', 'cpl');
+
+            fltr = '';
+
+            switch(filter){
+
+                case 'day':
+
+                    fltr = '1d';
+
+                    break;
+
+                case 'week':
+
+                    fltr = '1w';
+
+                    break;
+
+                case 'month':
+
+                    fltr = '1m';
+
+                    break;
+
+                case 'year':
+
+                    fltr = '1a';
+
+                    break;
+
+            }
+
+            tlabl = ''
+
+            if(tolabel != 'default'){
+
+                tlabl = "_"+tolabel;
+
+            }
+
+            else if(portlabel != 'default'){
+
+                tlabl = "-p"+portlabel;
+
+            }
+
+            for(i=1; i<graphs.length;i++){
+
+                if(admin == 1){
+
+                    if(entity == "views"){
+
+                        document.getElementById("viewer-body").innerHTML += "<div class='thumbnail graph-thumb-viewer col-md-6'><div class='graph' id='view"+i+"'></div></div></center>";
+
+                        src.innerHTML += graphs[i]; 
+
+                    }
+
+                    else{
+
+                        document.getElementById("content").innerHTML += "<div class='container-fluid'><div class='thumbnail graph-thumb col-md-6 col-md-offset-3'><div class='popover right fade in' id='viz"+i+"-popover' onclick='$(this).draggable();'> <h3 class='popover-title plugin-header'>Select Plugin <button type='button' class='close pull-right plugin-close' onclick=\"$('.popover').css('display', 'none');\" aria-hidden='true'>&times;</button></h3><div class='popover-content'><select id = 'APP_FILTER' class='form-control'><option value='cube'>Cube</option><option value='graph'>Graph</option></select><br><button id='viz"+i+"submit' class='btn btn-default btn-md pull-right btn-feature-bar' type='button'>Use Plugin</button><br><br></div></div><div class='graph' id='viz"+i+"'></div><div class='caption'><a onclick=\"AddListener('"+label+tlabl+"_"+fltr+types[i-1]+".js')\" href=# class='btn btn-default btn-lg btn-add-graph pull-right' data-toggle='modal' data-target='#AddGraphModal'>Add to View <i class='glyphicon glyphicon-plus'></i></a></div></div></div></center>";
+                        
+                        src.innerHTML += graphs[i];
+
+                    }  
+
+                }
+
+                else{
+
+                    document.getElementById("content").innerHTML += "<div class='thumbnail graph-thumb col-md-6 col-md-offset-3'><div class='graph' id='viz"+i+"'></div></div></center>";
+
+                    src.innerHTML += graphs[i];
+
+                }
+
+            }
+
+            document.body.appendChild(src);
+                
+        }
+                                                                                                                                                                                  
+    }
+
+    if(entity == "views" && vgraphs == ""){                                                                            
+
+        document.getElementById("viewer-body").innerHTML = "<br><br><br><center><h1>No Graphs in View<h1></center><br><br><br>";
+
+    }
+
+    else{
+
+        xmlhttp.open("GET","http://flows.hpcf.upr.edu/~albert/toa/public_html/Views/GraphViews/MasterGrapherView.cgi?uid="+uid+"&sid="+sid+"&remote="+remote+"&label="+label+"&entity="+entity+"&type="+type+"&filter="+filter+"&portlabel="+portlabel+"&tolabel="+tolabel+"&w="+width+"&h="+height+"&views="+vgraphs,true);
+
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+
+        xmlhttp.send();
+
+    }
+
+}
+
+function CleanViewer(){
+
+    document.getElementById("viewer-body").innerHTML = "";
+
+}
+
+function AddListener(path){
+
+    document.getElementById("GraphAdder").onclick = function(){AddGraphToView(path);};
+
+}
+
+function AddGraphToView(path){
+
+    view = document.getElementById("views");
+
+    vid = view.options[view.selectedIndex].value;
+
+    var xmlhttp;
+
+    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+                                
+        xmlhttp = new XMLHttpRequest();
+    
+    }
+
+    else{// code for IE6, IE5
+                                                                  
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+    }
+                                                                                 
+    xmlhttp.onreadystatechange=function(){
+                                                                                                          
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+
+            alert(xmlhttp.responseText);
+                
+        }
+                                                                                                                                                                                  
+    }
+
+    xmlhttp.open("GET","../../Controllers/AddGraph2View.cgi?vid="+vid+"&graph_name="+path,true);
+                     
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+
+    xmlhttp.send();
+
+}
+
+function CustomGraphView(uid, sid, remote){
+
+    try{
+
+        label = document.getElementById("network");
+
+        label = label.options[label.selectedIndex].value;
+
+        types = document.getElementsByName("ftype");
+
+        for(i=0; i<types.length;i++){
+
+            if(types[i].checked){
+
+                graphtype = types[i].value;
+
+                break;
+
+            }
+
+        }
+
+        checkbox = document.getElementsByName("checkboxoptions");
+
+        checkbox_marked = ""
+
+        for(i=0; i<checkbox.length;i++){
+
+            if(checkbox[i].checked){
+
+                checkbox_marked += "&checkbox_marked="+checkbox[i].value;
+
+            }
+
+        }
+
+        d1 = document.getElementById("calendar1").value;
+
+        d2 = document.getElementById("calendar2").value;
+
+    }catch(e){
+
+        label = 0;
+
+        checkbox_marked = '';
+
+        graphtype = '';
+
+        d1 = '';
+
+        d2 = '';
+
+    }
+
+    var xmlhttp;
+    
+    if (window.XMLHttpRequest){
+      
+        xmlhttp=new XMLHttpRequest();
+      
+    }
+    
+    else{
+      
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      
+    }
+    
+    xmlhttp.onreadystatechange=function(){
+
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+
+            var response = xmlhttp.responseText;
+
+            var graphs = response.split("#graph");
+
+            if(graphs.length > 1){
+
+                src = document.createElement('script');
+
+                document.getElementById("content").innerHTML = "<br><br><div class='col-md-6 col-md-offset-3'><h1 class='pull-left'>Custom Query Result</h1></div>"
+
+                for(i=1; i<graphs.length;i++){
+
+                    document.getElementById("content").innerHTML += "<div class='thumbnail graph-thumb col-md-6 col-md-offset-3'><div class='graph' id='viz"+i+"'></div></div></center>";
+
+                    src.innerHTML += graphs[i];
+
+                }
+
+                document.body.appendChild(src);
 
             }
 
             else{
 
-                graphtype = "p2p";
+                document.getElementById("custom-query-status").innerHTML = response;
 
             }
 
         }
-
+      
     }
-
-    checks = document.getElementById("custom-query-third").childNodes;
-
-    checked = "";
-
-    for(i=1; i<checks.length;i++){
-
-        if(checks.item(i).checked){
-
-            checked += "&checkbox_marked="+checks.item(i).value;
-
-        }
-
-    }
-
-    d1 = document.getElementById("custom-query-time").childNodes.item(3).value;
-
-    d2 = document.getElementById("custom-query-time").childNodes.item(5).value;
-
-    if(checked == ""){
-
-        document.getElementById("content").innerHTML = "<center><iframe id='custom_frame' src='http://flows.hpcf.upr.edu/graph_r.cgi?id="+id+"&graphtype="+graphtype+"&d1="+d1+"&d2="+d2+"'></iframe></center>";
-
-    }
-
-    else{
-
-        document.getElementById("content").innerHTML = "<center><iframe id='custom_frame' src='http://flows.hpcf.upr.edu/graph_r.cgi?id="+id+"&graphtype="+graphtype+checked+"&d1="+d1+"&d2="+d2+"'></iframe></center>";
-
-    }
-}
-
-function AddGraph(){
-
-    var gnum = parseInt(document.getElementById("gnumber").value);
-
-    if(gnum%2 == 0 && gnum != 0){
-
-        var graphid = document.getElementById("Graph").options[document.getElementById("Graph").selectedIndex].value;
-
-        var gids = document.getElementById("graph_ids").value;
-
-        if(gids.length == 0){
-
-            document.getElementById("graph_ids").value = graphid;
-
-        }
-
-        else{
-
-            document.getElementById("graph_ids").value += ","+graphid;
-
-        }
-
-        var xmlhttp;
-
-        if (window.XMLHttpRequest){
-  
-            xmlhttp=new XMLHttpRequest();
-  
-        }
-        
-        else{
-
-            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        
-        }
-
-        xmlhttp.onreadystatechange=function(){
-  
-            if (xmlhttp.readyState==4 && xmlhttp.status==200){
     
-                document.getElementById("graphs_preview_entry").innerHTML += "<td><iframe src='http://flows.hpcf.upr.edu/graphtest/"+xmlhttp.responseText+"'></iframe></td>";
-            
-            }
-  
-        }
-
-        xmlhttp.open("GET","../../Controllers/GetGraphPath.cgi?gid="+graphid,true);
+    xmlhttp.open("GET","http://flows.hpcf.upr.edu/~albert/toa/public_html/Views/GraphViews/CustomQueriesGrapher.cgi?uid="+uid+"&sid="+sid+"&remote="+remote+"&id="+label+"&graphtype="+graphtype+checkbox_marked+"&d1="+d1+"&d2="+d2,true);
     
-        xmlhttp.send();
-
-        document.getElementById("gnumber").value = gnum+1;
-
-    }
-
-    else{
-
-        var graphid = document.getElementById("Graph").options[document.getElementById("Graph").selectedIndex].value;
-
-        var gids = document.getElementById("graph_ids").value;
-
-        if(gids.length == 0){
-
-            document.getElementById("graph_ids").value = graphid;
-
-        }
-
-        else{
-
-            document.getElementById("graph_ids").value += ","+graphid;
-
-        }
-
-        var xmlhttp;
-
-        if (window.XMLHttpRequest){
-  
-            xmlhttp=new XMLHttpRequest();
-  
-        }
-        
-        else{
-
-            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        
-        }
-
-        xmlhttp.onreadystatechange=function(){
-  
-            if (xmlhttp.readyState==4 && xmlhttp.status==200){
-    
-
-                document.getElementById("graphs_preview").innerHTML += "<tr id='graphs_preview_entry'><td><iframe src='http://flows.hpcf.upr.edu/graphtest/"+xmlhttp.responseText+"'></iframe></td></tr>";
-
-
-            }
-  
-        }
-
-        xmlhttp.open("GET","../../Controllers/GetGraphPath.cgi?gid="+graphid,true);
-    
-        xmlhttp.send();
-
-        document.getElementById("gnumber").value = gnum+1;
-
-    }
-
-}
-
-function GetViewGraph(vid, vname){
-
-    var xmlhttp;
-
-    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-                                
-        xmlhttp = new XMLHttpRequest();
-    
-    }
-
-    else{// code for IE6, IE5
-                                                                  
-        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-
-    }
-                                                                                 
-    xmlhttp.onreadystatechange=function(){
-                                                                                                          
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-
-            document.getElementById("viewer-header").innerHTML = "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"+"<center><h2>"+vname+"</h2></center>";
-                                                             
-            document.getElementById("viewer-body").innerHTML = "<center>"+xmlhttp.responseText+"</center>";
-                
-        }
-                                                                                                                                                                                  
-    }
-
-    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Views/GraphViews/ViewerGraphs.cgi?vid="+vid,true);
-                     
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                                                                                                                                                                                                          
-    xmlhttp.send();
-
-}
-
-function AddGraphToView(form){
-
-    graph_name = form.childNodes.item(0).value.toString();
-
-    vid = form.childNodes.item(3)[form.childNodes.item(3).selectedIndex].value;
-
-    graph_path = form.childNodes.item(7).value.toString();
-
-    uid = form.childNodes.item(4).value;
-
-    //alert(graph_path);
-
-    var xmlhttp;
-
-    if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-                                
-        xmlhttp = new XMLHttpRequest();
-    
-    }
-
-    else{// code for IE6, IE5
-                                                                  
-        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-
-    }
-                                                                                 
-    xmlhttp.onreadystatechange=function(){
-                                                                                                          
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                                 
-            alert("http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Controllers/AddGraph2View.cgi?vid="+vid+"&graph_name="+graph_name+"&graph_path="+graph_path);
-
-            pid = form.id+"-status";
-
-            document.getElementById(pid.toString()).innerHTML = "<center>"+xmlhttp.responseText+"</center>";
-                
-        }
-                                                                                                                                                                                  
-    }
-
-    xmlhttp.open("GET","http://flows.hpcf.upr.edu/development/TOANMS/bootstrap_html/Controllers/AddGraph2View.cgi?vid="+vid+"&graph_name="+graph_name+"&graph_path="+graph_path,true);
-                     
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-                                                                                                                                                                                                          
     xmlhttp.send();
 
 }

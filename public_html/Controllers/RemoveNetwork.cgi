@@ -52,22 +52,40 @@ NetworkModel = NetworkModel()
 
 UserModel = UserModel()
 
-timestamp = SessionModel.Validate(uid, sid, remote)
+if SessionModel.connect() and UserModel.connect() and NetworkModel.connect():
 
-if((timestamp+5)<=tmstp or timestamp == -1):
+	timestamp = SessionModel.Validate(uid, sid, remote)
 
-    SessionModel.Close(uid, remote)
+	if((timestamp+5)<=tmstp or timestamp == -1):
 
-    del NetworkModel
+	    SessionModel.Close(uid, remote)
 
-    del UserModel
+	    del NetworkModel
 
-    del SessionModel
+	    del UserModel
 
-    print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
+	    del SessionModel
 
-SessionModel.UpdateTimeStamp(tmstp, uid, remote)
+	    print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
 
-NetworkModel.Remove(nid)
+	SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/Dashboard.cgi?uid=%s&sid=%s&remote=%s\";self.focus();}</script>"""%(uid, sid, remote)
+	NetworkModel.Remove(nid)
+
+	del NetworkModel
+
+	del UserModel
+
+	del SessionModel
+
+	print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/Dashboard.cgi?uid=%s&sid=%s&remote=%s\";self.focus();}</script>"""%(uid, sid, remote)
+
+else:
+
+	print "Database Connection Error. Configuration File Not Found."
+
+	del NetworkModel
+
+	del UserModel
+
+	del SessionModel

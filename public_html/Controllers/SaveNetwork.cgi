@@ -5,6 +5,7 @@
 import cgi
 import sys 
 import os
+import re
 import cgitb
 import datetime
 import urllib, hashlib
@@ -32,27 +33,75 @@ uid = str(uid).strip("(),L")
 
 uid = int(uid)
 
-sid = form.getvalue("sid")
-
-remote = form.getvalue("remote")
-
 nid = form.getvalue("nid")
 
 nid = str(nid).strip("(),L")
 
-#nid = int(nid)
+nid = int(nid)
+
+sid = form.getvalue("sid")
+
+remote = form.getvalue("remote")
 
 label = form.getvalue("Label")
 
 monitoringType = form.getvalue("Type")
 
-interfaceNumber = form.getvalue("InterfaceNumber")
+if form.has_key("InterfaceId"):
 
-asNumber = form.getvalue("ASNumber")
+	try:
 
-minBytes = form.getvalue("MinBytes")
+		interfaceNumber = int(form.getvalue("InterfaceId"))
 
-maxBytes = form.getvalue("MaxBytes")
+	except:
+
+		interfaceNumber = form.getvalue("InterfaceId")
+
+else:
+
+	interfaceNumber = None
+
+if form.has_key("ASNumber"):
+
+	try:
+
+		asNumber = int(form.getvalue("ASNumber"))
+
+	except:
+
+		asNumber = form.getvalue("ASNumber")
+
+else:
+
+	asNumber = None
+
+if form.has_key("MinBytes"):
+
+	try:
+
+		minBytes = int(form.getvalue("MinBytes"))
+
+	except:
+
+		minBytes = form.getvalue("MinBytes")
+
+else:
+
+	minBytes = None
+
+if form.has_key("MaxBytes"):
+
+	try:
+
+		maxBytes = int(form.getvalue("MaxBytes"))
+
+	except:
+
+		maxBytes = form.getvalue("MaxBytes")
+
+else:
+
+	maxBytes = None
 
 now = datetime.datetime.now()#generate the TimeStamp
 
@@ -64,11 +113,101 @@ NetworkModel = NetworkModel()
 
 UserModel = UserModel()
 
-timestamp = SessionModel.Validate(uid, sid, remote)
+if SessionModel.connect() and UserModel.connect() and NetworkModel.connect():
 
-if((timestamp+5)<=tmstp or timestamp == -1):
+	timestamp = SessionModel.Validate(uid, sid, remote)
 
-	SessionModel.Close(uid, remote)
+	if((timestamp+5)<=tmstp or timestamp == -1):
+
+	    SessionModel.Close(uid, remote)
+
+	    del NetworkModel
+
+	    del UserModel
+
+	    del SessionModel
+
+	    print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
+
+	SessionModel.UpdateTimeStamp(tmstp, uid, remote)
+
+	errors = []
+
+	try:
+
+		if not re.match('^[a-zA-Z][a-zA-Z0-9]*$', label):
+
+			errors.append("Name must contain only letters and numbers")
+
+			errors.append("Name must start with letter")
+
+	except:
+
+		errors.append("Name must contain only letters and numbers")
+
+		errors.append("Name must start with letter")
+
+	try:
+	
+		if not re.match('^[as]|[interface]|[network]$', str(monitoringType)):
+
+			errors.append("Please do not alter Toa's code")
+
+	except:
+
+		errors.append("Please do not alter Toa's code")
+
+	try:
+	
+		if re.match('^interface$', str(monitoringType)) and not re.match('^[0-9]+$', str(interfaceNumber)):
+
+			errors.append("Please select an interface number")
+
+	except:
+
+		if re.match('^interface$', str(monitoringType)):
+
+			errors.append("Please select an interface number")
+
+	try:
+	
+		if re.match('^as$', str(monitoringType)) and not re.match('^[0-9]+$', str(asNumber)):
+
+			errors.append("Please select an AS number")
+
+	except:
+
+		if re.match('^as$', str(monitoringType)):
+
+			errors.append("Please select an AS number")
+
+	try:
+	
+		if not re.match('^[0-9]+$', str(minBytes)) or not re.match('^[0-9]+$', str(maxBytes)):
+
+			errors.append("Invalid treshold. Treshold must be integers")
+
+		elif int(minBytes) > int(maxBytes):
+
+			errors.append("Invalid treshold")
+
+	except:
+
+		errors.append("Invalid treshold. Treshold must be integers")
+
+	if not NetworkModel.Save(nid, label, monitoringType, interfaceNumber, asNumber, minBytes, maxBytes):
+
+		errors.append("A device with that interface or as number already exist")
+
+	if (errors):
+
+		del NetworkModel
+
+		del UserModel
+
+		del SessionModel
+
+		print "<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/EditNetwork.cgi?uid=%s&sid=%s&remote=%s&errors=%s&nid=%s\";self.focus();}</script>"%(uid, sid, remote, errors, nid)			
 
 	del NetworkModel
 
@@ -76,10 +215,15 @@ if((timestamp+5)<=tmstp or timestamp == -1):
 
 	del SessionModel
 
-	print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
+	print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/EditNetwork.cgi?uid=%s&sid=%s&remote=%s&nid=%s\";self.focus();}</script>"""%(uid, sid, remote, nid)
 
-SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-NetworkModel.Save(nid, label, monitoringType, interfaceNumber, asNumber, minBytes, maxBytes)
+else:
 
-print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/EditNetwork.cgi?uid=%s&sid=%s&remote=%s&nid=%s\";self.focus();}</script>"""%(uid, sid, remote, nid)
+	print "Database Connection Error. Configuration File Not Found."
+
+	del NetworkModel
+
+	del UserModel
+
+	del SessionModel

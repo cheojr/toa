@@ -54,23 +54,30 @@ UserModel = UserModel()
 
 PortModel = PortModel()
 
-timestamp = SessionModel.Validate(uid, sid, remote)
+if SessionModel.connect() and UserModel.connect() and PortModel.connect():
 
-if((timestamp+5)<=tmstp or timestamp == -1):
+	timestamp = SessionModel.Validate(uid, sid, remote)
 
-    SessionModel.Close(uid, remote)
+	if((timestamp+5)<=tmstp or timestamp == -1):
 
-    del PortModel
+	    SessionModel.Close(uid, remote)
 
-    del UserModel
+	    del PortModel
 
-    del SessionModel
+	    del UserModel
 
-    print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
+	    del SessionModel
 
-SessionModel.UpdateTimeStamp(tmstp, uid, remote)
+	    print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
 
-PortModel.Add(nid, port)
+	SessionModel.UpdateTimeStamp(tmstp, uid, remote)
+
+	PortModel.Add(nid, port)
+
+else:
+
+    print "Database Connection Error. Configuration File Not Found."
+
 
 del PortModel
 
