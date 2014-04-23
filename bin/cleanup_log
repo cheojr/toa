@@ -1,0 +1,6 @@
+ ERROR: Didn't delete from rrd_n tables because of time mismatch. System time is 1398224253, database time is 1378218600
+ ERROR: Didn't delete from rrd_port tables because of time mismatch. System time is 1398224253, database time is 1378218600
+ ERROR: Didn't delete from rrd_to_net tables because of time mismatch. System time is 1398224253, database time is 1378218600
+ ERROR: Didn't delete from rrd_n tables because of time mismatch. System time is 1398224301, database time is 1378218600
+ ERROR: Didn't delete from rrd_port tables because of time mismatch. System time is 1398224301, database time is 1378218600
+ ERROR: Didn't delete from rrd_to_net tables because of time mismatch. System time is 1398224301, database time is 1378218600

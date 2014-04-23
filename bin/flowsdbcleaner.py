@@ -17,11 +17,11 @@ LOGSPATH=config.getLogsPath()
 db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
 c = db.cursor()
 
-logs=open('cleanup_log','a')
+logs=open(LOGSPATH+'/cleanup_log','a')
 
-maxtime=31536000
-#year=31536000 
-#maxtime=int(getOldesttime())*year
+#maxtime=31536000
+year=31536000  #year in seconds
+maxtime=int(config.getOldesttime())*year
 
 
 now = int(time.time())
@@ -46,7 +46,7 @@ if lasttime >= (databasenow-600) and lasttime<=now :
 
 	c.execute(sql)
 else:
-	logs.write(" ERROR: Didn't delete from rrd_n tables because of time mismatch. System time is %s, database time is %\n"%(now,lasttime))
+	logs.write(" ERROR: Didn't delete from rrd_n tables because of time mismatch. System time is %s, database time is %s\n"%(now,lasttime))
 
 #########################################################
 sql=" select time_unix from rrd_port order by time_unix desc limit 1" # do not use max, because if the clock changes the last one isnt necessarily the max 
@@ -55,13 +55,13 @@ c.execute(sql)
 
 lasttime=c.fetchone()[0]
 
-if lasttime >= (databasenow-600) and lasttimetime<=now :
+if lasttime >= (databasenow-600) and lasttime<=now :
 
 	sql="delete from rrd_port where time_unix <= %s"%(oldesttime)
 
 	c.execute(sql)
 else:
-	logs.write(" ERROR: Didn't delete from rrd_port tables because of time mismatch. System time is %s, database time is %\n"%(now,lasttime))
+	logs.write(" ERROR: Didn't delete from rrd_port tables because of time mismatch. System time is %s, database time is %s\n"%(now,lasttime))
 
 
 #########################################################
@@ -77,7 +77,7 @@ if lasttime >= (databasenow-600) and lasttime<=now :
 
 	c.execute(sql)
 else:
-	logs.write(" ERROR: Didn't delete from rrd_to_net tables because of time mismatch. System time is %s, database time is %\n"%(now,lasttime))
+	logs.write(" ERROR: Didn't delete from rrd_to_net tables because of time mismatch. System time is %s, database time is %s\n"%(now,lasttime))
 
 
 logs.close()
