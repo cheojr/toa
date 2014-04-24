@@ -69,7 +69,7 @@ function GetTop100(entity, type, id, uid, sid, remote){
     
     if((entity.match('ports') || entity.match('net') || entity.match('net2net')) && (type.match('oct') || type.match('pak') || type.match('flow')) && id.match('^[1-9][0-9]*$')){
 
-        xmlhttp.open("GET","http://flows.hpcf.upr.edu/~albert/toa/public_html/Views/MenuViews/Top100_formatted.cgi?uid="+uid+"&sid="+sid+"&remote="+remote+"&entity="+entity+"&type="+type+"&id="+id.toString(),true);
+        xmlhttp.open("GET","http://flows.hpcf.upr.edu/~albert/toa/public_html/Views/MenuViews/Top100.cgi?uid="+uid+"&sid="+sid+"&remote="+remote+"&entity="+entity+"&type="+type+"&id="+id.toString(),true);
     
         xmlhttp.send();
 

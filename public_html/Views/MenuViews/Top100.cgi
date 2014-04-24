@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+import re
 import cgi
 import sys 
 import os
@@ -24,7 +24,6 @@ cgitb.enable()
 sys.path.append('../../Models/')
 from PortModel import PortModel
 from SessionModel import SessionModel
-
 print "Content-Type: text/html\n\n"
 
 print 
@@ -36,7 +35,7 @@ def validate(form):
 		uid=form.getvalue('uid')
 		sid=form.getvalue('sid')
 		remote=form.getvalue('remote')
-		now = datetime.datetime.now()#generate the TimeStamp
+		now = datetime.now()#generate the TimeStamp
 
 		tmstp = now.minute#converting the TimeStamp to string   
 
@@ -61,18 +60,8 @@ def validate(form):
 	else:
 		return 0
 
-def  printgraphs(admin,graph,type,w,h,divid,filter=None):
 
-def getinfo(id,entity):
-	if entity=='net':
-		info=GetNetwork(c,id)	
-	elif entity=='ports':
-		portmodel=PortModel()		
-		id=portmodel.GetPortNetwork(id)[0]
-		info=GetNetwork(c,id)
-	else:
-		info=None
-	return info	
+
 def GetNetwork(c, id):
 	c.execute("""select label, interface, asn, tom from NETWORK where n_id=%s""" % id)
 	result = c.fetchone()	
@@ -100,82 +89,82 @@ def getfilepath():
 	PATH=PATH+'/'+year+'/'+year_month+'/'+year_month_day+'/ft-v05.'+year_month_day+'.'+hour+'-0400'
 	return PATH
 
-def format(results,entity,type):
-
-        
-
-	if max>= 1073741824:
-                sizetype="GB"
-                typediv=1073741824.0
-        elif max >= 1048576:
-                sizetype="MB"
-                typediv=1048576.0
-        elif  max >= 1024:
-                sizetype="KB"
-                typediv=1024.0
-        else:
-               sizetype="bytes"
-               typediv=1
+def format(results,type):
 	
-	formatted=""	
+
+	format=""	
 	for i in range(len(results)):
-		fields=results[i].split(' ') 	
-                if entity=='net': 
-			label = networkmodel.GetLabel(results[i][1])
-		elif entity=='ports':
-			id=portmodel.GetPortNetwork(results[i][1])[0]
-    			labelandport=portmodel.GetGraphInfo( id, results[i][1])
-			label="%s-%s"%(labelandport[0],labelandport[1])
-
-
+		if i%4!=0:
+			max=int(results[i])
+			if max>= 1073741824:
+			#print sizetype	
+                		sizetype="GB"
+                		typediv=1073741824.0
+        		elif max >= 1048576:
+                		sizetype="MB"
+                		typediv=1048576.0
+        		elif  max >= 1024:
+                		sizetype="KB"
+                		typediv=1024.0
+        		else:
+               			sizetype="bytes"
+               			typediv=1
+			
+			format+="%.2f-%s "%(int(results[i])/typediv,sizetype)
 		else:
-			fromandto=net2netmodel.GetFromandTo(results[i][1])
-			From=networkmodel.GetLabel(fromandto[0][0])
-			to=networkmodel.GetLabel(fromandto[0][1])
-			label="%s to %s"%(From,to)
-
-if form.has_key('entity') and form.has_key('id') and form.has_key('type') :
-
-  print form.getvalue("uid")
-
+			format+="#top100 %s "%(results[i])
+	return format
+		
+if form.has_key('entity') and form.has_key('id') and form.has_key('type'):
+	
   if validate(form)==1:
-
 	#int= as | int 
 	# type = flows|oct|pak
 	# entity = net | ports
-	types={'flows':'1','oct':'2','pak':'3'}
-	entities={'net':'9','ports':'5'}
+	types={'flows':1,'oct':2,'pak':3}
+	entities={'net':9,'ports':5}
 	type=form.getvalue('type')
 
 	id =form.getvalue('id')
 	entity=form.getvalue('entity')
+   
+	if re.match('(net|ports)$',entity) != None and re.match('(flows|pak|oct)$',type)!=None and re.match('(\d)*$',id)!=None :
 
-	info=getinfo(id,entity)
-	if info:	
-		tom=info[3]	
+		#info=getinfo(id,entity)
+		info=GetNetwork(c,id)	
+		if info:	
+			tom=info[3]	
 
-		if tom=='as':
-			asn=info[2]
-
-			cmd="/usr/local/flow-tools/bin/flow-cat %s | /usr/local/flow-tools/bin/flow-filter -a %s | /usr/local/flow-tools/bin/flow-stat -f %s -S %s | head -n 113"%(getfilepath(),asn,entities[entity],types[type])
-			pipe=os.popen(cmd)
-			top=pipe.read().split('#\n')
-			top=str(top[5:len(top)])
-
-		elif tom=='int':
+			if tom=='as':
+				asn=info[2]
+				cmd="/usr/local/flow-tools/bin/flow-cat %s | /usr/local/flow-tools/bin/flow-filter -a %s | /usr/local/flow-tools/bin/flow-stat -f %s -S %s | head -n 112"%(getfilepath(),asn,entities[entity],types[type])
+				pipe=os.popen(cmd)
+				top=pipe.read().split('#\n')
+				top=str(top[len(top)-1])
+				top=top.split()
+				top=format(top,types[type])
+				if len(top) <=0:
+					top="No data found !\n"	
+			elif tom=='int':
 	
-			int=info[1]	
-			cmd="/usr/local/flow-tools/bin/flow-cat %s | /usr/local/flow-tools/bin/flow-filter -i %s | /usr/local/flow-tools/bin/flow-stat -f %s -S %s | head -n 113"%(getfilepath,asn,entities[entity],types[type])
-			pipe=os.popen(cmd)
-			top=list(pipe.read().split('#\n'))
+				int=info[1]	
+				cmd="/usr/local/flow-tools/bin/flow-cat %s | /usr/local/flow-tools/bin/flow-filter -i %s | /usr/local/flow-tools/bin/flow-stat -f %s -S %s | head -n 112"%(getfilepath,asn,entities[entity],types[type])
+				pipe=os.popen(cmd)
+				top=list(pipe.read().split('#\n'))
+				top=str(top[len(top)-1])
+				top=top.split()
+				top=format(top,types[type])
+				if len(top) <=0:
+					top="No data found !\n"	
 			
-	
+			else:
+					top="ERROR: Sorry, no Top100 option for that id \n" 
 		else:
-				top="ERROR: Sorry, no Top100 option for that id \n" 
+			top="ERROR: Not valid network\n"
 	else:
-		top="ERROR: Not valid network\n"
-  else:
-	top="ERROR: Need to be Logged In to use this feature \n" 
+		top="ERROR: Not valid params\n"
+  else: 
+	top="ERROR: You must be logged in to use this feature\n"
 else:
 	top="ERROR: missing params\n"
 

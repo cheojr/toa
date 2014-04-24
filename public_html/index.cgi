@@ -14,15 +14,12 @@ sys.path.append("Models")
 from NetworkModel import NetworkModel
 from PortModel import PortModel
 from Net2NetModel import Net2NetModel
-
 sys.path.append("../bin/")
-
 from Config import Config
 
 config=Config()
-
 PATH=config.getGraphsPath() 
-
+#PATH="graphs/"
 ######################### imports  #########################
 
 ######################### headers  #########################
@@ -70,7 +67,7 @@ print "<div class='container-fluid'>"
 print "<div class='row'>"
 
 print "<div class='col-md-9'>"
-		
+
 print "<h1 class='brand'>Toa Network Monitoring System</h1>"
 
 print "</div>"
@@ -181,13 +178,15 @@ print "<div class='col-md-7'>"
 
 print "<div class='jumbotron p2p-jumbotron'>"
 
+#config = Config()
+
 if os.path.isfile(PATH + "/p2p_graph.html"):
         
     print "<center><iframe  class='infovisgraph' src='%s/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"%(PATH)   
 
 else:
         
-    print "<br><center><h1><p class='text-danger'>You dont see the p2p graph? <br><br>Try refreshing the page.</p></h1></center>"
+        print "<br><center><h1><p class='text-danger'>You dont see the p2p graph? <br><br>Try refreshing the page.</p></h1></center>"
 
 print "</div>"
 

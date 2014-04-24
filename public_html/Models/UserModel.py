@@ -6,11 +6,9 @@ import re
 import MySQLdb  
 import sys
 import bcrypt
-<<<<<<< HEAD
+
 sys.path.append("../../bin/")
-=======
-#sys.path.append("../../bin/")
->>>>>>> graph-dysizing
+
 from Config import Config
 
 ##### Imports #####
