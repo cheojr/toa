@@ -18,6 +18,8 @@ class Config:
         flowspath=""
         graphspath=""
 
+        oldesttime=""
+
         def __init__(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None):
 		if name==None:
        	    		conf_path = ""
@@ -37,6 +39,7 @@ class Config:
 				print "ERROR: Unable to find config.xml file"
 		
 				sys.exit(1)
+
 	    		tree = ET.parse(conf_path)
            	 	config=tree.getroot()# gets the first tag
             		data=config[0] # the first child of the root tag
@@ -59,7 +62,12 @@ class Config:
             		self.graphspath=graphs[0].text 
             
             		cron=config[4]#graph containing the crontime as childs
-            		self.crontime=cron[0].text #the first (and for now only) child is the time
+
+            		self.crontime=cron[0].text #the first (and for now only) child is the timei
+
+                    otime=config[5]
+			
+                    self.oldesttime=otime[0].text
 
 			#            print crontime,name,user,passwd,logspath,flowspath,graphspath
 
@@ -78,7 +86,6 @@ class Config:
                         self.graphs = graphs_path
 
                         self.crontime = crontime
-
 			
         def getUser(self):
 
@@ -108,7 +115,9 @@ class Config:
 
             return str(self.logspath).strip();
 
-                    
+        def getOldesttime(self):
+		
+            return int(str(self.oldesttime).strip())      
 
 
 

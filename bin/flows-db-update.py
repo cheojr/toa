@@ -10,10 +10,11 @@ import MySQLdb
 import os
 import time
 from Config import Config
-def main(file):
-        # This is the main function, it receives file which is the flow file being inserted in the database
 
-        config=Config() #needed to extract database info from the configuration file
+# This is the main function, it receives file which is the flow file being inserted in the database
+def main(file):
+
+        config=Config() 
 
         intervalmodulation=config.getCronTime() # the interval to be inserted into the db in unix time. 
 	
@@ -28,6 +29,7 @@ def main(file):
         utime_stamp = utime_stamp - (utime_stamp%intervalmodulation) #if for some reason the time stamp is not in the specified interval for updating the db , susbtract the necesary seconds the make it fit.  
 	
         # Database settings
+	#needed to extract database info from the configuration file
 	DB_NAME=config.getDBName();
 	DB_HOST='localhost'
 	DB_USER=config.getUser();
@@ -36,42 +38,53 @@ def main(file):
 	c = db.cursor()
         basepath=config.getFlowsPath()
 	path=file
-	print path
-	network = GenerateDictionary().GenDictionary(c) #This generates the dictionary. It needs the database cursor because settings for the dictionary are in the database
+	#This generates the dictionary. It needs the database cursor because settings for the dictionary are in the database
+	network = GenerateDictionary().GenDictionary(c) 
 	
-	sf = StripFlowData() #initializes the class 
+	sf = StripFlowData() 
 	set = flowtools.FlowSet(path)
 
-	for flow in set: #iterates over the flow file
-		sf.StripFlowData(flow, network) #uses the stripflowdata class functions to fill the dictionary (network) with the data from the file
+	#iterates over the flow file
+	for flow in set: 
+		#uses the stripflowdata to fill the dictionary with the data from the file
+		sf.StripFlowData(flow, network) 
 	
 	
 	
-        print network	
 	
-	for inter in network.keys(): #Iterates over the first level of the dictionary dictionary (Monitoring by AS,Net or Interface)
-		for label in  network[inter].keys(): #for each network label being monitored 
-			nlabel = GetNetId(c, label, inter) #gets network id and stores it in nlabel
+	#Iterates over the first level of the dictionary  (Monitoring by AS,Net or Interface)
+	for inter in network.keys(): 
+		#for each network label being monitored 
+		for label in  network[inter].keys(): 
+			#gets network id and stores it in nlabel
+			nlabel = GetNetId(c, label, inter) 
                         # Insert data in database
 			c.execute("""INSERT INTO rrd_n(nid, ooctect, ioctect, opacks, ipacks, oflows, iflows, time_unix) VALUES(%s, %s, %s, %s, %s, %s, '%s','%s')""" % (nlabel, network[inter][label]['o'][0], network[inter][label]['i'][0], network[inter][label]['o'][1], network[inter][label]['i'][1], network[inter][label]['o'][2], network[inter][label]['i'][2],utime_stamp))
 	
 			# Ports 
 	
-			for port in network[inter][label]["port"]:#iterates over ports being monitored (if any) 
-				nport = GetPortId(c, nlabel, port)#gets id for the desired port 
+			#iterates over ports being monitored (if any) 
+			for port in network[inter][label]["port"]:
+				#gets id for the desired port 
+				nport = GetPortId(c, nlabel, port)
 				c.execute("""INSERT INTO rrd_port(pid, ooctect, ioctect, opacks, ipacks, oflows, iflows, time_unix) VALUES(%s, %s, %s, %s, %s, %s, '%s', '%s')""" % (nport, network[inter][label]['port'][port]['o'][0], network[inter][label]['port'][port]['i'][0], network[inter][label]['port'][port]['o'][1], network[inter][label]['port'][port]['i'][1], network[inter][label]['port'][port]['o'][2], network[inter][label]['port'][port]['i'][2], utime_stamp))
 	
 			# To Interfaces
 			
-			for to_inter in network[inter][label]["to"]:#iterates over the monitoring options like AS,NET or interface for each  net2net connection if they exist for the network label
-				for to_label in  network[inter][label]["to"][to_inter]:#iterates over the destination labels for each net2net connection 
-					nto_label = GetNetId(c, to_label, to_inter)#gets id of destination network 
-					nn_id=getnn_id(nlabel,nto_label,c)# gets id for that specific net2net connection 
+			#iterates over the monitoring options like AS,NET or interface for each  net2net connection 
+			for to_inter in network[inter][label]["to"]:
+				#iterates over the destination labels for each net2net connection 
+				for to_label in  network[inter][label]["to"][to_inter]:
+					#gets id of destination network 
+					nto_label = GetNetId(c, to_label, to_inter)
+					# gets id for that specific net2net connection 
+					nn_id=getnn_id(nlabel,nto_label,c)
 					c.execute("""INSERT INTO rrd_to_net(nn_id, ooctect, ioctect, opacks, ipacks, oflows, iflows,time_unix) VALUES(%s, %s, %s, %s, %s, %s, '%s','%s')""" % (nn_id, network[inter][label]['to'][to_inter][to_label]['o'][0], network[inter][label]['to'][to_inter][to_label]['i'][0], network[inter][label]['to'][to_inter][to_label]['o'][1], network[inter][label]['to'][to_inter][to_label]['i'][1], network[inter][label]['to'][to_inter][to_label]['o'][2], network[inter][label]['to'][to_inter][to_label]['i'][2], utime_stamp))
 	
 	c.close()
 	
 ##################################### MAIN ####################################################
-file = sys.argv[1] #retrieves the flow file passed as an argument 
+#retrieves the flow file passed as an argument 
+file = sys.argv[1]
 main(file)
 	

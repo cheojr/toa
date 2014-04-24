@@ -7,6 +7,7 @@ import MySQLdb
 import os
 import sys  
 sys.path.append("../../bin")
+sys.path.append("../bin")
 from Config import Config
 ##### Imports #####
 

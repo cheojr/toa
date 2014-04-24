@@ -10,7 +10,49 @@ sys.path.append('/var/www/html/development/TOANMS/bootstrap_html/Models')
 from NetworkModel import NetworkModel
 from ViewModel import ViewModel
 
-#cgitb.enable()
+def printgraphs(GRAPH_PATH,device,type):
+
+   file=open(GRAPH_PATH+"%s_%s.js"%(device,type),'r')
+   greaphdata=file.read()
+   reponse=""
+   if type[len(type)-3:len(type)] !='cpl':
+	#Read the data for the graphs and the js functions to draw it from js file
+	response+= """<div class='graphs'>
+      <div id="%s" style="width: 900px; height: 600px;"></div>
+        <script type="text/javascript">
+        google.load('visualization', '1', {packages: ['corechart']});
+        </script> <script type="text/javascript">"""%(type)
+	response+= graphdata
+
+
+	response+="""
+	var net = new google.visualization.AreaChart(document.getElementById('%s'));
+            net.draw(data, {curveType: "function",
+	 width:450, height: 400, title: graphtitle , titleX: xtitle, titleY: ytitle,
+                        vAxis: {maxValue: maxvalue}}
+                );
+      </script>
+		</div>"""(type)
+   else:
+	response+= """<div class='graphs'>	
+	<div id="%s" style="width: 900px; height: 400px;"></div>
+	<script type="text/javascript">
+      google.load('visualization', '1', {packages: ['corechart']});
+
+    	</script> <script type="text/javascript">"""%(type)
+	response+=graphdata
+
+	response+= """
+	    net = new google.visualization.AreaChart(document.getElementById('%s'))
+            net.draw(data, {curveType: "function",
+                        width:650, height: 400,title: graphtitle, titleX: xtitle, titleY: ytitle,
+                        vAxis: {maxValue: 10}}
+                );
+
+    </script></div>"""%(type)
+   file.close()	
+
+cgitb.enable()
 
 GRAPH_PATH = "/graphtest/"### Ojo
 
@@ -42,13 +84,17 @@ response += "<li><a href='#%sByYear' onclick=\"GetGraphsViewBy(%s, '%s')\">Year<
 
 response += "</ul></div></div><br>"
 
-response += "<div class='hero-unit' id='GraphDisplay'><h2>%s Interface Graph | 24 Hours &nbsp;<a href='#addgraph1-toview-modal' class='btn btn-inverse' id='add-graph-view' data-trigger='hover' title='Add Graph to View' data-toggle='modal'>+</a></h2><iframe id='frame' id='frame' frameborder='0' src='%s%s_1dnet.html' width='803px' height='2500px' scrolling='no'></iframe></div>" % (device, GRAPH_PATH, device)
+response += printgraphs(GRAPH_PATH,device,type='1dnet')
+response += printgraphs(GRAPH_PATH,device,type='1dpak')
+response += printgraphs(GRAPH_PATH,device,type='1dflw')
+response += printgraphs(GRAPH_PATH,device,type='1dcpl')
+#"<div class='hero-unit' id='GraphDisplay'><h2>%s Interface Graph | 24 Hours &nbsp;<a href='#addgraph1-toview-modal' class='btn btn-inverse' id='add-graph-view' data-trigger='hover' title='Add Graph to View' data-toggle='modal'>+</a></h2><iframe id='frame' id='frame' frameborder='0' src='%s%s_1dnet.html' width='803px' height='2500px' scrolling='no'></iframe></div>" % (device, GRAPH_PATH, device)
 
-response += "<div class='hero-unit' id='GraphDisplay'><h2>%s Packet Graph | 24 Hours &nbsp;<a href='#addgraph2-toview-modal' class='btn btn-inverse' title='Add Graph to View' data-toggle='modal'>+</a></h2><iframe id='frame' id='frame' frameborder='0' src='%s%s_1dpak.html' width='803px' height='2500px' scrolling='no'></iframe></div>"% (device, GRAPH_PATH, device)
+#response += "<div class='hero-unit' id='GraphDisplay'><h2>%s Packet Graph | 24 Hours &nbsp;<a href='#addgraph2-toview-modal' class='btn btn-inverse' title='Add Graph to View' data-toggle='modal'>+</a></h2><iframe id='frame' id='frame' frameborder='0' src='%s%s_1dpak.html' width='803px' height='2500px' scrolling='no'></iframe></div>"% (device, GRAPH_PATH, device)
 
-response += "<div class='hero-unit' id='GraphDisplay'><h2>%s Flow Graph | 24 Hours &nbsp;<a href='#addgraph3-toview-modal' class='btn btn-inverse' title='Add Graph to View' data-toggle='modal'>+</a></h2><iframe id='frame' id='frame' frameborder='0' src='%s%s_1dflw.html' width='803px' height='2500px' scrolling='no'></iframe></div>"% (device, GRAPH_PATH, device)
+#response += "<div class='hero-unit' id='GraphDisplay'><h2>%s Flow Graph | 24 Hours &nbsp;<a href='#addgraph3-toview-modal' class='btn btn-inverse' title='Add Graph to View' data-toggle='modal'>+</a></h2><iframe id='frame' id='frame' frameborder='0' src='%s%s_1dflw.html' width='803px' height='2500px' scrolling='no'></iframe></div>"% (device, GRAPH_PATH, device)
 
-response += "<div class='hero-unit' id='GraphDisplay'><h2>%s Net, Packet and Flow Graph | 24 Hours &nbsp;<a href='#addgraph4-toview-modal' class='btn btn-inverse' title='Add Graph to View' data-toggle='modal'>+</a></h2><iframe id='frame' id='frame' frameborder='0' src='%s%s_1dcpl.html' width='803px' height='2500px' scrolling='no'></iframe></div>"% (device, GRAPH_PATH, device)
+#response += "<div class='hero-unit' id='GraphDisplay'><h2>%s Net, Packet and Flow Graph | 24 Hours &nbsp;<a href='#addgraph4-toview-modal' class='btn btn-inverse' title='Add Graph to View' data-toggle='modal'>+</a></h2><iframe id='frame' id='frame' frameborder='0' src='%s%s_1dcpl.html' width='803px' height='2500px' scrolling='no'></iframe></div>"% (device, GRAPH_PATH, device)
 
 response += "<h3 onload='startTooltip()' id='Disclaimer'>Disclaimer: This graphics might not show the complete traffic in the network devices.</h3>"
 

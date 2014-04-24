@@ -1,5 +1,5 @@
 
-#This script is in charge of creating the graph files that are stored in /var/www/html/graphs and are displayed in the page. These functions are called from flowsgrapher.py located in /opt/nap/bin/ 
+#This script is in charge of creating the graph files that are stored in /var/www/js/graphs and are displayed in the page. These functions are called from flowsgrapher.py located in /opt/nap/bin/ 
 
 import MySQLdb
 import time
@@ -16,83 +16,19 @@ DB_PASS=config.getPassword();
 
 INCREMENT=config.getCronTime()
 
-interval_modulation=INCREMENT #sets the number that thetime is going to be modulated by, should be the same as the time increment (if 5min then 300)so that if the module is 0 then the unixtime has ben incremented correctly 
+#sets the number that the time is going to be modulated by
+interval_modulation=INCREMENT 
 db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
 c = db.cursor()
 
-def normalizeall (input,output,rangeb,rangea):# Currently disabled
-        #VERIFICAR WHILE DEBIDO A QUE LOS QUIERIES SON < y no <=
-        start=rangeb
-        end=rangea
-        join = [[0 for i in range(7)] for j in range(((end-start)/300)-1)]
-        c1=c2=x=0
-        start =( start - start%300) + 300
-        while start <end :
-            if c1<len(input) and input[c1][3]==start :
-                join[x][0]=input[c1][0]
-                join[x][2]=input[c1][1]
-                join[x][4]=input[c1][2]
-                c1=c1+1
-            else:
-                join[x][0]=0
-                join[x][2]=0
-                join[x][4]=0
-            if c2<len(output) and output[c2][3]==start  :
-                join[x][1]=output[c2][0]
-                join[x][3]=output[c2][1]
-                join[x][5]=output[c2][2]
-                c2=c2+1
-            else:
-                join[x][1]=0
-                join[x][3]=0
-                join[x][5]=0
-
-            join[x][6]=start
-            start=start+INCREMENT
-            x=x+1
-
-        #print "Content-type:text/html\r\n\r\n"
-        t=tuple(tuple(x) for x in join)
-        #print '<html> %s  %s  %s </html>'%(rangea-rangeb,x,t)
-        return t
 
 
-def normalize (input,output,rangeb,rangea):
-        #VERIFICAR WHILE DEBIDO A QUE LOS QUIERIES SON < y no <=
-        start=rangeb
-        end=rangea
-        join = [[0 for i in range(3)] for j in range(((end-start)/300)-1)]
-        c1=c2=x=0
-        start =( start - start%300) + 300
-        while start <end :
-          
-            if c1<len(input) and  input[c1][1]==start  :
-                join[x][0]=input[c1][0]
-                c1=c1+1
-            else:
-                join[x][0]=0
-            if c2<len(output) and output[c2][1]==start :
-                join[x][1]=output[c2][0]
-                c2=c2+1
-            else:
-                join[x][1]=0
-
-            join[x][2]=start
-            start=start+INCREMENT
-            x=x+1
-
-        #print "Content-type:text/html\r\n\r\n"
-        t=tuple(tuple(x) for x in join)
-        #print '<html> %s  %s  %s </html>'%(rangea-rangeb,x,t)
-        return t
-
-
+#this function sets the type of size (MB,GB,KB...) that the data is. This is done to resize them on the graph propperly .
+# It its specifically for the graph that displays all because it sizetype is an array that will hold the sizes of the octects,flows, and packets. 
+#It receives row which is an array that contains all the data, and sizetype which is the array that is going to be modified and returned 
+#Does not return the max because in the "all" graph that is not dispayed 
 def setsizetype_all(row,sizetype):
-        #this function sets the type of size (MB,GB,KB...) that the data is. This is done to resize them on the graph propperly .
-        # It its specifically for the graph that displays all because it sizetype is an array that will hold the sizes of the octects,flows, and packets. 
-        #It receives row which is an array that contains all the data, and sizetype which is the array that is going to be modified and returned 
         max=[0,0,0]
-        #Does not return the max because in the "all" graph that is not dispayed 
 
 
         if len(row) >0:
@@ -118,16 +54,17 @@ def setsizetype_all(row,sizetype):
                                 sizetype[i]="bytes"
                 return sizetype
 
+#this function sets the type of size (MB,GB,KB...) that the data is and returns it in the variable sizetype.  
+# It its specifically for the individual graphs that display octects or packets or flows
+#It receives row which is an array that contains all the data                                                                           
+# It returns the max and min of the data 
 def setsizetype (row,sizetype):
-        #this function sets the type of size (MB,GB,KB...) that the data is and returns it in the variable sizetype.  This is done to resize them on the graph propperly .
-                # It its specifically for the individual graphs that display octects or packets or flows
-                #It receives row which is an array that contains all the data                                                                           
-                # It returns the max and min of the data 
 	max=0;
 	min=0; 	
 	sizetype="bytes"
 	
-	if len(row) > 0:# If row has elements (If there is data in the database) 
+	# If row has elements (If there is data in the database) 
+	if len(row) > 0:
 		max=row[0][0]
 		min=row[0][1]
 		for m in range(len(row)):
@@ -149,30 +86,26 @@ def setsizetype (row,sizetype):
 		
 	return sizetype,max,min;	
 
+# This function is for the individual graphs
+# This function writes the headers for the graphs. 
+#It receives fd which is the pointer to the file and sizetype indicating the size of the data 
 def gen_ioscript_header(fd,sizetype):
-        # This function is for the individual graphs
-        # This function writes the headers for the graphs. It receives fd which is the pointer to the file and sizetype indicating the size of the data to be specified so that the graphs labels them as such 
 	fd.write(("""
-        <script type="text/javascript">
-        google.load('visualization', '1', {packages: ['corechart']});
-        </script> <script type="text/javascript">
-        function drawVisualization() {
         // Create and populate the data table.
         var data = new google.visualization.DataTable();
+        data.addColumn('string', 'date');
         data.addColumn('string', 'x');
         data.addColumn(\'number\', \'Input %s \');
         data.addColumn(\'number\', \'Output %s \');""")%(sizetype,sizetype))
 	
+# This function is for the "all" graphs
+# This function writes the headers for the graphs. 
+#It receives fd which is the pointer to the file and sizetype indicating the size of the data 
 def gen_ioascript_header(fd,sizetype):
-        # This function is for the "all" graphs
-        # This function writes the headers for the graphs. It receives fd which is the pointer to the file and sizetype indicating the size of the data to be specified so that the graphs labels them as such 
-	fd.write("""<script type="text/javascript">
-      google.load('visualization', '1', {packages: ['corechart']});
-
-    </script> <script type="text/javascript">
-      function drawVisualization() {
+	fd.write("""
         // Create and populate the data table.
         var data = new google.visualization.DataTable();
+        data.addColumn('string', 'date');
         data.addColumn('string', 'x');
         data.addColumn(\'number\', \'Octects Input %s \');
         data.addColumn(\'number\', \'Octects Output  %s\');
@@ -183,12 +116,12 @@ def gen_ioascript_header(fd,sizetype):
 	
 	
 
+# This function writes the data columns for the graphs
+# It receives the file pointer (fd), the current unix time(now), the starting point to plot the graph (first) , the sizetype of the data (sizetype)
+# the data (row) and evaluate which indicates if its a graph of data,month,week or year
 def gen_iodata(fd, now, first, sizetype, row, evaluate, type=None):
-        # This function writes the data columns for the graphs
-        #Itreceives the file pointer (fd), the current unix time(now), the starting point to plot the graph (first) , the sizetype of the data (sizetype), the data (row), and evaluate which indicates if its a graph of data,month,week or year
 
-        #For each time laps of the graph (day,weeek...) the increments in time of the plots in the graph are different, if we have a year we cant graph every 5 minutes because the amount of points will be hard to understand and the browser may crash
-
+        #Set  the increments of time in the graph for each point, 
 	if evaluate == "D":
 		sumador = INCREMENT
 	elif evaluate == "S":
@@ -213,22 +146,23 @@ def gen_iodata(fd, now, first, sizetype, row, evaluate, type=None):
 	elif sizetype=="GB":
 		typediv=1073741824.0
 
-	i = 0 # iterator 
-	time_graph = 0#variable that will hold the timstamp 
+	i = 0 
+	#variable that will hold the timstamp 
+	time_graph = 0
 	
 
 
 
-	#print first
-	while first <= now: # loops while the the starting point hasnt reached the current time which is when the graph ends
-		
-		while first < limit: # limit represents the end of the interval of data that is going to create a single point in the graph.
-                        # for a day that interval is the same increments in which data is inserted in the database for the rest is a period of time specified in "sumador" , then we use this loop to take all the data of that time interval and avarege it out 
+	# loops while the the starting point hasnt reached the current time which is when the graph ends
+	while first <= now: 
+		# limit represents the end of the interval of data that is going to create a single point in the graph.
+		while first < limit: 
 	
 
 
-	                if  i < len(row) and first==(row[i][2]-(row[i][2]%INCREMENT)): # if the counter is in the sizeof the array and the timestamp in the database correspons to the time whre the graph is going to put it
-    # The row[i][2]-(row[i][2]%INCREMENT  is jsut in case the data point in the array does not contain a time stamp that falls in the correct  increments, it is then brought back to the increment before it                                 
+			# if the counter is in the sizeof the array and the timestamp in the database correspons to the time whre the graph is going to put it
+    			# The row[i][2]-(row[i][2]%INCREMENT  is jsut in case the data point in the array does not contain a time stamp that falls in the correct  increments
+	                if  i < len(row) and first==(row[i][2]-(row[i][2]%INCREMENT)): 
 				data1=data1 + row[i][0]
 				data2=data2 + row[i][1]
 				
@@ -242,10 +176,11 @@ def gen_iodata(fd, now, first, sizetype, row, evaluate, type=None):
 				data1=data1 + 0
 				data2=data2 + 0
 				time_graph = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(first))
-			first+=INCREMENT  # keep incrementing first untill it reaches limit 
+			first+=INCREMENT  
 			counter=counter+1
 		
-		avgdata1=data1/counter#averages the data out, if in the graph a single day then counter will be 1
+		#averages the data out, if in the graph a single day then counter will be 1
+		avgdata1=data1/counter
 		avgdata2=data2/counter
 	 
 		timedisplay=time_graph.split("-")
@@ -253,32 +188,34 @@ def gen_iodata(fd, now, first, sizetype, row, evaluate, type=None):
 		if evaluate=="D":
 
 			split_time=timedisplay[2].split(" ")
-			fd.write(""" data.addRow(["'%s'", %.2f, %.2f]); """ % (split_time[1], avgdata1/typediv, avgdata2/typediv))
+			fd.write(""" data.addRow(["'%s'","'%s'",%.2f, %.2f]); """ % (split_time[1],time_graph, avgdata1/typediv, avgdata2/typediv))
 		
 		elif evaluate=="S":
 			
-			fd.write(""" data.addRow(["'%s'", %.2f, %.2f]); """ % (timedisplay[2], avgdata1/typediv, avgdata2/typediv))
+			fd.write(""" data.addRow(["'%s'", "'%s'",%.2f, %.2f]); """ % (timedisplay[2], time_graph,avgdata1/typediv, avgdata2/typediv))
 		elif evaluate=="M":
 			
-			fd.write(""" data.addRow(["'%s'", %.2f, %.2f]); """ % (timedisplay[1]+" "+timedisplay[2], avgdata1/typediv, avgdata2/typediv))
+			fd.write(""" data.addRow([ "'%s'","'%s'",%.2f, %.2f]); """ % (timedisplay[1]+" "+timedisplay[2], time_graph,avgdata1/typediv, avgdata2/typediv))
 
 		else:	
 			
-			fd.write(""" data.addRow(["'%s'", %.2f, %.2f]); """ % (time_graph, avgdata1/typediv, avgdata2/typediv))
+			fd.write(""" data.addRow(["'%s'", "'%s'",%.2f, %.2f]); """ % (time_graph, time_graph, avgdata1/typediv, avgdata2/typediv))
 
 
 		counter=0
-	        limit=limit+sumador # Once first reaches limit we increment the limit again, and start a new loop in a new interval that is going to correpond to a point in the graph
+		# Once first reaches limit we increment the limit again, and start a new loop in a new interval that is going to correpond to a point in the graph
+	        limit=limit+sumador 
                 
-		data1=data2=0 # once we enter a new interval we reset data to 0 so it doesnt affect the avareges of the new interval/point in graph
+		# reset data to 0 so it doesnt affect the avareges of the new interval/point in graph
+		data1=data2=0 
 
+# This function writes the data columns for the " all" graph
+# It receives the file pointer (fd), the current unix time and end point (now), the starting point of the graph (first) 
+# the sizetype for all the data (sizetype), the data (row), and evaluate which indicates if its a graph of data,month,week or year
 def gen_ioadata(fd, now, first,sizetype,row, evaluate, type=None):
 
-        # This function writes the data columns for the " all" graph
-        #Itreceives the file pointer (fd), the current unix time and end point (now), the starting point to plot the graph (first) , the sizetype for all the data (sizetype), the data (row), and evaluate which indicates if its a graph of data,month,week or year
 
-
-        #For each time laps of the graph (day,weeek...) the increments in time of the plots in the graph are different, if we have a year we cant graph every 5 minutes because the amount of points will be hard to understand and the browser may crash
+        #Set  the increments of time in the graph for each point, 
 
 	if evaluate == "D":
 		sumador = INCREMENT
@@ -288,7 +225,7 @@ def gen_ioadata(fd, now, first,sizetype,row, evaluate, type=None):
 		sumador = 7200
 	elif evaluate == "A":
 		sumador = 86400
- # We hace six dara points for the inputs and outputs of the octects, packets and flows	
+ 	# We hace six data points for the inputs and outputs of the octects, packets and flows	
 	data1=0.0
 	data2=0.0
 	data3=0.0
@@ -312,18 +249,14 @@ def gen_ioadata(fd, now, first,sizetype,row, evaluate, type=None):
 		elif sizetype[i]=="GB":
 			typediv[i]=1073741824.0
 
-        
-
-        while row and first <= now: # loops while the the starting point hasnt reached the current time which is when the graph ends
-
-		while first <= limit: # limit represents the end of the interval of data that is going to create a single point in the graph.
-                                            # for a day that interval is the same increments in which data is inserted in the database for the rest is a period of time specified in "sumador" , then we use this loop to take all the data of that time interval and avarege it out 
+	# loops while the the starting point hasnt reached the current time which is when the graph ends
+        while row and first <= now: 
+		# limit represents the end of the interval of data that is going to create a single point in the graph.
+		while first <= limit: 
 
 
-
-                            #dbtime=dbtime-(dbtime%300)
 			if  i < len(row) and first==(row[i][6] -(row[i][6]%INCREMENT)):
-                             # The row[i][2]-(row[i][2]%INCREMENT  is jsut in case the data point in the array does not contain a time stamp that falls in the correct  increments, it is then brought back to the increment before it  
+                             # row[i][2]-(row[i][2]%INCREMENT) is in case the data point in the array does not contain a time stamp that falls in the correct interval
                                 data1=data1 + row[i][0]
                                 data2=data2 + row[i][1]
                                 data3=data3 + row[i][2]
@@ -334,7 +267,7 @@ def gen_ioadata(fd, now, first,sizetype,row, evaluate, type=None):
 				
 				time_graph = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(first))
                         else:
-                                 # if the times do not match or the counter is bigger then the array (which means the time of the graph has exceeded the amount of data available, then we just put 0
+                                 # if the times do not match or the counter is bigger then the array then we just put 0
 
                                 data1=data1 + 0
                                 data2=data2 + 0
@@ -348,35 +281,38 @@ def gen_ioadata(fd, now, first,sizetype,row, evaluate, type=None):
 			counter=counter+1
                 #averages the data out, if in the graph a single day then counter will be 1
 
-		avgdata1=data1/counter#avgdata es el promedio de la data calculado
+		#avgdata es el promedio de la data calculado
+		avgdata1=data1/counter
 		avgdata2=data2/counter
-		avgdata3=data3/counter#avgdata es el promedio de la data calculado
+		avgdata3=data3/counter
 		avgdata4=data4/counter
-		avgdata5=data5/counter#avgdata es el promedio de la data calculado
+		avgdata5=data5/counter
 		avgdata6=data6/counter
 		timedisplay=time_graph.split("-")
                 if evaluate=="D":
 
                         split_time=timedisplay[2].split(" ")
 	
-			fd.write(""" data.addRow(["'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (split_time[1], avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
+			fd.write(""" data.addRow(["'%s'","'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (split_time[1], time_graph,avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
              	elif evaluate=="S":
-			fd.write(""" data.addRow(["'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (timedisplay[1], avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
+			fd.write(""" data.addRow(["'%s'", "'%s'",%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (timedisplay[1], time_graph,avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
 
 		elif evaluate=="M":
-			fd.write(""" data.addRow(["'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (timedisplay[1] +" "+ timedisplay[2], avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
+			fd.write(""" data.addRow(["'%s'", "'%s'",%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (timedisplay[1] +" "+ timedisplay[2],time_graph, avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
 		else :
 			  
-			fd.write(""" data.addRow(["'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (time_graph, avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
+			fd.write(""" data.addRow(["'%s'", "'%s'", %.2f, %.2f, %.2f, %.2f, %.2f, %.2f]); """ % (time_graph,time_graph, avgdata1/typediv[0], avgdata2/typediv[0], avgdata3/typediv[1],avgdata4/typediv[1],avgdata5/typediv[2],avgdata6/typediv[2]))
 		counter=0
 	        limit=limit+sumador
+		# reset data to 0 so it doesnt affect the avareges of the new interval/point in graph
 		data1=data2=data3=data4=data5=data6=0
 		
 
+#Function to write the footer of the individual graphs
+#It receives fd (file object) , label is title of the graph,graphname is the name of the network the graph corresponds to, 
+#type  indicates the type of the data (packets,flows,etc) ,the max and min , and the size type 
 def gen_ioscript_footer(fd, label, type,graphname,max,min,sizetype):
 	
-        #Function to write the footer of the individual graphs
-        # It receives fd which is the poibnter to the file, label which is the title of the graph,  graphname  which is the name  of the network the graph corresponds to, type which indicates the type of the data (packets,flows,etc) , the max and min , and the size type (MB,GB,KB...) 
 
         # sets the number to be divided to scale down the data with the sizetype (NOTE: remember to turn this into a function)
         if sizetype=="KB":
@@ -397,74 +333,69 @@ def gen_ioscript_footer(fd, label, type,graphname,max,min,sizetype):
         else:
                 minlabel = "%.2f bytes" % min 
 
-        fd.write("""var net = new google.visualization.AreaChart(document.getElementById('%s'));
-            net.draw(data, {curveType: "function",
-	 width:750, height: 400, title: '%s  Traffic  %s  Max: %.2f %s  Min: %s', titleX: 'Time', titleY: '%s',
-                        vAxis: {maxValue: '%s'}}
-                );
+        fd.write("""
+
+	var graphtitle='%s Traffic %s Max: %.2f %s Min: %s'
+	var xtitle='Time'
+	var ytitle='%s'
+	var maxvalue='%s'
+
+	
         
-                //setTimeout(test, 1000* 10) ; 
-      }
-      function test(data, net){
-                data.addRow(["asa", 0,0]) ;
-                net.draw(data) ;
-                setTimeout(test, 1000* 10) ; 
-      }
-      google.setOnLoadCallback(drawVisualization);
-      </script>
-      <div id="%s" style="width: 900px; height: 600px;"></div>""" % (graphname, label, type,max/typediv,sizetype,minlabel, type, int(max/typediv), graphname))
+      
+	""" % (label, type,max/typediv,sizetype,minlabel, type, int(max/typediv)))
 
 
+
+#Function to write the footer of the "all"  graph
+# It receives fd which is the poibnter to the file, label which is the title of the graph,  graphname  which is the name  of the network the graph corresponds to
 def gen_ioascript_footer(fd, label, graphname): 
 
-        #Function to write the footer of the "all"  graph
-        # It receives fd which is the poibnter to the file, label which is the title of the graph,  graphname  which is the name  of the network the graph corresponds to
-        # sets the number to be divided to scale down the data with the sizetype (NOTE: remember to turn this into a function)
-	fd.write("""net = new google.visualization.AreaChart(document.getElementById('%s'))
-            net.draw(data, {curveType: "function",
-                        width:750, height: 400,title: '%s Net Traffic ', titleX: 'Time', titleY: 'All',
-                        vAxis: {maxValue: 10}}
-                );
-
-      }
-
-
-      google.setOnLoadCallback(drawVisualization);
-    </script>
-<div id="%s" style="width: 900px; height: 400px;"></div>""" % (graphname,label,graphname))	
+        
+	fd.write("""
+	    var graphtitle="%s Net Traffic ";
+	    var xtitle='Time';
+            var ytitle='All'
+            
+	
+	    """ % (label))	
 
 ###################################Functions called from the flowsgrapher.py script that use the functions defined above ###################################
 
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 24 hour single network graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives , the current unix time, the title of the graph in label, the id of the network and th path where it is going to be written 
 def graphInt24h(now, label, id, path):
 
         
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 24 hour single network graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time, the title of the graph in label, the id of the network and th path where it is going to be written 
-        
-    qb = QueryBuilder()#object to use the functions defined in QueryBuilder.py  to retreive data from the database 
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
+    #object to use the functions defined in QueryBuilder.py  to retreive data from the database 
+    qb = QueryBuilder()
 	
-    FILE1=open(pjoin(path, label+ "_1dnet.html"), "w")
+    FILE1=open(pjoin(path, label+ "_1dnet.js"), "w")
 
-    FILE1.write(gen_header()) # writes a file  on /var/www/html/graphs with the name  "label"_1d.html
+    # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
 
-    FILE2=open(pjoin(path, label+ "_1dpak.html"), "w")
+    FILE2=open(pjoin(path, label+ "_1dpak.js"), "w")
 
-    FILE2.write(gen_header()) # writes a file  on /var/www/html/graphs with the name  "label"_1d.html
+    # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
 
-    FILE3=open(pjoin(path, label+ "_1dflw.html"), "w")
+    FILE3=open(pjoin(path, label+ "_1dflw.js"), "w")
 
-    FILE3.write(gen_header()) # writes a file  on /var/www/html/graphs with the name  "label"_1d.html
+    # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
 
-    FILE4=open(pjoin(path, label+ "_1dcpl.html"), "w")
+    FILE4=open(pjoin(path, label+ "_1dcpl.js"), "w")
 
-    FILE4.write(gen_header()) # writes a file  on /var/www/html/graphs with the name  "label"_1d.html
+    # writes a file  on /var/www/js/graphs with the name  "label"_1d.html
 
     sizetype="bytes"
     sizetype_array=["bytes","bytes","bytes"]
 
-    first=now-86400 #first is initialized by sunstracting 24 hours in unix time to our current unix time
-	#print first;
-	# The I/O Network data (24h)
+    #first is initialized by substracting 24 hours in unix time to our current unix time
+    first=now-86400 
+
+
+# The I/O Network data (24h)
 	
     row = qb.IntRangeO(c, id, now, first) #Gets the dara from the database
     sizetype,max,min=setsizetype(row,sizetype)
@@ -473,7 +404,7 @@ def graphInt24h(now, label, id, path):
     gen_ioscript_footer(FILE1, label, "Network", "viz1",max,min,sizetype) 
 
 	
-	# The I/O Packet data(24h)
+# The I/O Packet data(24h)
 		
     row = qb.IntRangeP(c, id, now, first)
     sizetype,max,min=setsizetype(row,sizetype)
@@ -481,7 +412,8 @@ def graphInt24h(now, label, id, path):
 
     gen_iodata(FILE2, now, first,sizetype,row, "D")
     gen_ioscript_footer(FILE2, label, "Packet", "viz2",max,min,sizetype) 
-	# The I/O Flow data(24h)
+
+# The I/O Flow data(24h)
 
 	
     row = qb.IntRangeF(c, id, now, first)
@@ -492,8 +424,8 @@ def graphInt24h(now, label, id, path):
 
     gen_iodata(FILE3, now, first,sizetype, row, "D")
     gen_ioscript_footer(FILE3, label, "Flows", "viz3",max,min,sizetype) 
-	# The I/O network, packet, flow(24h)
 
+# The I/O network, packet, flow(24h)
     row = qb.IntRangeAll(c, id, now, first)
 	
     sizetype_array=setsizetype_all(row,sizetype_array)
@@ -501,33 +433,34 @@ def graphInt24h(now, label, id, path):
     gen_ioadata(FILE4, now, first,sizetype_array,row, "D")
     gen_ioascript_footer(FILE4, label, "viz4")
 	
-    FILE1.write(gen_footer())
 
-    FILE2.write(gen_footer())
 
-    FILE3.write(gen_footer())
 
-    FILE4.write(gen_footer())
 
+    c.close()
 ##################################################################	
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1  week  single network graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives , the current unix time, the title of the graph in label, the id of the network and th path where it is going to be written 
 def graphInt1s(now, label, id, path):
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1  week  single network graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time, the title of the graph in label, the id of the network and th path where it is going to be written 
 
     qb = QueryBuilder()
+        
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
 
-    FILE1=open(pjoin(path,label+ "_1wnet.html"), "w")
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,label+ "_1wpak.html"), "w")
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,label+ "_1wflw.html"), "w")
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,label+ "_1wcpl.html"), "w")
-    FILE4.write(gen_header())
+    FILE1=open(pjoin(path,label+ "_1wnet.js"), "w")
+     
+    FILE2=open(pjoin(path,label+ "_1wpak.js"), "w")
+     
+    FILE3=open(pjoin(path,label+ "_1wflw.js"), "w")
+     
+    FILE4=open(pjoin(path,label+ "_1wcpl.js"), "w")
+     
     first=now-604800
 
     sizetype_array=["bytes","bytes","bytes"]
     sizetype="bytes"
+
 	#The I/O Network data (1s)
 	
     row = qb.IntRangeO(c, id, now, first)
@@ -561,29 +494,34 @@ def graphInt1s(now, label, id, path):
     gen_ioadata(FILE4, now, first,sizetype_array, row, "S")
     gen_ioascript_footer(FILE4, label, "viz4")
 	
-    FILE1.write(gen_footer())
+     
 
-    FILE2.write(gen_footer())
+     
 
-    FILE3.write(gen_footer())
+     
 
-    FILE4.write(gen_footer())
+     
 
+    c.close()
 #######################################################################################
+
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1  month  single network graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives , the current unix time, the title of the graph in label, the id of the network and th path where it is going to be written 
 def graphInt1m(now, label, id, path):
 
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1  month  single network graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time, the title of the graph in label, the id of the network and th path where it is going to be written 
     qb = QueryBuilder()
+        
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
 
-    FILE1=open(pjoin(path,label+ "_1mnet.html"), "w")
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,label+ "_1mpak.html"), "w")
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,label+ "_1mflw.html"), "w")
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,label+ "_1mcpl.html"), "w")
-    FILE4.write(gen_header())
+    FILE1=open(pjoin(path,label+ "_1mnet.js"), "w")
+     
+    FILE2=open(pjoin(path,label+ "_1mpak.js"), "w")
+     
+    FILE3=open(pjoin(path,label+ "_1mflw.js"), "w")
+     
+    FILE4=open(pjoin(path,label+ "_1mcpl.js"), "w")
+     
 
     first=now-2419200
 	
@@ -625,24 +563,28 @@ def graphInt1m(now, label, id, path):
     gen_ioadata(FILE4, now, first,sizetype_array, row, "M")
     gen_ioascript_footer(FILE4, label, "viz4")
 	#FILE.write(graph_content)
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
+
+    c.close()
 ##################################################################################
 
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1  year  single network graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives , the current unix time, the title of the graph in label, the id of the network and th path where it is going to be written 
 def graphInt1a(now, label, id, path):
 
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1  year  single network graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time, the title of the graph in label, the id of the network and th path where it is going to be written 
-    FILE1=open(pjoin(path,label+ "_1anet.html"), "w")
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,label+ "_1apak.html"), "w")
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,label+ "_1aflw.html"), "w")
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,label+ "_1acpl.html"), "w")
-    FILE4.write(gen_header())
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
+    FILE1=open(pjoin(path,label+ "_1anet.js"), "w")
+     
+    FILE2=open(pjoin(path,label+ "_1apak.js"), "w")
+     
+    FILE3=open(pjoin(path,label+ "_1aflw.js"), "w")
+     
+    FILE4=open(pjoin(path,label+ "_1acpl.js"), "w")
+     
     
     first=now-29030400
     sizetype="bytes"
@@ -686,29 +628,31 @@ def graphInt1a(now, label, id, path):
     gen_ioadata(FILE4, now, first, sizetype_array,row, "A")
     gen_ioascript_footer(FILE4, label, "viz4")
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
+
+    c.close()
 ################################## PORT GRAPHS ##################################################
 
-##################################
-##########NOTA: Verificar de no estar mandadno parametros de mas
-##############################
+
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 24 hour port  graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives the unix time, the title of the graph (label),the name of the network  (nlabel) the id of the port in the database and the path where it is going to be written 
 def graphPort24h(now, nlabel, label, id, path):
 
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 24 hour port  graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time, the title of the graph in label(label),  the name of the network the port belongs to (nlabel) the id of the port in the database  and th path where it is going to be written 
+    label=str(label)
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
     qb = QueryBuilder()
-    FILE1=open(pjoin(path,"%s-p%s_1dnet.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html 
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s-p%s_1dpak.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s-p%s_1dflw.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s-p%s_1dcpl.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE4.write(gen_header())
-	#print(pjoin(path,"%s-p%s_1d.html") % (nlabel, label))
+    FILE1=open(pjoin(path,"%s-p%s_1dnet.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.js 
+     
+    FILE2=open(pjoin(path,"%s-p%s_1dpak.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
+     
+    FILE3=open(pjoin(path,"%s-p%s_1dflw.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
+     
+    FILE4=open(pjoin(path,"%s-p%s_1dcpl.js") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
+     
 	
     first=now-86400
 
@@ -718,10 +662,9 @@ def graphPort24h(now, nlabel, label, id, path):
 	
     row = qb.PortRangeO(c, id, now, first)
     sizetype,max,min=setsizetype(row,sizetype)
-        #print sizetype, max, min
     gen_ioscript_header(FILE1,sizetype)
     gen_iodata(FILE1, now, first, sizetype,row,"D")
-    gen_ioscript_footer(FILE1, label, "Network", "viz1",max,min,sizetype) 
+    gen_ioscript_footer(FILE1, nlabel+'-'+label, "Network", "viz1",max,min,sizetype) 
 
 
 	##################  The Port  Packets (1d) ###############
@@ -731,7 +674,7 @@ def graphPort24h(now, nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE2,sizetype)
     gen_iodata(FILE2, now, first,sizetype, row,"D")
-    gen_ioscript_footer(FILE2, label, "Packets", "viz2",max,min,sizetype) 
+    gen_ioscript_footer(FILE2, nlabel+'-'+label, "Packets", "viz2",max,min,sizetype) 
 
 	################# The Port  Flows (1d) ##################
 
@@ -741,7 +684,7 @@ def graphPort24h(now, nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE3,sizetype)
     gen_iodata(FILE3, now, first, sizetype,row,"D")
-    gen_ioscript_footer(FILE3, label, "Flows", "viz3",max,min,sizetype) 
+    gen_ioscript_footer(FILE3, nlabel+'-'+label, "Flows", "viz3",max,min,sizetype) 
 
 	############### The Port  of Network,Packets,Flows (1d) ######
      	 
@@ -750,33 +693,42 @@ def graphPort24h(now, nlabel, label, id, path):
     sizetype_array=setsizetype_all(row,sizetype_array)
     gen_ioascript_header(FILE4,sizetype_array)
     gen_ioadata(FILE4, now, first, sizetype_array,row,"D")
-    gen_ioascript_footer(FILE4, label, "viz4")
-#################
+    gen_ioascript_footer(FILE4,nlabel+'-'+ label, "viz4")
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
+   
+    c.close()
 ############################################################
+
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 week  port  graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives the unix time, the title of the graph (label),the name of the network  (nlabel) the id of the port in the database and the path where it is going to be written 
 def graphPort1s(now,nlabel, label, id, path):
 	
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 week  port  graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time, the title of the graph in label(label),  the name of the network the port belongs to (nlabel) the id of the port in the database  and th path where it is going to be written 
 	
+    label=str(label)
+
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
     qb = QueryBuilder()
-    FILE1=open(pjoin(path,"%s-p%s_1wnet.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html 
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s-p%s_1wpak.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s-p%s_1wflw.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s-p%s_1wcpl.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE4.write(gen_header())
+   # the name of the file is "name of network"-"port number"_1.d.js 
+    FILE1=open(pjoin(path,"%s-p%s_1wnet.js") % (nlabel, label), "w") 
+     
+    # the name of the file is "name of network"-"port number"_1.d.js
+    FILE2=open(pjoin(path,"%s-p%s_1wpak.js") % (nlabel, label), "w") 
+     
+    # the name of the file is "name of network"-"port number"_1.d.js
+    FILE3=open(pjoin(path,"%s-p%s_1wflw.js") % (nlabel, label), "w") 
+     
+   # the name of the file is "name of network"-"port number"_1.d.js
+    FILE4=open(pjoin(path,"%s-p%s_1wcpl.js") % (nlabel, label), "w") 
+     
     first=now-604800
 
     sizetype_array=["bytes","bytes","bytes"]
     sizetype="bytes"
-	#print(pjoin(path,"%s-p%s_1s.html") % (nlabel, label))
 	
 	######s############# The Port  of Network (1s)###############
 
@@ -786,7 +738,7 @@ def graphPort1s(now,nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE1,sizetype)
     gen_iodata(FILE1, now, first, sizetype,row,"S")
-    gen_ioscript_footer(FILE1, label, "Network", "viz1",max,min,sizetype) 
+    gen_ioscript_footer(FILE1, nlabel+'-'+label, "Network", "viz1",max,min,sizetype) 
 	##################  The Port  Packets (1s) ###############
 	
 	
@@ -794,7 +746,7 @@ def graphPort1s(now,nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE2,sizetype)
     gen_iodata(FILE2, now, first,sizetype, row,"S")
-    gen_ioscript_footer(FILE2, label, "Packets", "viz2",max,min,sizetype) 
+    gen_ioscript_footer(FILE2, nlabel+'-'+label, "Packets", "viz2",max,min,sizetype) 
 
 	################# The Port  Flows (1s) ##################
 
@@ -804,7 +756,7 @@ def graphPort1s(now,nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE3,sizetype)
     gen_iodata(FILE3, now, first, sizetype,row,"S")
-    gen_ioscript_footer(FILE3, label, "Flows", "viz3",max,min,sizetype) 
+    gen_ioscript_footer(FILE3, nlabel+'-'+label, "Flows", "viz3",max,min,sizetype) 
 	############### The Port  of Network,Packets,Flows (1d) ######
      	 
 	
@@ -812,34 +764,38 @@ def graphPort1s(now,nlabel, label, id, path):
     sizetype_array=setsizetype_all(row,sizetype_array)
     gen_ioascript_header(FILE4,sizetype_array)
     gen_ioadata(FILE4, now, first, sizetype_array,row,"S")
-    gen_ioascript_footer(FILE4, label, "viz4")
-################
+    gen_ioascript_footer(FILE4, nlabel+'-'+label, "viz4")
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
 
+    c.close()
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 month port  graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives the unix time, the title of the graph (label),the name of the network  (nlabel) the id of the port in the database and the path where it is going to be written 
 def graphPort1m(now,nlabel, label, id, path):
+    
+    label=str(label)
 	
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 month port  graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time, the title of the graph in label(label),  the name of the network the port belongs to (nlabel) the id of the port in the database  and th path where it is going to be written 
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
     qb = QueryBuilder()
-    FILE1=open(pjoin(path,"%s-p%s_1mnet.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html 
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s-p%s_1mpak.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s-p%s_1mflw.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s-p%s_1mcpl.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE4.write(gen_header())
+# the name of the file is "name of network"-"port number"_1.d.js 
+    FILE1=open(pjoin(path,"%s-p%s_1mnet.js") % (nlabel, label), "w") 
+     
+    FILE2=open(pjoin(path,"%s-p%s_1mpak.js") % (nlabel, label), "w") 
+     
+    FILE3=open(pjoin(path,"%s-p%s_1mflw.js") % (nlabel, label), "w") 
+     
+    FILE4=open(pjoin(path,"%s-p%s_1mcpl.js") % (nlabel, label), "w") 
+     
         
     first=now-2419200
 	
     sizetype_array=["bytes","bytes","bytes"]
     sizetype="bytes"
-	#print(pjoin(path,"%s-p%s_1m.html") % (nlabel, label))
 	
 	################### The Port  of Network (1m)###############
 
@@ -849,7 +805,7 @@ def graphPort1m(now,nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE1,sizetype)
     gen_iodata(FILE1, now, first, sizetype,row,"M")
-    gen_ioscript_footer(FILE1, label, "Network", "viz1",max,min,sizetype) 
+    gen_ioscript_footer(FILE1, nlabel+'-'+label, "Network", "viz1",max,min,sizetype) 
 
 	##################  The Port  Packets (1m) ###############
 	
@@ -858,7 +814,7 @@ def graphPort1m(now,nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE2,sizetype)
     gen_iodata(FILE2, now, first, sizetype,row,"M")
-    gen_ioscript_footer(FILE2, label, "Packets", "viz2",max,min,sizetype) 
+    gen_ioscript_footer(FILE2, nlabel+'-'+label, "Packets", "viz2",max,min,sizetype) 
 
 	################# The Port  Flows (1m) ##################
 
@@ -868,7 +824,7 @@ def graphPort1m(now,nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE3,sizetype)
     gen_iodata(FILE3, now, first, sizetype,row,"M")
-    gen_ioscript_footer(FILE3, label, "Flows", "viz3",max,min,sizetype) 
+    gen_ioscript_footer(FILE3, nlabel+'-'+label, "Flows", "viz3",max,min,sizetype) 
 
 	############### The Port  of Network,Packets,Flows (1d) ######
      	 
@@ -877,33 +833,36 @@ def graphPort1m(now,nlabel, label, id, path):
     sizetype_array=setsizetype_all(row,sizetype_array)
     gen_ioascript_header(FILE4,sizetype_array)
     gen_ioadata(FILE4, now, first,sizetype_array, row,"M")
-    gen_ioascript_footer(FILE4, label, "viz4")
+    gen_ioascript_footer(FILE4, nlabel+'-'+label, "viz4")
 
-##############
 	
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
 
+    c.close()
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 year  port  graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives the unix time, the title of the graph (label),the name of the network  (nlabel) the id of the port in the database and the path where it is going to be written 
 def graphPort1a(now,nlabel, label, id, path):
 
+    label=str(label)
 	
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 year  port  graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time, the title of the graph in label(label),  the name of the network the port belongs to (nlabel) the id of the port in the database  and th path where it is going to be written 
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
     qb = QueryBuilder()
 
-    FILE1=open(pjoin(path,"%s-p%s_1anet.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html 
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s-p%s_1apak.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s-p%s_1aflw.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s-p%s_1acpl.html") % (nlabel, label), "w") # the name of the file is "name of network"-"port number"_1.d.html
-    FILE4.write(gen_header())
+     # the name of the file is "name of network"-"port number"_1.d.js 
+    FILE1=open(pjoin(path,"%s-p%s_1anet.js") % (nlabel, label), "w") 
+     
+    FILE2=open(pjoin(path,"%s-p%s_1apak.js") % (nlabel, label), "w") 
+     
+    FILE3=open(pjoin(path,"%s-p%s_1aflw.js") % (nlabel, label), "w") 
+     
+    FILE4=open(pjoin(path,"%s-p%s_1acpl.js") % (nlabel, label), "w") 
+     
 	
-	#print(pjoin(path,"%s-p%s_1a.html") % (nlabel, label))
     first=now-29030400
 	
     sizetype_array=["bytes","bytes","bytes"]
@@ -916,7 +875,7 @@ def graphPort1a(now,nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE1,sizetype)
     gen_iodata(FILE1, now, first, sizetype,row, "A")
-    gen_ioscript_footer(FILE1, label, "Network" , "viz1",max,min,sizetype) 
+    gen_ioscript_footer(FILE1, nlabel+'-'+label, "Network" , "viz1",max,min,sizetype) 
 
         # The Port Packets (1a)
 
@@ -925,7 +884,7 @@ def graphPort1a(now,nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE2,sizetype)
     gen_iodata(FILE2, now, first, sizetype,row, "A")
-    gen_ioscript_footer(FILE2, label, "Packets" , "viz2",max,min,sizetype) 
+    gen_ioscript_footer(FILE2, nlabel+'-'+label, "Packets" , "viz2",max,min,sizetype) 
 
         # The Port Flows (1a)
         
@@ -933,7 +892,7 @@ def graphPort1a(now,nlabel, label, id, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE3,sizetype)
     gen_iodata(FILE3, now, first, sizetype,row, "A")
-    gen_ioscript_footer(FILE3, label, "Flows" , "viz3",max,min,sizetype) 
+    gen_ioscript_footer(FILE3, nlabel+'-'+label, "Flows" , "viz3",max,min,sizetype) 
 
         # The Network,Packets,Flows (1a)
 
@@ -942,31 +901,32 @@ def graphPort1a(now,nlabel, label, id, path):
     sizetype_array=setsizetype_all(row,sizetype_array)
     gen_ioascript_header(FILE4,sizetype_array)
     gen_ioadata(FILE4, now, first, sizetype_array,row, "A")
-    gen_ioascript_footer(FILE4, label, "viz4")
+    gen_ioascript_footer(FILE4, nlabel+'-'+label, "viz4")
 #######################################
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
-        
+    c.close()    
 ##################### Point 2 Point graphs ############################
 
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 24 hour Point to Point/Net 2 Net  graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives the unix time, the title of the graph (to_label),the name of the network  (nlabel) the id of the port in the database and the path where it is going to be written 
 def graphP2P24h(now,nlabel, nn_id, to_label, path):
 
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 24 hour Point to Point/Net 2 Net  graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time (now), the name of the source network (nlabel), the id of that connection (nn_id) , the name of the destination network (to_label) and the path where it is going to be written 
 	
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
     qb = QueryBuilder()
-    FILE1=open(pjoin(path,"%s_%s_1dnet.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s_%s_1dpak.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s_%s_1dflw.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s_%s_1dcpl.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE4.write(gen_header())
-        #print pjoin(path,"%s_%s_24h.html")%(nlabel, to_label)
+    FILE1=open(pjoin(path,"%s_%s_1dnet.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.js
+     
+    FILE2=open(pjoin(path,"%s_%s_1dpak.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
+     
+    FILE3=open(pjoin(path,"%s_%s_1dflw.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
+     
+    FILE4=open(pjoin(path,"%s_%s_1dcpl.js")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
+     
 		
     first=now-86400
     sizetype="bytes"
@@ -979,7 +939,7 @@ def graphP2P24h(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE1,sizetype)
     gen_iodata(FILE1, now, first, sizetype,row, "D")
-    gen_ioscript_footer(FILE1, to_label, "Network","viz1",max,min,sizetype) 
+    gen_ioscript_footer(FILE1, nlabel+' to '+to_label, "Network","viz1",max,min,sizetype) 
 	
 	############  P2P Packets (1d) ###################
 
@@ -989,7 +949,7 @@ def graphP2P24h(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE2,sizetype)
     gen_iodata(FILE2, now, first, sizetype,row, "D")
-    gen_ioscript_footer(FILE2, to_label,"Packets", "viz2",max,min,sizetype) 
+    gen_ioscript_footer(FILE2, nlabel+' to '+to_label,"Packets", "viz2",max,min,sizetype) 
 
 	############ P2P Flows (1d) ##################
 
@@ -1003,7 +963,7 @@ def graphP2P24h(now,nlabel, nn_id, to_label, path):
 		
     gen_ioscript_header(FILE3,sizetype)
     gen_iodata(FILE3, now, first, sizetype,row, "D")
-    gen_ioscript_footer(FILE3, to_label,"Flows", "viz3",max,min,sizetype) 
+    gen_ioscript_footer(FILE3, nlabel+' to '+to_label,"Flows", "viz3",max,min,sizetype) 
 
 	######### P2P Network,Packets,Flows (1d) ##########
 	
@@ -1014,33 +974,36 @@ def graphP2P24h(now,nlabel, nn_id, to_label, path):
     gen_ioascript_header(FILE4,sizetype_array)
 	
     gen_ioadata(FILE4, now, first, sizetype_array,row, "D")
-    gen_ioascript_footer(FILE4, to_label, "viz4")
+    gen_ioascript_footer(FILE4, nlabel+' to '+to_label, "viz4")
 
-##################
 	
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
+
+    c.close()
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 week  Point to Point/Net 2 Net  graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives the unix time, the title of the graph (to_label),the name of the network  (nlabel) the id of the port in the database and the path where it is going to be written 
 def graphP2P1s(now,nlabel, nn_id, to_label, path):
 
 	
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 week  Point to Point/Net 2 Net  graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time (now), the name of the source network (nlabel), the id of that connection (nn_id) , the name of the destination network (to_label) and the path where it is going to be written 
     qb = QueryBuilder()
 
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
 
-    FILE1=open(pjoin(path,"%s_%s_1wnet.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s_%s_1wpak.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s_%s_1wflw.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s_%s_1wcpl.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE4.write(gen_header())
+	#The file will be named "source"_"destination"_1d.js
+    FILE1=open(pjoin(path,"%s_%s_1wnet.js")%(nlabel, to_label), "w") 
+     
+    FILE2=open(pjoin(path,"%s_%s_1wpak.js")%(nlabel, to_label), "w")
+     
+    FILE3=open(pjoin(path,"%s_%s_1wflw.js")%(nlabel, to_label), "w") 
+     
+    FILE4=open(pjoin(path,"%s_%s_1wcpl.js")%(nlabel, to_label), "w") 
+     
 	
-	#print pjoin(path,"%s_%s_1s.html")%(nlabel, to_label)
     first=now-604800
 
     sizetype="bytes"
@@ -1052,7 +1015,7 @@ def graphP2P1s(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE1,sizetype)
     gen_iodata(FILE1, now, first, sizetype,row, "S")
-    gen_ioscript_footer(FILE1, to_label, "Network","viz1",max,min,sizetype) 
+    gen_ioscript_footer(FILE1, nlabel+' to '+to_label, "Network","viz1",max,min,sizetype) 
 
 	
 	############  P2P Packets (1s) ###################
@@ -1063,7 +1026,7 @@ def graphP2P1s(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE2,sizetype)
     gen_iodata(FILE2, now, first, sizetype,row, "S")
-    gen_ioscript_footer(FILE2, to_label,"Packets", "viz2",max,min,sizetype) 
+    gen_ioscript_footer(FILE2, nlabel+' to '+to_label,"Packets", "viz2",max,min,sizetype) 
 
 	############ P2P Flows (1s) ##################
 
@@ -1073,7 +1036,7 @@ def graphP2P1s(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE3,sizetype)
     gen_iodata(FILE3, now, first, sizetype,row, "S")
-    gen_ioscript_footer(FILE3, to_label,"Flows", "viz3",max,min,sizetype) 
+    gen_ioscript_footer(FILE3, nlabel+' to '+to_label,"Flows", "viz3",max,min,sizetype) 
 
 	######### P2P Network,Packets,Flows (1s) ##########
 	
@@ -1083,34 +1046,36 @@ def graphP2P1s(now,nlabel, nn_id, to_label, path):
     sizetype_array=setsizetype_all(row,sizetype_array)
     gen_ioascript_header(FILE4,sizetype_array)
     gen_ioadata(FILE4, now, first, sizetype_array,row, "S")
-    gen_ioascript_footer(FILE4, to_label, "viz4")   
+    gen_ioascript_footer(FILE4, nlabel+' to '+to_label, "viz4")   
 
-##################
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
 
-                   
+     
+     
+     
+     
 
+    c.close()               
+
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 month  Point to Point/Net 2 Net  graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives the unix time, the title of the graph (to_label),the name of the network  (nlabel) the id of the port in the database and the path where it is going to be written 
 def graphP2P1m(now,nlabel, nn_id, to_label, path):
 
 	
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 month  Point to Point/Net 2 Net  graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time (now), the name of the source network (nlabel), the id of that connection (nn_id) , the name of the destination network (to_label) and the path where it is going to be written 
     qb = QueryBuilder()
 
-    FILE1=open(pjoin(path,"%s_%s_1mnet.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s_%s_1mpak.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s_%s_1mflw.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s_%s_1mcpl.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE4.write(gen_header())
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
+    #The file will be named "source"_"destination"_1d.js
+    FILE1=open(pjoin(path,"%s_%s_1mnet.js")%(nlabel, to_label), "w") 
+     
+    FILE2=open(pjoin(path,"%s_%s_1mpak.js")%(nlabel, to_label), "w") 
+     
+    FILE3=open(pjoin(path,"%s_%s_1mflw.js")%(nlabel, to_label), "w") 
+     
+    FILE4=open(pjoin(path,"%s_%s_1mcpl.js")%(nlabel, to_label), "w") 
+     
 	
-	#print pjoin(path,"%s_%s_1m.html")%(nlabel, to_label)
     first=now-2419200
 	
     sizetype="bytes"
@@ -1123,7 +1088,7 @@ def graphP2P1m(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE1,sizetype)
     gen_iodata(FILE1, now, first, sizetype,row, "M")
-    gen_ioscript_footer(FILE1, to_label ,"Network","viz1",max,min,sizetype) 
+    gen_ioscript_footer(FILE1, nlabel+' to '+to_label ,"Network","viz1",max,min,sizetype) 
 
 	
 	############  P2P Packets (1m) ###################
@@ -1134,7 +1099,7 @@ def graphP2P1m(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE2,sizetype)
     gen_iodata(FILE2, now, first, sizetype,row, "M")
-    gen_ioscript_footer(FILE2, to_label,"Packets", "viz2",max,min,sizetype) 
+    gen_ioscript_footer(FILE2, nlabel+' to '+to_label,"Packets", "viz2",max,min,sizetype) 
 	############ P2P Flows (1M) ##################
 
 	
@@ -1143,7 +1108,7 @@ def graphP2P1m(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE3,sizetype)
     gen_iodata(FILE3, now, first, sizetype,row, "M")
-    gen_ioscript_footer(FILE3, to_label,"Flows", "viz3",max,min,sizetype) 
+    gen_ioscript_footer(FILE3, nlabel+' to '+to_label,"Flows", "viz3",max,min,sizetype) 
 
 	######### P2P Network,Packets,Flows (1M) ##########
 	
@@ -1153,33 +1118,35 @@ def graphP2P1m(now,nlabel, nn_id, to_label, path):
     sizetype_array=setsizetype_all(row,sizetype_array)
     gen_ioascript_header(FILE4,sizetype_array)
     gen_ioadata(FILE4, now, first, sizetype_array,row, "M")
-    gen_ioascript_footer(FILE4, to_label, "viz4")
+    gen_ioascript_footer(FILE4, nlabel+' to '+to_label, "viz4")
 
-##################
 
-    FILE1.write(gen_footer())
-    FILE2.write(gen_footer())
-    FILE3.write(gen_footer())
-    FILE4.write(gen_footer())
+     
+     
+     
+     
 
+    c.close()
+# This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 year to Point/Net 2 Net  graphs that contain the octect,packets,flows and "all" graphs, 
+# This function receives the unix time, the title of the graph (to_label),the name of the network  (nlabel) the id of the port in the database and the path where it is going to be written 
 def graphP2P1a(now,nlabel, nn_id, to_label, path):
 
+    db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
+    c = db.cursor()
 	
-    # This function (called from flowsgrapher.py , is responsible from generating the graph file for the 1 year to Point/Net 2 Net  graphs that contain the octect,packets,flows and "all" graphs, 
-        # This function receives , the current unix time (now), the name of the source network (nlabel), the id of that connection (nn_id) , the name of the destination network (to_label) and the path where it is going to be written 
     qb = QueryBuilder()
 
-    FILE1=open(pjoin(path,"%s_%s_1anet.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE1.write(gen_header())
-    FILE2=open(pjoin(path,"%s_%s_1apak.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE2.write(gen_header())
-    FILE3=open(pjoin(path,"%s_%s_1aflw.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE3.write(gen_header())
-    FILE4=open(pjoin(path,"%s_%s_1acpl.html")%(nlabel, to_label), "w") #The file will be named "source"_"destination"_1d.html
-    FILE4.write(gen_header())
+    #The file will be named "source"_"destination"_1d.js
+    FILE1=open(pjoin(path,"%s_%s_1anet.js")%(nlabel, to_label), "w") 
+     
+    FILE2=open(pjoin(path,"%s_%s_1apak.js")%(nlabel, to_label), "w") 
+     
+    FILE3=open(pjoin(path,"%s_%s_1aflw.js")%(nlabel, to_label), "w") 
+     
+    FILE4=open(pjoin(path,"%s_%s_1acpl.js")%(nlabel, to_label), "w") 
+     
 
 	
-	#print pjoin(path,"%s_%s_1a.html")%(nlabel, to_label)
     first=now-29030400
 	
     sizetype="bytes"
@@ -1192,7 +1159,7 @@ def graphP2P1a(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE1,sizetype)
     gen_iodata(FILE1, now, first,sizetype, row, "A")
-    gen_ioscript_footer(FILE1, to_label ,"Network","viz1",max,min,sizetype) 
+    gen_ioscript_footer(FILE1, nlabel+' to '+to_label ,"Network","viz1",max,min,sizetype) 
 
 	
 	############  P2P Packets(1a) ###################
@@ -1203,7 +1170,7 @@ def graphP2P1a(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE2,sizetype)
     gen_iodata(FILE2, now, first,sizetype, row, "A")
-    gen_ioscript_footer(FILE2, to_label,"Packets", "viz2",max,min,sizetype) 
+    gen_ioscript_footer(FILE2, nlabel+' to '+to_label,"Packets", "viz2",max,min,sizetype) 
 
 	############ P2P Flows (1a) ##################
 
@@ -1213,7 +1180,7 @@ def graphP2P1a(now,nlabel, nn_id, to_label, path):
     sizetype,max,min=setsizetype(row,sizetype)
     gen_ioscript_header(FILE3,sizetype)
     gen_iodata(FILE3, now, first, sizetype,row, "A")
-    gen_ioscript_footer(FILE3, to_label,"Flows", "viz3",max,min,sizetype) 
+    gen_ioscript_footer(FILE3, nlabel+' to '+to_label,"Flows", "viz3",max,min,sizetype) 
 
 	######### P2P Network,Packets,Flows (1a) ##########
 	
@@ -1221,21 +1188,18 @@ def graphP2P1a(now,nlabel, nn_id, to_label, path):
         
     row = qb.ToNetRangeAll(c, nn_id, now, first)
 	
-    if row:
 
-        sizetype_array=setsizetype_all(row,sizetype_array)
-        gen_ioascript_header(FILE4,sizetype_array)
-        gen_ioadata(FILE4, now, first, sizetype_array,row, "A")
-        gen_ioascript_footer(FILE4, to_label, "viz4")
-
+    sizetype_array=setsizetype_all(row,sizetype_array)
+    gen_ioascript_header(FILE4,sizetype_array)
+    gen_ioadata(FILE4, now, first, sizetype_array,row, "A")
+    gen_ioascript_footer(FILE4, nlabel+' to '+to_label, "viz4")
 
 
-        FILE1.write(gen_footer())
-        FILE2.write(gen_footer())
-        FILE3.write(gen_footer())
-        FILE4.write(gen_footer())
 
+     
+     
+     
+     
 
-#c.close() cursor closed in flowsqueries2.py but for some reason in here there is an error
-
+    c.close()
 ###################################################################################################### THE END ####################################################################################

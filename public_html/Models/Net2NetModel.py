@@ -77,6 +77,11 @@ class Net2NetModel:
         	
 		return self.cursor.fetchall()
 
+	def GetFromandTo(self,id):
+    #this function gets a net2net id and returns the from and to network ids of that connection in an array
+        	self.cursor.execute("select fn_id, tn_id from NET2NET where nn_id=%s"%id)
+        	return self.cursor.fetchall()
+
 	def Get(self, id):
         	
 		self.cursor.execute("""select nn_id, label, tn_id from NETWORK, NET2NET where fn_id=%s and tn_id=n_id""" % id)

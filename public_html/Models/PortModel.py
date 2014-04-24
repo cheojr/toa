@@ -75,6 +75,17 @@ class PortModel:
         	
         return self.cursor.fetchall()
 
+    def GetPortNetwork(self,id):
+        
+	self.cursor.execute("""select n_id from PORT where p_id=%s""" % id)
+        	
+        return self.cursor.fetchone()
+    def GetPortLabel(self,id):
+        
+	self.cursor.execute("""select port from PORT where p_id=%s""" % id)
+        	
+        return self.cursor.fetchone()
+
     def GetAll(self, nid):
             
         self.cursor.execute("""select p_id, port from PORT where n_id = '%s' """%nid)

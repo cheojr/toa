@@ -14,12 +14,14 @@
 
         </database>
 
-        <logs><path>/home/albert/newToa/toalogs</path></logs>
+        <logs><path>/home/eric/toa/toalogs/</path></logs>
 
-        <flows><path>/CassandraVol/flows</path></flows>
+        <flows><path>/CassandraVol/flows/</path></flows>
 
-        <graphs><path>graphs/</path></graphs>
+        <graphs><path>/home/eric/public_html/toa/public_html/graphs/</path></graphs>
 
         <crontime><time>300</time></crontime>
+
+        <oldesttime><time>1</time></oldesttime>
 
     </config>

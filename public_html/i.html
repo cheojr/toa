@@ -1,0 +1,137 @@
+Content-Type: text/html
+
+<!DOCTYPE html><html>
+<head>
+<title>ToaNMS</title>
+<link rel="stylesheet" href="Style/bootstrap/css/style.css"/>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="Style/bootstrap/js/bootstrap.min.js"></script>
+<script type='text/javascript' src='http://platform.twitter.com/widgets.js'></script>
+<script src="Controllers/GraphController.js"></script>
+<script src='Style/bootstrap/js/helpers.js'></script>
+</head>
+<body>
+<div class="row-fluid" id="banner">
+<div class="span8 offset1" id="app-name">
+<h1>Toa Network Monitoring System</h1>
+</div>
+<div class="span2 offset1" id="login">
+<div class="btn-group">
+<a href=#login-form-modal data-toggle="modal" class="btn btn-large btn-inverse" id="login-button">Login</a>
+</div>
+</div>
+</div>
+<div class="modal hide fade" id="login-form-modal">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+<center><h2>Toa Login</h2></center>
+</div>
+<div class="modal-body">
+<center><br><form action="Controllers/AuthenticationController.cgi" method="post" class="form-horizontal">
+<div class="input-prepend">
+<span class="add-on"><i class="icon-envelope"></i></span>
+<input class="span4" id="prependedInput" type="text" name="username" placeholder="Username">
+</div><br><br>
+<div class="input-prepend">
+<span class="add-on"><i class="icon-lock"></i></span>
+<input class="span4" id="prependedInput" type="password" name="password" placeholder="Password">
+</div>
+</div>
+<div class="modal-footer">
+<input class="btn btn-large btn-inverse" id="login-button" type="submit" value="Login">
+</form></center>
+</div>
+</div>
+<div class='row' id='FeatureBar'>
+<br>
+<div class='span11 offset1'>
+<div class="btn-group">
+<a href='#DeviceMenu' data-toggle="dropdown" class="btn btn-large btn-inverse dropdown-toggle" id="device-button">Device</a>
+<ul class='dropdown-menu' role='menu'>
+<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>RUM</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#RUMInterfaceGraph' onclick='GetGraphsView(1)'>Interface Graph</a></li><li><a href='#1PortGraph' onclick="GetGraphsView(RUM)">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, 1)'>
+<option value='None'>Select</option>
+<option value='22'>22</option>
+<option value='1433'>1433</option>
+</select></a></li><li><a href='#RUMNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, 1)'>
+<option value='None'>Select</option>
+<option value='3'>RRP</option>
+<option value='7'>FIU</option>
+<option value='10'>HPCf</option>
+<option value='29'>AO</option>
+</select></a></li></ul></li>
+<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>RCM</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#RCMInterfaceGraph' onclick='GetGraphsView(2)'>Interface Graph</a></li><li><a href='#2PortGraph' onclick="GetGraphsView(RCM)">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, 2)'>
+<option value='None'>Select</option>
+</select></a></li><li><a href='#RCMNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, 2)'>
+<option value='None'>Select</option>
+<option value='7'>FIU</option>
+</select></a></li></ul></li>
+<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>RRP</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#RRPInterfaceGraph' onclick='GetGraphsView(3)'>Interface Graph</a></li><li><a href='#3PortGraph' onclick="GetGraphsView(RRP)">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, 3)'>
+<option value='None'>Select</option>
+<option value='22'>22</option>
+</select></a></li><li><a href='#RRPNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, 3)'>
+<option value='None'>Select</option>
+<option value='1'>RUM</option>
+<option value='7'>FIU</option>
+<option value='10'>HPCf</option>
+</select></a></li></ul></li>
+<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>CAYEY</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#CAYEYInterfaceGraph' onclick='GetGraphsView(4)'>Interface Graph</a></li><li><a href='#4PortGraph' onclick="GetGraphsView(CAYEY)">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, 4)'>
+<option value='None'>Select</option>
+</select></a></li><li><a href='#CAYEYNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, 4)'>
+<option value='None'>Select</option>
+<option value='7'>FIU</option>
+<option value='10'>HPCf</option>
+</select></a></li></ul></li>
+<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>FIU</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#FIUInterfaceGraph' onclick='GetGraphsView(7)'>Interface Graph</a></li><li><a href='#7PortGraph' onclick="GetGraphsView(FIU)">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, 7)'>
+<option value='None'>Select</option>
+</select></a></li><li><a href='#FIUNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, 7)'>
+<option value='None'>Select</option>
+<option value='1'>RUM</option>
+<option value='2'>RCM</option>
+<option value='3'>RRP</option>
+<option value='4'>CAYEY</option>
+<option value='10'>HPCf</option>
+<option value='11'>CUH</option>
+<option value='12'>PSM</option>
+</select></a></li></ul></li>
+<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>HPCf</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#HPCfInterfaceGraph' onclick='GetGraphsView(10)'>Interface Graph</a></li><li><a href='#10PortGraph' onclick="GetGraphsView(HPCf)">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, 10)'>
+<option value='None'>Select</option>
+<option value='22'>22</option>
+<option value='80'>80</option>
+</select></a></li><li><a href='#HPCfNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, 10)'>
+<option value='None'>Select</option>
+<option value='1'>RUM</option>
+<option value='3'>RRP</option>
+<option value='4'>CAYEY</option>
+<option value='7'>FIU</option>
+<option value='12'>PSM</option>
+</select></a></li></ul></li>
+<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>CUH</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#CUHInterfaceGraph' onclick='GetGraphsView(11)'>Interface Graph</a></li><li><a href='#11PortGraph' onclick="GetGraphsView(CUH)">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, 11)'>
+<option value='None'>Select</option>
+</select></a></li><li><a href='#CUHNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, 11)'>
+<option value='None'>Select</option>
+<option value='7'>FIU</option>
+</select></a></li></ul></li>
+<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>PSM</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#PSMInterfaceGraph' onclick='GetGraphsView(12)'>Interface Graph</a></li><li><a href='#12PortGraph' onclick="GetGraphsView(PSM)">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, 12)'>
+<option value='None'>Select</option>
+</select></a></li><li><a href='#PSMNet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, 12)'>
+<option value='None'>Select</option>
+<option value='7'>FIU</option>
+<option value='10'>HPCf</option>
+</select></a></li></ul></li>
+<li class='dropdown-submenu parent'><a href=#Device class='dropdown-hover'>AO</a><ul class='dropdown-menu' id='TripleOptionMenu'><li><a href='#AOInterfaceGraph' onclick='GetGraphsView(29)'>Interface Graph</a></li><li><a href='#29PortGraph' onclick="GetGraphsView(AO)">Port Graph<br><select id='PortSelection' onchange='GetPortGraphsView(this.options[this.selectedIndex].value, 29)'>
+<option value='None'>Select</option>
+</select></a></li><li><a href='#AONet2NetGraph'>Net2Net Graph<br><select id='N2NSelection' onchange='GetNet2NetGraphsView(this.options[this.selectedIndex].value, 29)'>
+<option value='None'>Select</option>
+</select></a></li></ul></li>
+</ul>
+</div>
+</div></div>
+<br>
+<div class='row-fluid' id='Parent'>
+<div class='span12'>
+<div class="container" id="content">
+<center><font color="red">You should be watching the p2p graph.  Try refreshing the page.</font></center>
+</div>
+</div>
+</body>
+</html>

@@ -18,8 +18,10 @@
 
         <flows><path>/CassandraVol/flows/</path></flows>
 
-        <graphs><path>graphs/</path></graphs>
+        <graphs><path>/home/eric/public_html/toa/public_html/graphs/</path></graphs>
 
         <crontime><time>300</time></crontime>
+
+        <oldesttime><time>1</time></oldesttime>
 
     </config>
