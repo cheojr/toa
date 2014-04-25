@@ -2,6 +2,20 @@ function GraphView(label, type, filter, entity, portlabel, tolabel, width, heigh
 
     var xmlhttp;
 
+    var url = ""
+
+    if(admin){
+
+        url = "../GraphViews/MasterGrapherView.cgi?uid="+uid+"&sid="+sid+"&remote="+remote+"&label="+label+"&entity="+entity+"&type="+type+"&filter="+filter+"&portlabel="+portlabel+"&tolabel="+tolabel+"&w="+width+"&h="+height+"&views="+vgraphs
+
+    }
+
+    else{
+
+        url = "Views/GraphViews/MasterGrapherView.cgi?uid="+uid+"&sid="+sid+"&remote="+remote+"&label="+label+"&entity="+entity+"&type="+type+"&filter="+filter+"&portlabel="+portlabel+"&tolabel="+tolabel+"&w="+width+"&h="+height+"&views="+vgraphs
+
+    }
+
     if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
                                 
         xmlhttp = new XMLHttpRequest();
@@ -197,7 +211,7 @@ function GraphView(label, type, filter, entity, portlabel, tolabel, width, heigh
 
     else{
 
-        xmlhttp.open("GET","http://flows.hpcf.upr.edu/~albert/toa/public_html/Views/GraphViews/MasterGrapherView.cgi?uid="+uid+"&sid="+sid+"&remote="+remote+"&label="+label+"&entity="+entity+"&type="+type+"&filter="+filter+"&portlabel="+portlabel+"&tolabel="+tolabel+"&w="+width+"&h="+height+"&views="+vgraphs,true);
+        xmlhttp.open("GET",url,true);
 
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 
@@ -360,8 +374,8 @@ function CustomGraphView(uid, sid, remote){
         }
       
     }
-    
-    xmlhttp.open("GET","http://flows.hpcf.upr.edu/~albert/toa/public_html/Views/GraphViews/CustomQueriesGrapher.cgi?uid="+uid+"&sid="+sid+"&remote="+remote+"&id="+label+"&graphtype="+graphtype+checkbox_marked+"&d1="+d1+"&d2="+d2,true);
+
+    xmlhttp.open("GET","../GraphViews/CustomQueriesGrapher.cgi?uid="+uid+"&sid="+sid+"&remote="+remote+"&id="+label+"&graphtype="+graphtype+checkbox_marked+"&d1="+d1+"&d2="+d2,true);
     
     xmlhttp.send();
 

@@ -14,6 +14,8 @@ GRAPH_PATH=config.getGraphsPath()
 sys.path.append('../../Models/')
 from SessionModel import SessionModel
 
+
+uid=sid=remote=""
 def validate(form):
 	if form.has_key('uid') and form.has_key('sid') and form.has_key('remote'):
 		uid=form.getvalue('uid')
@@ -72,7 +74,7 @@ def  printgraphs(admin,graph,type,w,h,divid,filter=None):
                                        var flowDate = data%s.getFormattedValue(item.row, 1);
                                        document.getElementById('APP_FILTER').selectedIndex = 0;        
                                        document.getElementById('%s').addEventListener('click',function() { 
-						getApp(flowDate); 
+						getApp(flowDate,'%s','%s','%s'); 
 						this.removeEventListener('click', arguments.callee);
 						$('#%s-popover').css('display', 'none');
 						} ,false);        
@@ -80,7 +82,7 @@ def  printgraphs(admin,graph,type,w,h,divid,filter=None):
 
                        });
 
-                         """ %(divid,divid,divid,divid,divid,divid,divid+"submit",divid)
+                         """ %(divid,divid,divid,divid,divid,divid,divid+"submit",uid,sid,remote,divid)
 
    if type !='cpl':
 	#Read the data for the graphs and the js functions to draw it from js file
