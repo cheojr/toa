@@ -14,11 +14,11 @@
 
         </database>
 
-        <logs><path>/home/eric/toa/toalogs/</path></logs>
+        <logs><path>/home/albert/toa/toalogs/</path></logs>
 
         <flows><path>/CassandraVol/flows/</path></flows>
 
-        <graphs><path>/home/eric/public_html/toa/public_html/graphs/</path></graphs>
+        <graphs><path>/home/albert/toa/public_html/graphs/</path></graphs>
 
         <crontime><time>300</time></crontime>
 
