@@ -34,7 +34,14 @@ print "<head>"
 
 print "<title>ToaNMS</title>"
 
-print """<link rel="stylesheet" href="Style/bootstrap/css/style.css"/>"""
+print """<link rel="stylesheet" href="Style/bootstrap/css/style.css"/>
+
+         <link type="text/css" href="./Jit/Examples/css/base.css" rel="stylesheet" />
+	 <link type="text/css" href="./Jit/Examples/css/base.css" rel="stylesheet" />
+        <link type="text/css" href="./Jit/Examples/css/Sunburst.css" rel="stylesheet" />
+         <script language="javascript" type="text/javascript"src="./Jit/jit.js"></script>
+ 
+"""
 
 print """<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>"""
 
@@ -58,7 +65,7 @@ print "</head>"
 
 ######################### headers #########################
 
-print "<body>"
+print "<body onload='P2PGraph()'>"
 
 ######################### banner  #########################
 
@@ -180,9 +187,21 @@ print "<div class='jumbotron p2p-jumbotron'>"
 
 #config = Config()
 
-if os.path.isfile(PATH + "/p2p_graph.html"):
-        
-    print "<center><iframe  class='infovisgraph' src='%s/p2p_graph.html' frameborder='0' scrolling='no'></iframe></center>"%(PATH)   
+if os.path.isfile(PATH + "/p2p_graph.js"):
+     print  """
+
+		<div id="container">
+
+			<div id="center-container">
+   		 		<div id="infovis"></div>   
+			</div>
+			<div id="right-container">
+
+			<div id="inner-details"></div> 
+		</div>
+
+
+	""" 
 
 else:
         

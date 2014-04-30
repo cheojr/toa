@@ -380,3 +380,41 @@ function CustomGraphView(uid, sid, remote){
     xmlhttp.send();
 
 }
+
+function P2PGraph(){
+
+    var xmlhttp;
+
+    var src = document.createElement('script');
+    
+    if (window.XMLHttpRequest){
+      
+        xmlhttp=new XMLHttpRequest();
+      
+    }
+    
+    else{
+      
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      
+    }
+    
+    xmlhttp.onreadystatechange=function(){
+
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){
+
+            //document.write(xmlhttp.responseText);
+
+            src.innerHTML = xmlhttp.responseText;
+
+        }
+
+        document.body.appendChild(src);
+      
+    }
+
+    xmlhttp.open("GET","Views/GraphViews/P2PView.cgi",true);
+    
+    xmlhttp.send();
+
+}

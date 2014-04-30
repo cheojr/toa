@@ -29,8 +29,6 @@ def  printgraphs():
                         nativeCanvasSupport = (typeOfCanvas == 'object' || typeOfCanvas == 'function'),
                         textSupport = nativeCanvasSupport
                         && (typeof document.createElement('canvas').getContext('2d').fillText =='function');
-                        //I'm setting this based on the fact that ExCanvas provides text support for IE
-                        //and that as of today iPhone/iPad current text support is lame
                         labelType = (!nativeCanvasSupport || (textSupport && !iStuff))? 'Native' : 'HTML';
                         nativeTextSupport = labelType == 'Native';
                         useGradients = nativeCanvasSupport;
@@ -56,14 +54,9 @@ def  printgraphs():
 	response+= graphdata
 
 	response+="""
-
-  //init Sunburst
-  
+ 
   var sb = new $jit.Sunburst({
-    //id container for the visualization
     injectInto: 'infovis',
-    //Change node and edge styles such as
-    //color, width, lineWidth and edge types
     Node: {
       overridable: true,
       type: useGradients? 'gradient-multipie' : 'multipie'
@@ -74,58 +67,43 @@ def  printgraphs():
       lineWidth: 2,
       color: '#0000FF'
     },
-    //Draw canvas text. Can also be
-    //'HTML' or 'SVG' to draw DOM labels
     Label: {
       type: nativeTextSupport? 'Native' : 'SVG'
     },
-    //Add animations when hovering and clicking nodes
     NodeStyles: {
       enable: true,
       type: 'Native',
       stylesClick: {
-       // 'color': '#96807F'
        "color": "#E25D33",
-        //'color': '#DD3333'
       },
       stylesHover: {
-        //'color': '#96807F'
        "color": "#E25D33",
-       // 'color': '#DD3333'
       }, 
-      //duration: 700
     },
-      //Add Tips
           Tips: {
                 enable: true,
                       onShow: function(tip, node) {
-                              //count connections
                                       var count = 0;
-                                              node.eachAdjacency(function() { count++; });//loop to find the ammount of connections
-                                                      //display node info in tooltip
-                                                              //This displays the sum of all the input and output data frmo the edges of the node that is being moused over 
+                                              node.eachAdjacency(function() { count++; });
                                                                       tip.innerHTML = "<div class='tip-title'> All Octects: " + node.getData('All_Octects') +'<br/> All Packets: ' + node.getData('All_Packets')+'<br/> Al Flows: ' +node.getData('All_Flows')+ "</div>"
-                                                                                + "<div class='tip-text'><b>connections:</b> " + (count -1)  + "</div>"; //count -1 to eliminate root connection 
+                                                                                + "<div class='tip-text'><b>connections:</b> " + (count -1)  + "</div>"; 
                                                                                       }
                                                                                           },
 
     Events: {
       enable: true,
       type: 'Native',
-      //List node connections onClick
 
       
       onClick: function(node) {
               if(!node) return;
-                      // Build the right column relations list.
-                              // This is done by traversing the clicked node connections.
                                       var html = "<h4>" + node.name + "</h4><b> connections:</b><ul><li>",
                                                   list = [];
-                                                it=0;//iterator
-                                                          node.eachAdjacency(function(adj){//Iterates over every edge and places the name of the destination and the data values on a list
-                                                                 if (it!=0){//to void displaying the root
+                                                it=0;
+                                                          node.eachAdjacency(function(adj){
+                                                                 if (it!=0){
                                                                 list.push(adj.nodeTo.name);
-                                                                           list.push('Octects: '+adj.getData('Octects'));//These values are defined in the data part of the edge
+                                                                           list.push('Octects: '+adj.getData('Octects'));
                                                                                     list.push('Packets: '+adj.getData('Packets'));
                                                                                              list.push('Flows: '+adj.getData('Flows')+'<br/><br/>');
                                                                                              }
@@ -134,16 +112,13 @@ def  printgraphs():
 
                                                                                                              });
 
-                $jit.id('inner-details').innerHTML = html + list.join('</li><li>') + '</li></ul>';//Formats the array into a list in html to be displayed
+                $jit.id('inner-details').innerHTML = html + list.join('</li><li>') + '</li></ul>';
 
                   }
 	
 
     },
     levelDistance: 190,
-    // Only used when Label type is 'HTML' or 'SVG'
-    // Add text to the labels. 
-    // This method is only triggered on label creation
     onCreateLabel: function(domElement, node){
  
  
@@ -154,9 +129,6 @@ def  printgraphs():
         domElement.firstChild.appendChild(document.createTextNode(node.name));
       }
     },
-    // Only used when Label type is 'HTML' or 'SVG'
-    // Change node styles when labels are placed
-    // or moved.
     onPlaceLabel: function(domElement, node){
       var labels = sb.config.Label.type;
       if (labels === 'SVG') {
@@ -180,12 +152,8 @@ def  printgraphs():
       }
     }
   });
-  // load JSON data.
   sb.loadJSON(json);
-  // compute positions and plot.       
   sb.refresh();
-  //end
-}
 
 
 

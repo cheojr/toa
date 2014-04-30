@@ -67,40 +67,38 @@ class runpage:
 		
 		file.write("""
   			var json = [
-      			//"root" node is invisible
 				{
 				"id" : "root" ,
 				"name" :"" ,
 				"data" :{
-				"$type": "none" 
-				},"adjacencies": [
+				"$type": "none"
+				},"adjacencies": [\n
 				""")
 	### Writing the adjacencies for the root is essensial, it needs to be connected to everybody
 		From=hash.keys()
 		for i in range(len(From)):
 			if From[0]==From[i]:
 
-				file.write("""{""")
+				file.write("""{\n""")
 			else:
-				file.write(""",{""")
+				file.write(""",{\n""")
 			file.write(("""
 					"nodeTo": "%s",
 					"data": {
 					'$type': 'none'
 						}
-		  			}""")%(From[i]))
+		  			}\n""")%(From[i]))
 
-		file.write("""]
-			},""")
+		file.write("""]},\n""")
 	#################################Finishes writing the root and its adjacencies
 	
                 for i in range (len(From)):
                     if From[0]==From[i]:#simple fix to the issue of everything but the last element having a coma at the end
-                        file.write("""  { """)
+                        file.write(""" {\n""")
                     else:
-                        file.write(""" ,{ """)
+                        file.write(""" ,{\n""")
 
-                    file.write( """ "adjacencies": [ """) #Starts the array that contains the adjacencies of the network in From[i]
+                    file.write( """ "adjacencies": [ \n""") #Starts the array that contains the adjacencies of the network in From[i]
                     max_flow,min_flow=self.get_threshold(From[i],c)
                     to=hash[From[i]].keys() #These adjacencies are accesed using the id  From[i] as a key in the hash and are saved in the array " to"
                     all_octects=0
@@ -129,37 +127,29 @@ class runpage:
                                 file.write (""" ,{ """)
 
                             
-                            file.write (("""
-                                    "nodeTo": "%s",
-
-                                    "data": {
-                                                                                                                                                                                                                                                   "$color": "%s",
-                                          
-                                    "$lineWidth":4,
-                                                                                                                                                                                                                                                   "$Octects": %s,
-                                                                                                                                                                                                                                                   "$Packets": %s,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                  "$Flows": %s
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                             }
-                                                   
-                                    """) %(to[x],self.getcolor(packets,max_flow,min_flow),octects,packets,flows))  #file.writes out an adjacent network to From[i]
+                            file.write ((""" "nodeTo": "%s",\n
+ 				"data": {\n 
+					"$color": "%s",\n 
+ 					"$lineWidth":4,\n
+					"$Octects": %s,\n
+					"$Packets": %s,\n
+					"$Flows": %s\n 
+				 }\n
+				} \n \n""") %(to[x],self.getcolor(packets,max_flow,min_flow),octects,packets,flows))  #file.writes out an adjacent network to From[i]
                     
                 
 		      
-                    file.write ((""" ],
-                            "data": {
-                            "$angularWidth":10,
-                            "$height" : 50,
-                            "$color": "#A94442",
-                            //"$color": "#E25D33",
-                                                                                                                                                                                                                                           "$All_Octects": %s,
-                                                                                                                                                                                                                                           "$All_Packets": %s,
-                                                                                                                                                                                                                                           "$All_Flows": %s
-                                                                                                                                                                                                                                                    },
-                                                                                                                                                                                                                                           "id": "%s",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                          "name": "%s"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     }
-                            """) %(all_octects,all_packets,all_flows,From[i],GetLabel(c,From[i]))) #Closes the adjacencies arra and specifies the color,shape and dim that the source network is going to have in the viz
+                    file.write (("""],\n
+			"data": {\n
+				 "$angularWidth":10,\n
+				"$height" : 50,\n
+				"$color": "#A94442",\n
+				"$All_Octects": %s,\n
+				"$All_Packets": %s,\n
+				"$All_Flows": %s\n
+			},\n
+			"id": "%s",\n
+			"name": "%s"  \n}""") %(all_octects,all_packets,all_flows,From[i],GetLabel(c,From[i]))) #Closes the adjacencies arra and specifies the color,shape and dim that the source network is going to have in the viz
 		file.write("];")
 
         
