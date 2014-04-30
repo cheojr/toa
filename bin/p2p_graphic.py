@@ -67,6 +67,7 @@ class runpage:
 		
 		file.write("""
   			var json = [
+      			//"root" node is invisible
 				{
 				"id" : "root" ,
 				"name" :"" ,
@@ -150,6 +151,7 @@ class runpage:
                             "$angularWidth":10,
                             "$height" : 50,
                             "$color": "#A94442",
+                            //"$color": "#E25D33",
                                                                                                                                                                                                                                            "$All_Octects": %s,
                                                                                                                                                                                                                                            "$All_Packets": %s,
                                                                                                                                                                                                                                            "$All_Flows": %s
