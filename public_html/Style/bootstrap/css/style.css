@@ -6,6 +6,8 @@ html{
 
 	overflow-x:hidden;
 
+	text-align: left!important;
+
 }
 
 body{
@@ -13,6 +15,8 @@ body{
 	background-image:url("../img/back.png");
 
 	overflow-x:hidden;
+
+	text-align: left!important;
 
 }
 
@@ -114,6 +118,12 @@ body{
 /********** Feature Bar Style ************/
 
 /********** Content Style ************/
+
+#container{
+
+	width:100%!important;
+
+}
 
 .p2p-jumbotron{
 

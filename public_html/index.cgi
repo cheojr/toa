@@ -34,14 +34,13 @@ print "<head>"
 
 print "<title>ToaNMS</title>"
 
-print """<link rel="stylesheet" href="Style/bootstrap/css/style.css"/>
+print "<link rel='stylesheet' href='Style/bootstrap/css/style.css'/>"
 
-         <link type="text/css" href="./Jit/Examples/css/base.css" rel="stylesheet" />
-	 <link type="text/css" href="./Jit/Examples/css/base.css" rel="stylesheet" />
-        <link type="text/css" href="./Jit/Examples/css/Sunburst.css" rel="stylesheet" />
-         <script language="javascript" type="text/javascript"src="./Jit/jit.js"></script>
- 
-"""
+print "<link type='text/css' href='./Jit/Examples/css/base.css' rel='stylesheet' />"
+        
+print "<link type='text/css' href='./Jit/Examples/css/Sunburst.css' rel='stylesheet' />"
+         
+print "<script language='javascript' type='text/javascript'src='./Jit/jit.js'></script>"
 
 print """<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>"""
 
@@ -185,27 +184,27 @@ print "<div class='col-md-7'>"
 
 print "<div class='jumbotron p2p-jumbotron'>"
 
-#config = Config()
-
 if os.path.isfile(PATH + "/p2p_graph.js"):
-     print  """
 
-		<div id="container">
+	print "<div id='container'>"
+				
+	print "<div id='center-container'>"
+   		 		
+	print "<div id='infovis'></div>"  
 
-			<div id="center-container">
-   		 		<div id="infovis"></div>   
-			</div>
-			<div id="right-container">
+	print "</div>"
 
-			<div id="inner-details"></div> 
-		</div>
+	#print "<div id='right-container'>"
 
-
-	""" 
+	#print "<div id='inner-details'></div>"
+		
+	#print "</div>"
 
 else:
         
         print "<br><center><h1><p class='text-danger'>You dont see the p2p graph? <br><br>Try refreshing the page.</p></h1></center>"
+
+print "</div>"
 
 print "</div>"
 
