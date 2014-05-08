@@ -141,7 +141,6 @@ def monthly_insert(options,PATH):
 
                                         if execute==0:
                                             try:
-                                                        os.listdir('/var/www/html/development/TOANMS/tools')
                                                         print PATH+"/"+day+"/"+flow+"\n"
 
 					        	os.system("python ../bin/flows-db-update.py %s "%(PATH +"/"+day+"/"+flow))
