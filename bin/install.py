@@ -103,59 +103,58 @@ print """This installer will guide you through the installation of TOA"""
 print """Please follow the instructions carefully"""
 print 
 
-print """Create Database..."""
 DB_USER=confirmInput("Enter MySQL User to be use with Toa: ")
 DB_PASS=confirmInput("Enter the password: ")
-#DB_NAME=raw_input("Enter the database to be used\n")
+DB_NAME=confirmInput("Enter the database to be used\n")
 DB_HOST='localhost'
-try:
-	db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, host=DB_HOST)
+#try:
+#	db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, host=DB_HOST)
 
-	c = db.cursor()
+#	c = db.cursor()
 
-except MySQLdb.Error, e:
+#except MySQLdb.Error, e:
 
-    print "Error %d: %s" % (e.args[0],e.args[1])
-    exit(1)
+ #   print "Error %d: %s" % (e.args[0],e.args[1])
+#    exit(1)
 
 
 
-print "Creating database Toa and granting permissions to user %s"%(DB_USER)
+#print "Creating database Toa and granting permissions to user %s"%(DB_USER)
 
-try:
-	c.execute("CREATE DATABASE IF NOT EXISTS Toa;")
+#try:
+#	c.execute("CREATE DATABASE IF NOT EXISTS Toa;")
 
-except MySQLdb.Error, e:
+#except MySQLdb.Error, e:
 
-    	print "Error %d: %s" % (e.args[0],e.args[1])
-	print "Exiting installation with errors"
-	c.close()
-    	exit(1)
+ #   	print "Error %d: %s" % (e.args[0],e.args[1])
+#	print "Exiting installation with errors"
+#	c.close()
+#    	exit(1)
 
-try: 
- 	c.execute("GRANT ALL ON Toa.* TO 'toadb'@'%s';"%(DB_HOST))
-except MySQLdb.Error, e:
-    	print "Error %d: %s" % (e.args[0],e.args[1])
-	c.close()
-	exit(1)
+#try: 
+ #	c.execute("GRANT ALL ON Toa.* TO 'toadb'@'%s';"%(DB_HOST))
+#except MySQLdb.Error, e:
+# 	print "Error %d: %s" % (e.args[0],e.args[1])
+#	c.close()
+#	exit(1)
 	
-c.close()
+#c.close()
 
 print "Testing connection to database using toadb..."
 try:
-	db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, host=DB_HOST,db='Toa')
+	db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, host=DB_HOST,db=DB_NAME)
 
 	c = db.cursor()
-	print "Connected"
+	print "Succesfully Connected"
 except MySQLdb.Error, e:
 
     print "Error %d: %s" % (e.args[0],e.args[1])
     if e.args[0]==1045:
-	print "If the user was created before installation make sure you provided the correct password for the existing user at the begining of the installation\n"
+	print "Make sure you provided the correct password,database and user credentials"
 	print "Exiting installation with errors"
     exit(1)
 
-print "Loading Database..."
+print "Loading Database Schema..."
 if os.path.exists('../db/flowsschema.sql'):
 	#os.system('mysql -u toadb -p%s -h %s Toa < db/flowsschema.sql'%(toapass,DB_HOST))
 	try:
