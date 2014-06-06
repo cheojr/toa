@@ -1,0 +1,218 @@
+#!/usr/bin.python
+import sys 
+import MySQLdb
+import re
+import os
+sys.path.append("../public_html/Models")
+from UserModel  import *
+
+def getpasswd():
+	confirm=""
+	toapass=" "
+	valid=False
+	while (confirm!=toapass or valid==False):
+		toapass=raw_input("Enter a password \n")
+		confirm=raw_input("Please confirm password\n")
+		if confirm!=toapass:
+			print("ERROR:passwords dont match, please try again\n")
+		#elif re.match('.(?=.{8,})(?=.[a-zA-Z])(?=.[!@#\$%*&]).*$',toapass)==None  :
+		elif re.match('.(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!#\$%@&\?\* "]).*$',toapass)==None  :
+			print "Password not valid, must contain at least 8 characters and at least one number, one letter and one unique character"
+		else:
+			valid=True
+	return toapass 
+
+def createcrontab(flowspath, binpath) :
+	fd = open("../etc/crontab", "w")
+	binpath+='/toa/bin'
+	fd.write("""*/5 * * * * %s/flowdbu.sh %s %s\n""" % (binpath, flowspath, binpath))	
+	fd.write("""0 22 * * * /usr/bin/python %s/flowsgrapherdaily_pool.py""" % (binpath))
+	fd.close()
+
+def confirmInput(msg):
+	value = ""
+	cont = ""
+	while 1:
+		value = raw_input(msg)
+		cont = raw_input("Your selection was %s ok?(y/n)" % value)
+		if cont == "y" or cont == "Y":
+			return value
+		
+		
+		
+def createconfigfile(password):
+
+	print "Now enter the following information to create the configuration file\n" 
+    	graphpath=confirmInput("Enter the complete graph path for TOA (directory must exist, create after instalation if necessary): ")
+
+	flowpath=confirmInput("Enter path where the Flow files will be located (directory must exist, create after instalation if necessary): ")
+
+	logspath=confirmInput("Enter the  complete path for TOA logs to be saved(directory must exist, create after instalation if necessary): ")
+	
+	crontime=confirmInput("Enter the new crontime (in unix time) for TOA's script executions (suggested 300): ")
+	oldesttime=confirmInput("Enter for how many years will Toa keep data in the database before deleting it, min 1 year  max 5 years (only int): ")
+	oldesttime=int(float(oldesttime)) #round down just incase
+
+	toapath=confirmInput("Enter the path where the toa directory is located: ")
+
+	configfile="""
+<!-- Warning do not leave spaces in between tags and the data, it will count as part of the data string -->
+<config>
+        <database>
+
+            <name>Toa</name>
+
+            <auth>
+
+                <user>%s</user>
+
+                <passwd>%s</passwd>
+
+            </auth>
+
+        </database>
+
+
+
+
+        <logs><path>%s</path></logs>
+
+        <flows><path>%s</path></flows>
+
+        <graphs><path>%s</path></graphs>
+
+        <crontime><time>%s</time></crontime>
+
+	<oldesttime><time>%i</time></oldesttime>
+
+	<toapath><path>%s</path></toapath> 
+    </config>
+	""" %(DB_USER,DB_PASS,logspath,flowpath,graphpath,crontime,oldesttime,toapath)
+
+
+
+	file=open('../etc/config.xml','w')
+	file.write(configfile)
+	file.close()
+	return flowpath,graphpath,crontime,toapath
+
+
+################### MAIN ################
+
+print """This installer will guide you through the installation of TOA"""
+print """Please follow the instructions carefully"""
+print 
+
+print """Create Database..."""
+DB_USER=confirmInput("Enter MySQL User to be use with Toa: ")
+DB_PASS=confirmInput("Enter the password: ")
+#DB_NAME=raw_input("Enter the database to be used\n")
+DB_HOST='localhost'
+try:
+	db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, host=DB_HOST)
+
+	c = db.cursor()
+
+except MySQLdb.Error, e:
+
+    print "Error %d: %s" % (e.args[0],e.args[1])
+    exit(1)
+
+
+
+print "Creating database Toa and granting permissions to user %s"%(DB_USER)
+
+try:
+	c.execute("CREATE DATABASE IF NOT EXISTS Toa;")
+
+except MySQLdb.Error, e:
+
+    	print "Error %d: %s" % (e.args[0],e.args[1])
+	print "Exiting installation with errors"
+	c.close()
+    	exit(1)
+
+try: 
+ 	c.execute("GRANT ALL ON Toa.* TO 'toadb'@'%s';"%(DB_HOST))
+except MySQLdb.Error, e:
+    	print "Error %d: %s" % (e.args[0],e.args[1])
+	c.close()
+	exit(1)
+	
+c.close()
+
+print "Testing connection to database using toadb..."
+try:
+	db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, host=DB_HOST,db='Toa')
+
+	c = db.cursor()
+	print "Connected"
+except MySQLdb.Error, e:
+
+    print "Error %d: %s" % (e.args[0],e.args[1])
+    if e.args[0]==1045:
+	print "If the user was created before installation make sure you provided the correct password for the existing user at the begining of the installation\n"
+	print "Exiting installation with errors"
+    exit(1)
+
+print "Loading Database..."
+if os.path.exists('../db/flowsschema.sql'):
+	#os.system('mysql -u toadb -p%s -h %s Toa < db/flowsschema.sql'%(toapass,DB_HOST))
+	try:
+		file=open('../db/flowsschema.sql','r')
+		lines=(file.read()).split(";")
+		for query in lines:
+			c.execute(query)
+	except MySQLdb.Error,e:
+    		print "Error %d: %s" % (e.args[0],e.args[1])
+		print "ERROR: database could not be loaded from 'db/flowsschema.sql', exiting ..."
+		c.close()
+		exit(1)
+
+	print "Database loaded"
+else:
+	print "Error: Database dump 'flowsschema.sql' not found, please place it in this directory"
+	exit(1)
+
+
+print "Success"
+print "Creating the configuration file"
+flowpath,graphpath,crontime, toapath=createconfigfile(DB_PASS)
+
+print "..Done, a file named config.xml was created in the ../etc directory. If desired the file can also be placed on /etc or ~/etc "
+
+print "Generating crontab commands"
+createcrontab(flowpath,toapath)
+
+print "..Done, a file named crontab  was created in the ../etc directory. Please copy its contents to the crontab (remember to update crontab if the path it uses change) "
+
+print ("""Creating User 'toa' as admin for  the web interface""")
+print "Insert password for admin 'toa'"
+
+userpass=getpasswd()
+phone=raw_input("Enter phone number(only digits)\n")
+while re.match("[0-9]{7,20}$",phone)==None :
+	print "ERROR: not a valid phone number (use only digits)"
+	phone=raw_input("Enter phone number(only digits)\n")
+
+email=raw_input("Enter email\n")
+while re.match("([a-zA-Z0-9]|\.|_|-|\+|$)+@[a-zA-Z0-9]+(\.[a-zA-Z]+)+$",email)==None:
+	print "Error: not a valid email adress"
+	email=raw_input("Enter email\n")
+
+
+user=UserModel()
+if user.connect('Toa','toa',userpass,flowpath,graphpath,crontime):
+	
+	user.Create('toa',phone,userpass,email,1)
+else:
+	print "ERROR: Database Connection Error\n"
+	print "Make sure the user 'toa' doesn't exist already"
+	print "Exiting installation with errors"
+	c.close()
+	exit(1)
+
+print("Done, you are now able to log in as admin using the toaoverlord user")
+
+
+c.close()
