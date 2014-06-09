@@ -149,7 +149,7 @@ flowpath,graphpath,crontime, toapath=createconfigfile(DB_PASS)
 
 print "..Done" 
 print """****************************[IMPORTANT READ] *********************************** 
-a file named config.xml was created in the ../etc directory. If desired the file can also be placed on /etc or ~/etc "
+a file named config.xml was created in the ../etc directory. When the install is done copy the etc directory found in toa to your home directory. If desired the file can also be placed on /etc, /usr/local/etc or where it is if the toa directory is located inside your home directory "
 *************************************[IMPORTANT READ] *************************** """ 
 
 print 

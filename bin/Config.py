@@ -26,38 +26,38 @@ class Config:
        	    		
                 conf_path = ""
                 
-		if os.environ.has_key("HOME") and os.path.isfile("%s/toa/etc/config.xml" % os.environ["HOME"]):
-				    
-                    conf_path = "%s/toa/etc/config.xml" % os.environ["HOME"]
-                
 
-		elif os.environ.has_key("HOME") and os.path.isfile("%s/etc/config.xml" % os.environ["HOME"]):
+		
+		if os.environ.has_key("HOME") and os.path.isfile("%s/etc/config.xml" % os.environ["HOME"]):
 				    
                     conf_path = "%s/etc/config.xml" % os.environ["HOME"]
-	    		
-                elif os.path.isfile("/etc/config.xml"):
+		
+
+		elif os.path.isfile("/usr/local/etc/config.xml"):
+				    
+                    conf_path = "/usr/local/etc/config.xml"
+		
+                elif os.path.isfile("/etc/config.xml") :
 				    
                     conf_path = "/etc/config.xml"
-	    		
-                #elif os.path.isfile("../etc/config.xml"):
-				    
-                 #   conf_path = "../etc/config.xml"
-            		
-            #    elif os.path.isfile("../../etc/config.xml"):
-                		
-                #    conf_path = "../../etc/config.xml"
-	    		
-               # elif os.path.isfile("../../../etc/config.xml"):
-                		
-                #    conf_path = "../../../etc/config.xml"
-            	
-                else:
-				    
-                    print "ERROR: Unable to find config.xml file"
 		
-                    sys.exit(1)
+		elif os.environ.has_key("HOME") and os.path.isfile("%s/toa/etc/config.xml" % os.environ["HOME"]):
+				    
+                    conf_path = "%s/toa/etc/config.xml" % os.environ["HOME"]
 
-                tree = ET.parse(conf_path)
+	    		
+                else:
+
+
+			print "Content-Type: text/html\n\n"
+			print
+				    
+                    	print """ERROR: Unable to find config.xml file. Try putting it in /home/username/etc, /etc, /usr/local/etc or /home/username/toa/etc (see step 6 of ins
+				tructions)"""
+
+                    	sys.exit(1)
+		
+		tree = ET.parse(conf_path)
            	 	
                 config=tree.getroot()# gets the first tag
             	
