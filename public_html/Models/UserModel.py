@@ -108,7 +108,7 @@ class UserModel:
 
 			return self.cursor.fetchone()
 
-		except MySQLdb.error:
+		except MySQLdb.Error:
 
 			return False
 
@@ -120,8 +120,7 @@ class UserModel:
 			self.cursor.execute("""SELECT staff FROM USUARIO WHERE uid='%s'"""%id)
 
 			return self.cursor.fetchone()
-
-		except MySQLdb.error:
+		except MySQLdb.Error:
 
 			return False
 
@@ -150,7 +149,7 @@ class UserModel:
 
 			return True
 
-		except MySQLdb.error:
+		except MySQLdb.Error:
 
 			return False
 
@@ -162,7 +161,7 @@ class UserModel:
 
 			return True
 
-		except MySQLdb.error:
+		except MySQLdb.Error:
 
 			return False
 

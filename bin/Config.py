@@ -2,7 +2,7 @@
 import os
 import sys
 import xml.etree.ElementTree as ET
-
+import pwd
 #This class is for accesing the value sin the configuration file in the code.
 # Warning The class asumes that the order of the tags has not been altered from the original file created at instalation
 
@@ -27,10 +27,11 @@ class Config:
                 conf_path = ""
                 
 
-		
-		if os.environ.has_key("HOME") and os.path.isfile("%s/etc/config.xml" % os.environ["HOME"]):
+	
+		HOME= pwd.getpwuid(os.stat('Models/Config.py').st_uid).pw_name	
+		if HOME  and os.path.isfile("/home/%s/etc/config.xml" % HOME):
 				    
-                    conf_path = "%s/etc/config.xml" % os.environ["HOME"]
+                    conf_path = "/home/%s/etc/config.xml" % HOME
 		
 
 		elif os.path.isfile("/usr/local/etc/config.xml"):
@@ -41,9 +42,9 @@ class Config:
 				    
                     conf_path = "/etc/config.xml"
 		
-		elif os.environ.has_key("HOME") and os.path.isfile("%s/toa/etc/config.xml" % os.environ["HOME"]):
+		elif HOME  and os.path.isfile("/home/%s/toa/etc/config.xml" % HOME):
 				    
-                    conf_path = "%s/toa/etc/config.xml" % os.environ["HOME"]
+                    conf_path = "/home/%s/toa/etc/config.xml" % HOME
 
 	    		
                 else:
@@ -56,7 +57,7 @@ class Config:
 				tructions)"""
 
                     	sys.exit(1)
-		
+	
 		tree = ET.parse(conf_path)
            	 	
                 config=tree.getroot()# gets the first tag
