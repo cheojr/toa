@@ -43,7 +43,7 @@ def confirmInput(msg):
 def createconfigfile(password):
 
 	print "Now enter the following information to create the configuration file\n" 
-    	graphpath=confirmInput("Enter the complete graph path for TOA (directory must exist, create after instalation if necessary): ")
+    	graphpath=confirmInput("Enter the complete graphs path for TOA, suggested: /home/<username>/public_html/graphs (directory must exist, create after instalation if necessary): ")
 
 	flowpath=confirmInput("Enter path where the Flow files will be located (directory must exist, create after instalation if necessary): ")
 
@@ -51,9 +51,10 @@ def createconfigfile(password):
 	
 	crontime=confirmInput("Enter the new crontime (in unix time) for TOA's script executions (suggested 300): ")
 	oldesttime=confirmInput("Enter for how many years will Toa keep data in the database before deleting it, min 1 year  max 5 years (only int): ")
+	
 	oldesttime=int(float(oldesttime)) #round down just incase
 
-	toapath=confirmInput("Enter the path where the toa directory is located: ")
+	toapath=confirmInput("Enter the path where the toa directory is located (include the toa directory in the path): ")
 
 	configfile="""
 <!-- Warning do not leave spaces in between tags and the data, it will count as part of the data string -->
@@ -107,38 +108,6 @@ DB_USER=confirmInput("Enter MySQL User to be use with Toa: ")
 DB_PASS=confirmInput("Enter the password: ")
 DB_NAME=confirmInput("Enter the database to be used\n")
 DB_HOST='localhost'
-#try:
-#	db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, host=DB_HOST)
-
-#	c = db.cursor()
-
-#except MySQLdb.Error, e:
-
- #   print "Error %d: %s" % (e.args[0],e.args[1])
-#    exit(1)
-
-
-
-#print "Creating database Toa and granting permissions to user %s"%(DB_USER)
-
-#try:
-#	c.execute("CREATE DATABASE IF NOT EXISTS Toa;")
-
-#except MySQLdb.Error, e:
-
- #   	print "Error %d: %s" % (e.args[0],e.args[1])
-#	print "Exiting installation with errors"
-#	c.close()
-#    	exit(1)
-
-#try: 
- #	c.execute("GRANT ALL ON Toa.* TO 'toadb'@'%s';"%(DB_HOST))
-#except MySQLdb.Error, e:
-# 	print "Error %d: %s" % (e.args[0],e.args[1])
-#	c.close()
-#	exit(1)
-	
-#c.close()
 
 print "Testing connection to database using toadb..."
 try:
@@ -178,13 +147,21 @@ print "Success"
 print "Creating the configuration file"
 flowpath,graphpath,crontime, toapath=createconfigfile(DB_PASS)
 
-print "..Done, a file named config.xml was created in the ../etc directory. If desired the file can also be placed on /etc or ~/etc "
+print "..Done" 
+print """****************************[IMPORTANT READ] *********************************** 
+a file named config.xml was created in the ../etc directory. If desired the file can also be placed on /etc or ~/etc "
+*************************************[IMPORTANT READ] *************************** """ 
 
+print 
 print "Generating crontab commands"
 createcrontab(flowpath,toapath)
 
-print "..Done, a file named crontab  was created in the ../etc directory. Please copy its contents to the crontab (remember to update crontab if the path it uses change) "
+print "..Done"
+print """****************************[IMPORTANT READ] *********************************** 
+a file named crontab  was created in the ../etc directory. Please copy its contents to the crontab (remember to update crontab if the path it uses change) "
+*************************************[IMPORTANT READ] *************************** """ 
 
+print 
 print ("""Creating User 'toa' as admin for  the web interface""")
 print "Insert password for admin 'toa'"
 
