@@ -28,7 +28,7 @@ class Config:
                 
 
 	
-		HOME= pwd.getpwuid(os.stat('Models/Config.py').st_uid).pw_name	
+		HOME= pwd.getpwuid(os.stat('.').st_uid).pw_name	
 		if HOME  and os.path.isfile("/home/%s/etc/config.xml" % HOME):
 				    
                     conf_path = "/home/%s/etc/config.xml" % HOME
