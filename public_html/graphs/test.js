@@ -1,1 +1,0 @@
-alert('aaaaaaa pu~eeeeeta')
