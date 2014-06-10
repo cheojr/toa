@@ -33,7 +33,7 @@ INCREMENT=config.getCronTime()
 interval_modulation=INCREMENT #sets the number that thetime is going to be modulated by, should be the same as the time increment (if 5min then 300)so that if the module is 0 then the unixtime has ben incremented correctly 
 
 
-sys.path.append(TOAPATH+'/toa/bin/')
+sys.path.append(TOAPATH+'/bin/')
 from FlowQueries import *
 
 

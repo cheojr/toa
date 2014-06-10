@@ -182,7 +182,7 @@ def getGraph(admin,type,filter,entity,h, w,portlabel,tolabel,label):
 		#id is network id 
 		#GetLabel returns the label for that id 
 
-		graph=GRAPH_PATH+label+'_'+f
+		graph=GRAPH_PATH+'/'+label+'_'+f
 		
 
 
@@ -190,10 +190,10 @@ def getGraph(admin,type,filter,entity,h, w,portlabel,tolabel,label):
 		#id is the port if (pid from the database)
 
 
-		graph=GRAPH_PATH+label+'-p'+portlabel+'_'+f
+		graph=GRAPH_PATH+'/'+label+'-p'+portlabel+'_'+f
 
 	elif entity=='net2net':
-		graph=GRAPH_PATH+label+'_'+tolabel+'_'+f
+		graph=GRAPH_PATH+'/'+label+'_'+tolabel+'_'+f
 		
 	if type=='all':
 		types=['net','pak','flw','cpl']

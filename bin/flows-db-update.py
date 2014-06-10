@@ -42,6 +42,7 @@ def main(file):
 	#This generates the dictionary. It needs the database cursor because settings for the dictionary are in the database
 	network = GenerateDictionary().GenDictionary(c) 
 	
+	print file
 	sf = StripFlowData() 
 	set = flowtools.FlowSet(path)
 
