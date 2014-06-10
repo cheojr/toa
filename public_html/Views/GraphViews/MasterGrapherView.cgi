@@ -17,6 +17,9 @@ from SessionModel import SessionModel
 
 uid=sid=remote=""
 def validate(form):
+	global uid
+	global sid
+	global remote
 	if form.has_key('uid') and form.has_key('sid') and form.has_key('remote'):
 		uid=form.getvalue('uid')
 		sid=form.getvalue('sid')
@@ -53,8 +56,10 @@ def  printgraphs(admin,graph,type,w,h,divid,filter=None):
    graphdata=file.read()
    graphdata=graphdata.replace("data","data%s"%(divid))
    response=""
-
-   eventhandler="""      //  google.visualization.events.addListener(net%s, 'select', function(e){
+  
+   eventhandler="""
+					console.log("uid = " +' %s');
+					//  google.visualization.events.addListener(net%s, 'select', function(e){
                                  
                                 //document.getElementById('APP_FILTER').style.display = 'inline';
                        //  });
@@ -82,7 +87,7 @@ def  printgraphs(admin,graph,type,w,h,divid,filter=None):
 
                        });
 
-                         """ %(divid,divid,divid,divid,divid,divid,divid+"submit",uid,sid,remote,divid)
+                         """ %(uid,divid,divid,divid,divid,divid,divid,divid+"submit",uid,sid,remote,divid)
 
    if type !='cpl':
 	#Read the data for the graphs and the js functions to draw it from js file

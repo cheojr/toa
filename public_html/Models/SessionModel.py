@@ -91,7 +91,7 @@ class SessionModel:
 		return self.cursor.fetchone()#fetching the value of the Datestamp of the current user
 
 	def Validate(self, uid, sid, remote):
-
+		
 		self.cursor.execute("SELECT lasttime from SESION where uid = '%s' and sid = '%s' and remote_addr = '%s'"%(uid, sid, remote))
 
 		status = self.cursor.fetchone()
