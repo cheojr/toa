@@ -27,11 +27,14 @@ class Config:
                 conf_path = ""
                 
 
-	
-		HOME= pwd.getpwuid(os.stat('.').st_uid).pw_name	
+		try:
+			HOME= pwd.getpwuid(os.stat('.').st_uid).pw_dir
+		except:
+			HOME=0
+
 		if HOME  and os.path.isfile("/home/%s/etc/config.xml" % HOME):
 				    
-                    conf_path = "/home/%s/etc/config.xml" % HOME
+                    conf_path = "/%s/etc/config.xml" % HOME
 		
 
 		elif os.path.isfile("/usr/local/etc/config.xml"):
@@ -44,7 +47,7 @@ class Config:
 		
 		elif HOME  and os.path.isfile("/home/%s/toa/etc/config.xml" % HOME):
 				    
-                    conf_path = "/home/%s/toa/etc/config.xml" % HOME
+                    conf_path = "/%s/toa/etc/config.xml" % HOME
 
 	    		
                 else:
