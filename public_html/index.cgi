@@ -200,8 +200,13 @@ if os.path.isfile(PATH + "/p2p_graph.js"):
 	#print "</div>"
 
 else:
+	print "<div id='container'>"
+	print "<div>"
+				
         
         print "<br><center><h1><p class='text-danger'>You dont see the p2p graph? <br><br>Try refreshing the page.</p></h1></center>"
+	
+	print "</div>" 
 
 print "</div>"
 
