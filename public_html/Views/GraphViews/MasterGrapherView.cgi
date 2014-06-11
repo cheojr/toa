@@ -58,7 +58,6 @@ def  printgraphs(admin,graph,type,w,h,divid,filter=None):
    response=""
   
    eventhandler="""
-					console.log("uid = " +' %s');
 					//  google.visualization.events.addListener(net%s, 'select', function(e){
                                  
                                 //document.getElementById('APP_FILTER').style.display = 'inline';

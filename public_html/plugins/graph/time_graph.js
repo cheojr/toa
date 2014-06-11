@@ -42,7 +42,7 @@ function validData(request_type){
 	if (srcIp.length == 0)srcIp = "null" ;
 	if (dstIp.length == 0)dstIp = "null";
 	if (src_pre%8!=0||src_pre<0||src_pre>32||dst_pre%8!=0||dst_pre<0||dst_pre>32)return 0 ;
-	console.log(request_type);	
+	//console.log(request_type);	
 	return 1;
 }
 
@@ -59,24 +59,9 @@ function getUrl(request_type){
 	
 }
 
-function parseData(request_type)
-{
-
-	if (!validData(request_type))return ;
-	
-	var response=getResponse(getUrl(request_type));
-	console.log(response);	
-	if (parseInt(response)==-1){
-		alert('Input_Error');
-		return 0;
-    }
-
-	json = JSON.parse(response);
-
-	document.body.style.cursor = "wait";
-
+function initForceDirectedObject(){
 	// init ForceDirected
-	var fd = new $jit.ForceDirected({
+	fd = new $jit.ForceDirected({
 			//id of the visualization container
 			injectInto: 'infovis',
 			//Enable zooming and panning
@@ -156,9 +141,9 @@ function parseData(request_type)
 			},
 			
 		//Number of iterations for the FD algorithm
-			iterations: 200,
+			iterations: 200,//200
 			//Edge length
-			levelDistance: 130,
+			levelDistance: 130,//130
 			// Add text to the labels. This method is only triggered
 			// on label creation and only for DOM labels (not native canvas ones).
 		onCreateLabel: function(domElement, node){
@@ -225,7 +210,7 @@ function parseData(request_type)
 		// Build the right column relations list.
 		// This is done by traversing the clicked node connections.
 		var html = "<h4>" + node.name + "</h4><b> connections:</b><ul><li>",
-			list = [];
+		list = [];
 		node.eachAdjacency(function(adj){
 		  if(adj.getData('alpha')) list.push(adj.nodeTo.name);
 		});
@@ -244,7 +229,26 @@ function parseData(request_type)
 				style.display = '';
 			}
 	});//fd object end
+}
 
+
+function parseData(request_type)
+{
+
+	if (!validData(request_type))return ;
+	
+	var response=getResponse(getUrl(request_type));
+	//console.log(response);	
+	if (parseInt(response)==-1){
+		alert('Input_Error');
+		return 0;
+    }
+
+	json = JSON.parse(response);
+
+	document.body.style.cursor = "wait";
+
+//********************************************************************************************
 	// load JSON data.
 	fd.loadJSON(json);
 	
@@ -328,6 +332,7 @@ function getResponse(url){
 
 
 window.onload = function(){
+	initForceDirectedObject();
 	$('#axis_menu').hide(0);
 	document.getElementById('srcIp').focus();
 	inp_date = document.getElementById('flow_date').value ;
