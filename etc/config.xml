@@ -6,23 +6,23 @@
 
             <auth>
 
-                <user>root</user>
+                <user>dummy</user>
 
-                <passwd>rootitg</passwd>
+                <passwd>dummypass</passwd>
 
             </auth>
 
         </database>
 
-        <logs><path>/opt/toa/toalogs/</path></logs>
+        <logs><path></path></logs>
 
-        <flows><path>/CassandraVol/flows/</path></flows>
+        <flows><path></path></flows>
 
-        <graphs><path>/var/www/html/graphs/</path></graphs>
+        <graphs><path></path></graphs>
 
         <crontime><time>300</time></crontime>
 
         <oldesttime><time>1</time></oldesttime>
 	
-        <toahome><path>/home/albert</path></toahome>
+        <toahome><path></path></toahome>
     </config>
