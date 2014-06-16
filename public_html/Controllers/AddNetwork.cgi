@@ -107,6 +107,8 @@ NetworkModel = NetworkModel()
 
 UserModel = UserModel()
 
+fail=False;
+
 if SessionModel.connect() and UserModel.connect() and NetworkModel.connect():
 
 	timestamp = SessionModel.Validate(uid, sid, remote)
@@ -134,30 +136,37 @@ if SessionModel.connect() and UserModel.connect() and NetworkModel.connect():
 			errors.append("Name must contain only letters and numbers")
 
 			errors.append("Name must start with letter")
+			
+			fail=True
 
 	except:
 
 		errors.append("Name must contain only letters and numbers")
 
 		errors.append("Name must start with letter")
+		fail=True
 
 	try:
 	
 		if not re.match('^[as]|[interface]|[network]$', str(monitoringType)):
+			fail=True
 
 			errors.append("Please do not alter Toa's code")
 
 	except:
 
 		errors.append("Please do not alter Toa's code")
+		fail=True
 
 	try:
 	
 		if re.match('^interface$', str(monitoringType)) and not re.match('^[0-9]+$', str(interfaceNumber)):
 
 			errors.append("Please select an interface number")
+			fail=True
 
 	except:
+		fail=True
 
 		if re.match('^interface$', str(monitoringType)):
 
@@ -166,10 +175,12 @@ if SessionModel.connect() and UserModel.connect() and NetworkModel.connect():
 	try:
 	
 		if re.match('^as$', str(monitoringType)) and not re.match('^[0-9]+$', str(asNumber)):
+			fail=True
 
 			errors.append("Please select an AS number")
 
 	except:
+		fail=True
 
 		if re.match('^as$', str(monitoringType)):
 
@@ -178,30 +189,36 @@ if SessionModel.connect() and UserModel.connect() and NetworkModel.connect():
 	try:
 	
 		if not re.match('^[0-9]+$', str(minBytes)) or not re.match('^[0-9]+$', str(maxBytes)):
+			fail=True
 
 			errors.append("Invalid treshold. Treshold must be integers")
 
 		elif int(minBytes) > int(maxBytes):
+			fail=True
 
 			errors.append("Invalid treshold")
 
 	except:
+		fail=True
 
 		errors.append("Invalid treshold. Treshold must be integers")
 
-	if not NetworkModel.Add(label, monitoringType, interfaceNumber, asNumber, minBytes, maxBytes):
+	if not fail: 
+		if not NetworkModel.Add(label, monitoringType, interfaceNumber, asNumber, minBytes, maxBytes):
 
-		errors.append("A device with that interface or as number already exist")
+			errors.append("A device with that interface or as number already exist")
 
-	if (errors):
+		errors.append("Network Added.")
 
-		del NetworkModel
+		if (errors):
 
-		del UserModel
+			del NetworkModel
 
-		del SessionModel
+			del UserModel
 
-		print "<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/AddNetwork.cgi?uid=%s&sid=%s&remote=%s&errors=%s\";self.focus();}</script>"%(uid, sid, remote, errors)			
+			del SessionModel
+
+			print "<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/AddNetwork.cgi?uid=%s&sid=%s&remote=%s&errors=%s\";self.focus();}</script>"%(uid, sid, remote, errors)			
 
 	del NetworkModel
 
@@ -209,7 +226,6 @@ if SessionModel.connect() and UserModel.connect() and NetworkModel.connect():
 
 	del SessionModel
 
-	errors.append("Network Added.")
 
 	print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/AddNetwork.cgi?uid=%s&sid=%s&remote=%s&errors=%s\";self.focus();}</script>"""%(uid, sid, remote, errors)
 
