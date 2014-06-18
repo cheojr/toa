@@ -122,7 +122,13 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     print """<script src="../../Controllers/MenuController.js"></script>"""
 
+    print """<script src="../../Controllers/PluginController.js"></script>"""
+
+    print """<script src="../../Controllers/Top100Controller.js"></script>"""
+
     print "<script type='text/javascript'>google.load('visualization', '1', {packages: ['corechart']});</script>"
+
+    print "<script>var elem = document.getElementsByClassName('popover');for(i=0; i<elem.length;i++){elem[i].popover();}</script>"
 
     print "</head>"
 
@@ -333,7 +339,7 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     for device in devices:
 
-        print "<li class='dropdown-submenu'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu'><li><a href='#' onclick=\"GraphView('%s', 'all', 'day', 'device', 'default', 'default', 'default', 'default', 1)\">Interface Graph</a></li>"%(device[1], device[1])
+	print "<li class='dropdown-submenu'><a href=#Device class='dropdown-hover'>%s</a><ul class='dropdown-menu'><li><a href='#' onclick=\"GraphView('%s', 'all', 'day', 'device', 'default', 'default', 'default', 'default', 1, 'default', '%s', '%s', '%s')\">Interface Graph</a></li>"%(device[1], device[1], uid, sid, remote)
 
         ports = PortModel.Get(device[0])
 
@@ -342,8 +348,8 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
             print "<li class='dropdown-submenu'><a href=#Port class='dropdown-hover'>Port Graph</a><ul class='dropdown-menu'>"
 
             for port in ports:
-
-                print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'port', '%s', 'default', 'default', 'default', 1)\">%s</a></li>"%(device[1], port[1], port[1])
+		
+		print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'port', '%s', 'default', 'default', 'default', 1, 'default', '%s', '%s', '%s')\">%s</a></li>"%(device[1], port[1], uid, sid, remote, port[1])
 
             print "</ul></li>"
 
@@ -355,9 +361,44 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
             for net2net in net2nets:
 
-                print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'net2net', 'default', '%s', 'default', 'default', 1)\">%s</a>"%(device[1],net2net[1], net2net[1])
+		print "<li><a href=# onclick=\"GraphView('%s', 'all', 'day', 'net2net', 'default', '%s', 'default', 'default', 1, 'default', '%s', '%s', '%s')\">%s</a>"%(device[1],net2net[1], uid, sid, remote, net2net[1])
 
             print "</ul></li>"
+        
+	print "<li class='dropdown-submenu'><a href=#Top100 class='dropdown-hover'>Top100</a>"
+
+        print "<ul class='dropdown-menu' role='menu'>"
+
+	#### Net Top 1000
+
+	print "<li class='dropdown-submenu'><a class='dropdown-hover'>Network</a>"
+
+        print "<ul class='dropdown-menu' role='menu'>"
+
+        print "<li><a onclick=\"GetTop100('net', 'oct', '%s', '%s', '%s', '%s')\">Octects</a></li>"%(device[0], uid, sid, remote)
+
+        print "<li><a onclick=\"GetTop100('net', 'pak', '%s', '%s', '%s', '%s')\">Packets</a></li>"%(device[0], uid, sid, remote)
+
+        print "<li><a onclick=\"GetTop100('net', 'flow', '%s', '%s', '%s', '%s')\">Flows</a></li>"%(device[0], uid, sid, remote)
+
+        print "</li></ul>"
+
+	 ### Port Top 100
+
+
+        print "<li class='dropdown-submenu'><a class='dropdown-hover'>Port</a>"
+
+        print "<ul class='dropdown-menu' role='menu'>"
+
+        print "<li><a onclick=\"GetTop100('ports', 'oct', '%s','%s','%s','%s')\">Octects</a></li>"%(device[0],uid,sid,remote)
+
+        print "<li><a onclick=\"GetTop100('ports', 'pak', '%s','%s','%s','%s')\">Packets</a></li>"%(device[0],uid,sid,remote)
+
+        print "<li><a onclick=\"GetTop100('ports', 'flow', '%s','%s','%s','%s')\">Flows</a></li>"%(device[0],uid,sid,remote)
+
+        print "</ul></li>"
+
+        print "</ul>"
 
         print "</li></ul>"
 
@@ -375,7 +416,7 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
 
     for view in views:
 
-        print "<li><a href=# onclick=\"GraphView('default', 'all', 'day', 'views', 'default', 'default', '900','400', 1, %s)\" data-toggle='modal' data-target='#Viewer'>%s</a></li>"%(view[0], view[1])
+ 	print "<li><a href=# onclick=\"GraphView('default', 'all', 'day', 'views', 'default', 'default', screen.width/2, screen.height-(screen.height/2), 1, %s)\" data-toggle='modal' data-target='#Viewer'>%s</a></li>"%(view[0], view[1])
 
     print "</ul></div>"
 
