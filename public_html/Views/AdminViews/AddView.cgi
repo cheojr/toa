@@ -291,27 +291,45 @@ if SessionModel.connect() and UserModel.connect() and Net2NetModel.connect() and
     ######################### Add Graph to View ##########################
 
     print "<div class='modal fade' id='AddGraphModal'>"
-            
+
     print "<div class='modal-dialog'>"
-                
+
     print "<div class='modal-content'>"
-                
+
     print "<div class='modal-header'>"
-        
+
     print "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>"
-        
+
     print "<h4 class='modal-title'>Add Graph to a View</h4>"
-      
+
     print "</div>"
-      
+
     print "<div class='modal-body'>"
 
-    print "<button type='button' class='btn btn-default btn-lg btn-feature-bar pull-right'>Add</button><br><br>"
-      
+    views = ViewModel.GetAll(uid)
+
+    print "<div class='row'>"
+
+    print "<div class='col-md-7 col-md-offset-1'>"
+
+    print "<select class='form-control form-control-lg' id='views'>"
+
+    for v in views:
+
+        print "<option value='%s'>%s</option>"%(v[0], v[1])
+
+    print "</select>"
+
+    print "</div><div class='col-md-3'>"
+
+    print "<button type='button' class='btn btn-default btn-lg btn-feature-bar pull-right' id='GraphAdder'>Add</button><br><br>"
+
+    print "</div></div>"
+
     print "</div>"
-    
+
     print "</div>"
-    
+
     print "</div>"
 
     print "</div>"
