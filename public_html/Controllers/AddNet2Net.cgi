@@ -26,23 +26,24 @@ print
 
 form = cgi.FieldStorage()#getting the values of the form in case of a validation error
 
-uid = form.getvalue("uid")
+
+uid =  form.getvalue("uid") if form.has_key("uid") else 0 
 
 uid = str(uid).strip("(),L")
 
 uid = int(uid)
 
-sid = form.getvalue("sid")
+sid = form.getvalue("sid")  if form.has_key("sid") else 0
 
-remote = form.getvalue("remote")
+remote = form.getvalue("remote")  if form.has_key("remote") else 0
 
-nid = form.getvalue("nid")
+nid = form.getvalue("nid")  if form.has_key("nid") else 0
 
 nid = str(nid).strip("(),L")
 
 nid = int(nid)
 
-device = form.getvalue("Device")
+device = form.getvalue("Device")  if form.has_key("Device") else "0"
 
 now = datetime.datetime.now()#generate the TimeStamp
 
@@ -54,28 +55,41 @@ UserModel = UserModel()
 
 Net2NetModel = Net2NetModel()
 
-timestamp = SessionModel.Validate(uid, sid, remote)
+if  SessionModel.connect() and Net2NetModel.connect() and UserModel.connect():
 
-if((timestamp+5)<=tmstp or timestamp == -1):
+	
+	timestamp = SessionModel.Validate(uid, sid, remote)
 
-    SessionModel.Close(uid, remote)
+	if((timestamp+5)<=tmstp or timestamp == -1):
 
-    del Net2NetModel
+    		SessionModel.Close(uid, remote)
 
-    del UserModel
+    		del Net2NetModel
 
-    del SessionModel
+    		del UserModel
 
-    print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
+    		del SessionModel
 
-SessionModel.UpdateTimeStamp(tmstp, uid, remote)
+    		print """<script language=\"JavaScript\">{location.href=\"../index.cgi\";self.focus();}</script>"""
 
-Net2NetModel.Add(nid, device)
+	SessionModel.UpdateTimeStamp(tmstp, uid, remote)
 
-del Net2NetModel
+	Net2NetModel.Add(nid, device)
 
-del UserModel
+	del Net2NetModel
 
-del SessionModel
+	del UserModel
 
-print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/ManageNet2Net.cgi?nid=%s&uid=%s&sid=%s&remote=%s\";self.focus();}</script>"""%(nid, uid, sid, remote)
+	del SessionModel
+
+	print """<script language=\"JavaScript\">{location.href=\"../Views/AdminViews/ManageNet2Net.cgi?nid=%s&uid=%s&sid=%s&remote=%s\";self.focus();}</script>"""%(nid, uid, sid, remote)
+else:
+
+	print "Database Connection Error. Configuration File Not Found."
+
+	del Net2NetModel
+
+	del UserModel
+
+	del SessionModel
+
