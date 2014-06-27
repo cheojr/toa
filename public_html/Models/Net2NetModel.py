@@ -112,9 +112,12 @@ class Net2NetModel:
 
 	def Remove(self, nnid):
 
+		fn_id,tn_id=self.GetFromandTo(nnid)[0]
+
 		try:
 	               
-			self.cursor.execute("""delete from NET2NET where nn_id=%s""" % (nnid))
+			self.cursor.execute("""delete from NET2NET where tn_id=%s and fn_id=%s""" % (tn_id,fn_id))
+			self.cursor.execute("""delete from NET2NET where fn_id=%s and tn_id=%s""" % (tn_id,fn_id))
 	        
 		except:
 	                
