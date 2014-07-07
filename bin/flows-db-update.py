@@ -11,14 +11,20 @@ import os
 import time
 from Config import Config
 
+ # the config file path is not specified as a command line parameter
+if len(sys.argv) < 3:
+	config=Config() 
+# the path is specified
+else:
+
+	config=Config(sys.argv[2])
+	
+
 # This is the main function, it receives file which is the flow file being inserted in the database
 def main(file):
 
-	print file
-        config=Config() 
 
-        intervalmodulation=config.getCronTime() # the interval to be inserted into the db in unix time. 
-	
+	intervalmodulation=config.getCronTime() # the interval to be inserted into the db in unix time. 
         #Split to create timestamp
 	temp_var = file.split("/")[-1].split('.')
 	date = temp_var[1]
@@ -42,7 +48,6 @@ def main(file):
 	#This generates the dictionary. It needs the database cursor because settings for the dictionary are in the database
 	network = GenerateDictionary().GenDictionary(c) 
 	
-	print file
 	sf = StripFlowData() 
 	set = flowtools.FlowSet(path)
 

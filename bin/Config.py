@@ -20,47 +20,50 @@ class Config:
 
         oldesttime=""
 	toapath=""
-        def __init__(self, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None, oldest = None, homepath = None):
+        def __init__(self, conf_path=None, name = None, user = None, passwd = None, flows_path = None, graphs_path = None, crontime = None, oldest = None, homepath = None):
             
+
+
             if name==None:
-       	    		
-                conf_path = ""
+       	    	
+		if conf_path ==None:
+                	conf_path = ""
                 
 
-		try:
-			HOME= pwd.getpwuid(os.stat('.').st_uid).pw_dir
-		except:
-			HOME=0
+			try:
+				HOME= pwd.getpwuid(os.stat('.').st_uid).pw_dir
+			except:
+				HOME=0
 
-		if HOME  and os.path.isfile("/home/%s/etc/config.xml" % HOME):
+			if HOME  and os.path.isfile("/%s/etc/config.xml" % HOME):
 				    
-                    conf_path = "/%s/etc/config.xml" % HOME
+                    		conf_path = "/%s/etc/config.xml" % HOME
 		
 
-		elif os.path.isfile("/usr/local/etc/config.xml"):
+			elif os.path.isfile("/usr/local/etc/config.xml"):
 				    
-                    conf_path = "/usr/local/etc/config.xml"
+                    		conf_path = "/usr/local/etc/config.xml"
 		
-                elif os.path.isfile("/etc/config.xml") :
+                	elif os.path.isfile("/etc/config.xml") :
 				    
-                    conf_path = "/etc/config.xml"
+                    		conf_path = "/etc/config.xml"
 		
-		elif HOME  and os.path.isfile("/home/%s/toa/etc/config.xml" % HOME):
+			elif HOME  and os.path.isfile("/%s/toa/etc/config.xml" % HOME):
 				    
-                    conf_path = "/%s/toa/etc/config.xml" % HOME
+                    		conf_path = "/%s/toa/etc/config.xml" % HOME
 
 	    		
-                else:
+                	else:
 
 
-			print "Content-Type: text/html\n\n"
-			print
+				print "Content-Type: text/html\n\n"
+				print
 				    
-                    	print """ERROR: Unable to find config.xml file. Try putting it in /home/username/etc, /etc, /usr/local/etc or /home/username/toa/etc (see step 6 of ins
+                    		print """ERROR: Unable to find config.xml file. Try putting it in /home/username/etc, /etc, /usr/local/etc or /home/username/toa/etc (see step 6 of ins
 				tructions)"""
 
-                    	sys.exit(1)
-	
+                    		sys.exit(1)
+
 		tree = ET.parse(conf_path)
            	 	
                 config=tree.getroot()# gets the first tag

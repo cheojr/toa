@@ -18,7 +18,14 @@ import os
 import time
 
 from Config import Config
-config=Config()
+ # the config file path is not specified as a command line parameter
+if len(sys.argv) < 2:
+	config=Config() 
+# the path is specified
+else:
+
+	config=Config(sys.argv[1])
+
 DB_NAME=config.getDBName();
 DB_HOST='localhost'
 DB_USER=config.getUser();
