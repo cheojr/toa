@@ -27,6 +27,7 @@ def createcrontab(flowspath, binpath) :
 	binpath+='/bin'
 	fd.write("""*/5 * * * * %s/flowdbu.sh %s %s\n""" % (binpath, flowspath, binpath))	
 	fd.write("""0 22 * * * /usr/bin/python %s/flowsgrapherdaily_pool.py""" % (binpath))
+	fd.write("""0 22 * * * /usr/bin/python %s/flowsdbcleaner.py \n"""%(binpath) )	
 	fd.close()
 
 def confirmInput(msg):
@@ -51,7 +52,6 @@ def createconfigfile(password):
 	
 	crontime=confirmInput("Enter the new crontime (in unix time) for TOA's script executions (suggested 300): ")
 	oldesttime=confirmInput("Enter for how many years will Toa keep data in the database before deleting it, min 1 year  max 5 years (only int): ")
-	
 	oldesttime=int(float(oldesttime)) #round down just incase
 
 	toapath=confirmInput("Enter the path where the toa directory is located (include the toa directory in the path): ")
@@ -147,21 +147,13 @@ print "Success"
 print "Creating the configuration file"
 flowpath,graphpath,crontime, toapath=createconfigfile(DB_PASS)
 
-print "..Done" 
-print """****************************[IMPORTANT READ] *********************************** 
-a file named config.xml was created in the ../etc directory. When the install is done copy the etc directory found in toa to your home directory. If desired the file can also be placed on /etc, /usr/local/etc or where it is if the toa directory is located inside your home directory "
-*************************************[IMPORTANT READ] *************************** """ 
+print "..Done, a file named config.xml was created in the ../etc directory. If desired the file can also be placed on /etc or ~/etc "
 
-print 
 print "Generating crontab commands"
 createcrontab(flowpath,toapath)
 
-print "..Done"
-print """****************************[IMPORTANT READ] *********************************** 
-a file named crontab  was created in the ../etc directory. Please copy its contents to the crontab (remember to update crontab if the path it uses change) "
-*************************************[IMPORTANT READ] *************************** """ 
+print "..Done, a file named crontab  was created in the ../etc directory. Please copy its contents to the crontab (remember to update crontab if the path it uses change) "
 
-print 
 print ("""Creating User 'toa' as admin for  the web interface""")
 print "Insert password for admin 'toa'"
 

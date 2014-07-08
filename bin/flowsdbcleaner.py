@@ -1,10 +1,9 @@
 #!/usr/bin/python
 
-from optparse import OptionParser
 import time
 import MySQLdb
 from Config import Config
-
+import os 
 
 config=Config()
 DB_NAME=config.getDBName();
@@ -17,7 +16,13 @@ LOGSPATH=config.getLogsPath()
 db = MySQLdb.connect(user=DB_USER, passwd=DB_PASS, db=DB_NAME, host=DB_HOST)
 c = db.cursor()
 
-logs=open(LOGSPATH+'/cleanup_log','a')
+
+#check if logs path exists, if not create it
+
+if not os.path.exists(LOGSPATH):
+	os.makedirs(LOGSPATH)
+ 
+logs=open(LOGSPATH+'/cleanup_log','a+')
 
 #maxtime=31536000
 year=31536000  #year in seconds

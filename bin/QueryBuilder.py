@@ -6,7 +6,6 @@ class QueryBuilder:
 
 	def IntRangeO(self, c, id, rangea, rangeb):
 		c.execute("""select ioctect, ooctect, time_unix from rrd_n where nid=%s and time_unix<'%s' and time_unix>'%s' order by time_unix""" % (id, rangea, rangeb))
-		#print """select ioctect, ooctect, time_unix, time_unix from rrd_n where nid=%s and time_unix<'%s' and time_unix>'%s' order by time_unix""" % (id, rangea, rangeb)
 		return  c.fetchall()
 		
 	def IntRangeP(self, c, id, rangea, rangeb):
@@ -19,7 +18,6 @@ class QueryBuilder:
 
 	def IntRangeAll(self, c, id, rangea, rangeb):
 		c.execute("""select ioctect,ooctect,ipacks,opacks,iflows,oflows, time_unix from rrd_n where nid=%s and time_unix<'%s' and time_unix>'%s' order by time_unix""" % (id, rangea, rangeb))
-		#print ("""select ioctect,ooctect,ipacks,opacks,iflows,oflows, time_unix from rrd_n where nid=%s and time_unix<'%s' and time_unix>'%s' order by time_unix""" % (id, rangea, rangeb))
 
 
 		return  c.fetchall()
@@ -43,7 +41,6 @@ class QueryBuilder:
 	def ToNetRangeO(self, c, id,  rangea, rangeb):
 		fromandto=GetFromandTo(c,id)
                 reverseid=GetReverseNet2Net(c,fromandto[0],fromandto[1])
-		print id
                 reverseid=reverseid[0]#Make sure there is a reverse connection in the database, otherwise this will fail
 		c.execute("""select ioctect,time_unix from rrd_to_net where nn_id=%s and time_unix <'%s' and time_unix > '%s' order by time_unix"""%(id,rangea,rangeb))
                 input=c.fetchall()

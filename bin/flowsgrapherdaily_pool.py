@@ -115,7 +115,6 @@ if __name__=='__main__':
 		for label in network[inter].keys():
 				#create a list of networks to graphs
 				labels.append(label)
-		print labels 
 		#if there are networks  to graph
         	if len(labels)>0:
 			#create a list of tupples to pass as param to the pool of procceses 
